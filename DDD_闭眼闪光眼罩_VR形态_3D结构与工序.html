@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>闭眼闪光眼罩 · VR 形态 · 最优三色 620/590/505 —— 三维结构、光路与工序</title>
+<meta name="description" content="以 VR 头显外壳为载体、去掉 VR 光学、用 620/590/505 三色高亮灯珠驱动闭眼闪光刺激的三维结构示意、最优三色推导、剂量计算与装配工序。">
+<style>
+  :root{
+    --ink:#16222b; --ink2:#3c4d58; --muted:#6c808c; --line:#dfe6ec;
+    --teal:#0f6f66; --warm:#a8632a; --red:#a33a32; --soft:#f7f9fb;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:#fff;color:var(--ink);line-height:1.78;
+    font-family:"Songti SC","Source Han Serif SC","Noto Serif CJK SC",Georgia,"Microsoft YaHei",serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:64px 26px 110px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:24px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+  h1{font-size:31px;line-height:1.38;margin:0 0 12px;font-weight:700}
+  .sub{font-size:15.5px;color:var(--ink2);margin:0;max-width:700px}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 18px}
+  .meta span::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--teal);margin-right:7px;vertical-align:2px;opacity:.55}
+
+  h2{font-size:21px;margin:54px 0 14px;font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h2 .num{font-family:var(--mono);font-size:13px;color:var(--teal);margin-right:10px;font-weight:700}
+  h3{font-size:16.5px;margin:30px 0 10px;font-weight:700;color:var(--ink)}
+  p{margin:0 0 14px;font-size:15px;color:var(--ink2)}
+  strong{color:var(--ink)}
+  a{color:var(--teal)}
+  code,.mono{font-family:var(--mono);font-size:.93em;background:#f2f5f7;padding:1px 5px;border-radius:3px;color:#25424e}
+
+  .cards{display:grid;gap:14px;margin:26px 0 6px}
+  @media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--soft);border-left:3px solid var(--teal);padding:16px 18px}
+  .card .t{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--teal);text-transform:uppercase;margin-bottom:6px}
+  .card h4{margin:0 0 6px;font-size:15px;font-weight:700}
+  .card p{margin:0;font-size:13.5px;line-height:1.7}
+
+  /* ── 3D 舞台 ── */
+  .stage{position:relative;margin:22px 0 0;border:1px solid var(--line);background:
+    radial-gradient(120% 100% at 50% 0%,#fbfdfe 0%,#f4f7f9 60%,#eef2f5 100%);border-radius:4px;overflow:hidden}
+  #cv{display:block;width:100%;height:520px;touch-action:none;cursor:grab}
+  #cv.drag{cursor:grabbing}
+  .tools{position:absolute;left:12px;top:12px;display:flex;flex-wrap:wrap;gap:6px}
+  .tools button{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;
+    background:rgba(255,255,255,.94);border:1px solid var(--line);color:var(--ink2);
+    padding:5px 10px;border-radius:3px;cursor:pointer;transition:.15s
+  }
+  .tools button:hover{border-color:#b9c8d2;color:var(--ink)}
+  .tools button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+  .hint{position:absolute;right:12px;bottom:10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .legend{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-top:none;display:grid}
+  @media(min-width:720px){.legend{grid-template-columns:1fr 1fr}}
+  .legend li{
+    display:flex;gap:10px;padding:9px 12px;font-size:13px;color:var(--ink2);
+    border-bottom:1px solid #edf1f4;cursor:default;transition:background .15s
+  }
+  .legend li:nth-child(odd){border-right:1px solid #edf1f4}
+  .legend li:hover,.legend li.hl{background:#f0f7f6}
+  .legend .n{font-family:var(--mono);font-size:10.5px;font-weight:700;color:#fff;background:var(--teal);
+    width:17px;height:17px;line-height:17px;text-align:center;border-radius:50%;flex:none;margin-top:3px}
+  .legend .nm{font-weight:700;color:var(--ink);display:block;font-size:13.2px}
+  .legend .nt{display:block;font-size:12.2px;color:var(--muted);line-height:1.55}
+
+  table{width:100%;border-collapse:collapse;margin:18px 0 8px;font-size:13.6px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+     border-bottom:1.5px solid #c9d5de;font-weight:700}
+  tbody tr:hover{background:#fafcfd}
+  td .mono{background:none;padding:0}
+  .num-cell{font-family:var(--mono);font-size:13px;white-space:nowrap}
+  .hi{color:var(--red);font-weight:700}
+  .ok{color:var(--teal);font-weight:700}
+
+  .note{margin:20px 0;padding:16px 18px;background:var(--soft);border-left:3px solid var(--teal);font-size:13.8px;color:var(--ink2)}
+  .note.warn{background:#fdf6f5;border-left-color:#c0504a}
+  .note h5{margin:0 0 6px;font-size:13.6px;color:var(--ink);font-weight:700}
+  .note p{margin:0 0 8px;font-size:13.6px}
+  .note p:last-child{margin:0}
+
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+  ol.steps li{counter-increment:s;position:relative;padding:0 0 16px 40px;font-size:14.2px;color:var(--ink2)}
+  ol.steps li::before{
+    content:counter(s,decimal-leading-zero);position:absolute;left:0;top:1px;
+    font-family:var(--mono);font-size:11px;font-weight:700;color:var(--teal);
+    border:1px solid #cfe0dd;border-radius:50%;width:25px;height:25px;line-height:24px;text-align:center;background:#fff
+  }
+  ol.steps li b{color:var(--ink)}
+  ol.steps li:last-child{padding-bottom:0}
+
+  .figcap{font-size:12.4px;color:var(--muted);margin:8px 0 0;font-family:var(--mono);line-height:1.6}
+  .figcap + p{margin-top:15px}
+  .eq{font-family:var(--mono);font-size:13.5px;background:#f6f9fa;border-left:2px solid #cfe0dd;
+      padding:9px 12px;color:#25424e;margin:14px 0;border-radius:0 3px 3px 0}
+  svg.chart{display:block;width:100%;height:auto;margin:16px 0 6px}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);line-height:2}
+
+  /* ══ 屏幕试跑控制台 ══ */
+  .cf{display:grid;gap:16px;margin:20px 0 0}
+  @media(min-width:780px){.cf{grid-template-columns:1fr 320px}}
+  .cfview{position:relative;height:500px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
+  .cfcells{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;background:#1a1f24}
+  .cfcell{background:#000;transition:none}
+  .cfhud{position:absolute;left:10px;bottom:8px;font-family:var(--mono);font-size:11px;color:#8fa3ad;
+    background:rgba(8,9,11,.72);padding:3px 8px;border-radius:3px;letter-spacing:.02em}
+  .cfhud.on{color:#d8e6ee}
+  .cftag{position:absolute;right:10px;top:8px;font-family:var(--mono);font-size:10px;color:#5d6f79;letter-spacing:.12em}
+  .cfpanel{border:1px solid var(--line);border-radius:4px;background:#fff;padding:14px 15px;font-size:13px}
+  .cffld{margin-bottom:12px}
+  .cffld:last-child{margin-bottom:0}
+  .cflab{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
+  .cflab b{color:var(--ink);letter-spacing:0;font-size:11.5px}
+  .cfrow{display:flex;flex-wrap:wrap;gap:5px}
+  .cfbtn{font-family:var(--mono);font-size:11px;border:1px solid var(--line);background:#fff;color:var(--ink2);
+    padding:4px 8px;border-radius:3px;cursor:pointer}
+  .cfbtn:hover{border-color:#b9c8d2}
+  .cfbtn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+  .cfbtn:disabled{opacity:.4;cursor:not-allowed}
+  input[type=range]{width:100%;height:16px;accent-color:var(--teal);margin:0}
+  .cfnum{display:flex;gap:5px}
+  .cfnum input{width:100%;font-family:var(--mono);font-size:12px;border:1px solid var(--line);
+    border-radius:3px;padding:4px 6px;color:var(--ink);background:#fff;text-align:center}
+  .cfread{font-family:var(--mono);font-size:11px;color:var(--ink2);line-height:1.75;background:#f6f9fa;
+    border-left:2px solid #cfe0dd;padding:7px 9px;border-radius:0 3px 3px 0;margin-top:6px}
+  .cfread .ok{color:var(--teal);font-weight:700}
+  .cfread .no{color:var(--red);font-weight:700}
+  .cfgo{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
+  .cfgo .main{flex:1;background:var(--teal);color:#fff;border:1px solid var(--teal);font-weight:700;padding:7px 10px;font-size:12.5px}
+  .cfgo .main.stop{background:#8d2f28;border-color:#8d2f28}
+  .cfcheck{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
+  .cfcheck input{margin-top:3px;accent-color:var(--teal)}
+  .cfsw{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:6px}
+  .cfsw i{width:26px;height:14px;border-radius:2px;border:1px solid #ccd6dd;display:inline-block}
+  .kbd{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kicker">Build Sheet · 闭眼光刺激 · 2026-11</p>
+  <h1>闭眼闪光眼罩：VR 外壳 + 最优三色 + 全视野漫射</h1>
+  <p class="sub">把「戴上去在眼前闪」做成一台能重复工作的设备。形态借 VR 头显，光学反过来做——去掉透镜，留一片漫射面。三色可用，但闭眼时三色的每瓦效力差 60 倍，配比必须先算清——算完的结论是 620 / 590 / 505，不是 RGB。</p>
+  <div class="meta">
+    <span>三维可交互</span><span>全部内联 · 无依赖</span><span>剂量按眼睑照度算</span>
+  </div>
+</header>
+
+<h2><span class="num">00</span>先给三条判断</h2>
+
+<div class="cards">
+  <div class="card">
+    <div class="t">Form</div>
+    <h4>VR 外壳要，VR 透镜不要</h4>
+    <p>头显的价值是密封、遮光、贴脸、配重平衡。但它的光学核心——把微屏成像到 1–2 m 外的透镜组——在这里是有害的：透镜会把 LED 聚成一点，在眼皮内侧打出热斑。闭眼要的是「一片匀光贴着睑」，不是「一个远处的像」。</p>
+  </div>
+  <div class="card">
+    <div class="t">Dose</div>
+    <h4>闭眼时每瓦效力 红 100 : 琥珀 32 : 青 6.7</h4>
+    <p>眼睑对 620 nm 透 7.5%，对 550 nm 只透 0.5%，对 470 nm 透 0.35%；再乘上 LED 自身的电光效率，「每瓦电买到多少闭眼视觉量」差 60 倍。所以「三原色混成白」在闭眼条件下不是调色问题，是功率问题。</p>
+  </div>
+  <div class="card">
+    <div class="t">Use</div>
+    <h4>三色的真正用处不是好看</h4>
+    <p>它能做一件单色做不到的事：<strong>等亮度色度闪烁</strong>——两色调到主观等亮后反相闪，亮度通道几乎不动，只驱动色通路。这是视觉神经科学的标准手段，也是这套三色灯珠唯一不可替代的用途。</p>
+  </div>
+</div>
+
+<h2><span class="num">01</span>三维结构</h2>
+
+<p>下面是单机全貌：外壳半透明，左右两个独立光通道，每通道七层。<strong>左通道展开成详图，右通道保持装配态淡显</strong>作对照——这一张里左右不是对称画法，是有意的。拖动旋转，滚轮缩放；三个按钮分别是<strong>爆炸</strong>（拉开层距）、<strong>剖面</strong>（只留左通道，去掉外壳与右通道）、<strong>光路</strong>（四颗灯珠各向扩散板四角发散的 16 束）。鼠标移到下方图例上，对应那一层会单独亮起并标出名字。</p>
+
+<div class="stage">
+  <canvas id="cv"></canvas>
+  <div class="tools">
+    <button id="bExp" class="on">爆炸</button>
+    <button id="bSec">剖面</button>
+    <button id="bOpt">光路</button>
+    <button id="bAuto" class="on">自动旋转</button>
+    <button id="bReset">复位</button>
+  </div>
+  <div class="hint">拖动旋转 · 滚轮缩放</div>
+</div>
+<ul class="legend" id="lg"></ul>
+
+<p class="figcap">尺寸单位 mm。单通道板面 62 × 52，眼距中心 ±33，外壳 152 × 86 × 46。层序自眼睑向外：面垫 → 遮光腔 20 → 扩散板 2 → 混光腔 12 → 铝基板 2 → 散热齿 6 → 后盖 2。图中央那块淡红的杏仁形是<strong>闭着的眼</strong>，用来定方向：它在哪一端，哪一端就贴脸。</p>
+
+<h3>为什么层序是这样</h3>
+
+<p>光从最外侧的灯板发出，要先在<strong>混光腔</strong>里走满 12 mm，让四颗灯珠、三个颜色在这个空腔里充分叠合；再穿过<strong>扩散板</strong>变成面光；最后留 <strong>20 mm 的遮光腔</strong>。最后这段最容易被省掉，但它有三个作用：</p>
+
+<table>
+  <thead><tr><th style="width:22%">留 20 mm 的作用</th><th>不这么做的后果</th></tr></thead>
+  <tbody>
+    <tr><td><b>看不见灯珠结构</b></td><td>扩散板贴着眼皮，四颗灯珠的位置会以亮斑形式被直接看到，「整片视野均匀亮」的前提就没了</td></tr>
+    <tr><td><b>填满视野</b></td><td>离眼太近时，发光面张角不足，只有中央视野被照到，而全视野刺激的诱发强度显著高于小视场</td></tr>
+    <tr><td><b>容下睫毛与眼动</b></td><td>睁眼模式下睫毛会扫到扩散板；闭眼时眼睑也会随眼球转动微微鼓起</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>闭眼反而放宽了一件事</h5>
+  <p>眼睑本身就是一层强散射体（皮肤 + 肌肉 + 结膜，透射率只有百分之几，其余全被散射）。这意味着<strong>闭眼时对扩散板的均匀性要求比睁眼低得多</strong>——细微的亮度不均会被眼睑抹平。真正要防的不是「花纹」，而是<strong>局部过热点</strong>：一个 10 mm 的热区在闭眼时会被感知成「一侧更亮」，比均匀地暗更难受，也更难标定剂量。</p>
+</div>
+
+<h2><span class="num">02</span>三色的剂量账：最优三色是算出来的</h2>
+
+<p>这一节是整台机器最反直觉的地方，也是「高亮三原色」这个想法必须先过的一关。三色的权重不是「红好一点」，而是<strong>差 60 倍</strong>。这一节把这个数算透，然后给出真正该买的三条波长——结论和直觉、和市面上的 RGB 套件都不一样。</p>
+
+<h3>第一步：眼睑透射 × 视见函数</h3>
+
+<p>光要过两层才变成「看见」：一是眼睑的透射率 T(λ)（客观光度法实测），二是视网膜的视见函数 V(λ)（CIE 1924 明视觉）。两者相乘，就是同样辐射通量下「闭眼到底看见多少」：</p>
+
+<table>
+  <thead>
+    <tr><th>通道</th><th>波长</th><th>眼睑透射 T</th><th>视见函数 V(λ)</th><th>T · V</th><th>相对</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>红</b></td><td class="num-cell">630 nm</td><td class="num-cell">9.0 %</td><td class="num-cell">0.265</td><td class="num-cell">0.0239</td><td class="num-cell ok">100</td></tr>
+    <tr><td><b>绿</b></td><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.0050</td><td class="num-cell">21</td></tr>
+    <tr><td><b>蓝</b></td><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.0008</td><td class="num-cell hi">3.5</td></tr>
+  </tbody>
+</table>
+
+<p class="figcap">眼睑透射率取自客观光度法文献值；个体差异很大（肤色、眼睑厚度、年龄），实测范围可差 2–3 倍，但<strong>红 ≫ 绿 &gt; 蓝 的次序是稳定的</strong>。</p>
+
+<p>只看这一栏，很容易得出两个「常识」：红压倒性有效、绿还剩两成、蓝可以扔。但这一步漏了第三个数——<strong>LED 自己并不把电全部变成光</strong>。</p>
+
+<h3>第二步：乘上 LED 的电光效率，答案就变了</h3>
+
+<p>每瓦电出多少瓦辐射，叫 <b>WPE</b>，它随波长强烈变化：蓝光 InGaN 现在能做到 40–50%，而 550–590 nm 的黄绿正是著名的「<strong>绿光鸿沟</strong>」，只有 20% 上下。三条曲线乘起来，才是真正的<strong>每瓦电买到多少闭眼视觉量</strong>：</p>
+
+<div class="eq">η(λ) = WPE(λ) × T(λ) × V(λ)</div>
+
+<table>
+  <thead>
+    <tr><th>波长</th><th>眼睑透射 T</th><th>V(λ)</th><th>WPE</th><th style="text-transform:none">η × 10⁻⁴</th><th>相对峰值</th><th></th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="num-cell">470 nm</td><td class="num-cell">0.35 %</td><td class="num-cell">0.091</td><td class="num-cell">0.43</td><td class="num-cell">1.36</td><td class="num-cell hi">1.6 %</td><td>蓝</td></tr>
+    <tr><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.40</td><td class="num-cell">3.33</td><td class="num-cell hi">3.9 %</td><td>青蓝</td></tr>
+    <tr><td class="num-cell">505 nm</td><td class="num-cell">0.42 %</td><td class="num-cell">0.407</td><td class="num-cell">0.33</td><td class="num-cell">5.70</td><td class="num-cell">6.7 %</td><td>青</td></tr>
+    <tr><td class="num-cell">520 nm</td><td class="num-cell">0.45 %</td><td class="num-cell">0.710</td><td class="num-cell">0.29</td><td class="num-cell">9.27</td><td class="num-cell">10.8 %</td><td>绿</td></tr>
+    <tr><td class="num-cell">530 nm</td><td class="num-cell">0.47 %</td><td class="num-cell">0.862</td><td class="num-cell">0.28</td><td class="num-cell">11.12</td><td class="num-cell">13.0 %</td><td>绿</td></tr>
+    <tr><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.26</td><td class="num-cell">12.69</td><td class="num-cell">14.8 %</td><td>绿（V 最高，但没用）</td></tr>
+    <tr><td class="num-cell">570 nm</td><td class="num-cell">0.62 %</td><td class="num-cell">0.952</td><td class="num-cell">0.23</td><td class="num-cell">13.43</td><td class="num-cell">15.7 %</td><td>黄绿</td></tr>
+    <tr><td class="num-cell">590 nm</td><td class="num-cell">1.80 %</td><td class="num-cell">0.757</td><td class="num-cell">0.20</td><td class="num-cell">27.25</td><td class="num-cell ok">31.8 %</td><td><b>琥珀 ← 选它</b></td></tr>
+    <tr><td class="num-cell">600 nm</td><td class="num-cell">3.20 %</td><td class="num-cell">0.631</td><td class="num-cell">0.22</td><td class="num-cell">44.42</td><td class="num-cell">51.8 %</td><td>琥珀红</td></tr>
+    <tr><td class="num-cell">610 nm</td><td class="num-cell">5.50 %</td><td class="num-cell">0.503</td><td class="num-cell">0.26</td><td class="num-cell">71.93</td><td class="num-cell">83.9 %</td><td>红</td></tr>
+    <tr style="background:#f2f8f7"><td class="num-cell"><b>620 nm</b></td><td class="num-cell">7.50 %</td><td class="num-cell">0.381</td><td class="num-cell">0.30</td><td class="num-cell">85.73</td><td class="num-cell ok"><b>100 %</b></td><td><b>峰值 ← 剂量通道</b></td></tr>
+    <tr><td class="num-cell">625 nm</td><td class="num-cell">8.22 %</td><td class="num-cell">0.321</td><td class="num-cell">0.32</td><td class="num-cell">84.39</td><td class="num-cell">98.4 %</td><td>红（最好买）</td></tr>
+    <tr><td class="num-cell">630 nm</td><td class="num-cell">9.00 %</td><td class="num-cell">0.265</td><td class="num-cell">0.34</td><td class="num-cell">81.09</td><td class="num-cell">94.6 %</td><td>红</td></tr>
+    <tr><td class="num-cell">640 nm</td><td class="num-cell">10.50 %</td><td class="num-cell">0.175</td><td class="num-cell">0.36</td><td class="num-cell">66.15</td><td class="num-cell">77.2 %</td><td>深红</td></tr>
+    <tr><td class="num-cell">650 nm</td><td class="num-cell">12.00 %</td><td class="num-cell">0.107</td><td class="num-cell">0.38</td><td class="num-cell">48.79</td><td class="num-cell">56.9 %</td><td>深红</td></tr>
+    <tr><td class="num-cell">660 nm</td><td class="num-cell">13.00 %</td><td class="num-cell">0.061</td><td class="num-cell">0.38</td><td class="num-cell">30.13</td><td class="num-cell hi">35.2 %</td><td>深红（透射最高，效率却最差之一）</td></tr>
+    <tr><td class="num-cell">680 nm</td><td class="num-cell">14.20 %</td><td class="num-cell">0.017</td><td class="num-cell">0.36</td><td class="num-cell">8.69</td><td class="num-cell hi">10.1 %</td><td>不可见边缘</td></tr>
+  </tbody>
+</table>
+
+<svg class="chart" viewBox="0 0 680 300" role="img" aria-label="闭眼效力曲线：η 随波长变化，峰值在 620 nm，610–630 为最优窗口">
+  <defs>
+    <linearGradient id="gEta" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f6f66" stop-opacity=".20"/>
+      <stop offset="1" stop-color="#0f6f66" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="436" y="32" width="51" height="218" fill="#a33a32" opacity=".06"/>
+  <text x="461" y="20" text-anchor="middle" font-size="9.5" font-family="ui-monospace,monospace" fill="#a33a32">最优窗口 610–630</text>
+
+  <g stroke="#eef2f5" stroke-width="1">
+    <line x1="56" y1="250" x2="664" y2="250"/>
+    <line x1="56" y1="145" x2="664" y2="145"/>
+    <line x1="56" y1="40"  x2="664" y2="40"/>
+  </g>
+  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
+    <text x="46" y="254" text-anchor="end">0</text>
+    <text x="46" y="149" text-anchor="end">50</text>
+    <text x="46" y="44"  text-anchor="end">100</text>
+  </g>
+
+  <path d="M81,250 L81,246.6 L132,241.8 L170,235.9 L208,227.3 L233,222.7 L284,218.9 L335,217 L385,183.2 L411,141.2 L436,73.8 L461,40 L474,43.4 L487,51.3 L512,87.9 L563,176.1 L613,228.8 L613,250 Z"
+        fill="url(#gEta)"/>
+  <polyline points="81,246.6 132,241.8 170,235.9 208,227.3 233,222.7 284,218.9 335,217 385,183.2 411,141.2 436,73.8 461,40 474,43.4 487,51.3 512,87.9 563,176.1 613,228.8"
+            fill="none" stroke="#0f6f66" stroke-width="2"/>
+
+  <circle cx="170" cy="235.9" r="3" fill="#0f6f66"/>
+  <circle cx="284" cy="218.9" r="3" fill="#0f6f66"/>
+  <circle cx="385" cy="183.2" r="3.5" fill="#0f6f66"/>
+  <circle cx="461" cy="40" r="4.5" fill="#a33a32"/>
+  <circle cx="563" cy="176.1" r="3.5" fill="#a33a32"/>
+  <circle cx="613" cy="228.8" r="3" fill="#c0504a"/>
+
+  <g font-size="10.5" font-family="ui-monospace,monospace" fill="#3c4d58">
+    <text x="461" y="33" text-anchor="middle" fill="#a33a32" font-weight="700">620</text>
+    <text x="170" y="226" text-anchor="middle">505 青 6.7</text>
+    <text x="284" y="209" text-anchor="middle">550 绿 15</text>
+    <text x="370" y="172" text-anchor="end">590 琥珀 32</text>
+    <text x="590" y="192" text-anchor="start" fill="#a33a32">660 深红 35</text>
+  </g>
+
+  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
+    <text x="81"  y="268" text-anchor="middle">470</text>
+    <text x="208" y="268" text-anchor="middle">520</text>
+    <text x="335" y="268" text-anchor="middle">570</text>
+    <text x="461" y="268" text-anchor="middle">620</text>
+    <text x="563" y="268" text-anchor="middle">660</text>
+    <text x="664" y="268" text-anchor="middle">700</text>
+    <text x="664" y="286" text-anchor="end" fill="#16222b">波长 nm</text>
+    <text x="56"  y="286" text-anchor="start">相对闭眼效力 η（峰值 = 100）</text>
+  </g>
+</svg>
+
+<p class="figcap">曲线的形状是三件事叠出来的：<strong>眼睑透射随波长单调上升</strong>（450 → 700 nm 从 0.3% 涨到 14.5%），<strong>视见函数在 555 nm 见顶后陡降</strong>，<strong>WPE 在绿光鸿沟处凹陷</strong>。上升的与下降的在这里交叉，极值落在 620 nm 附近；610–630 整段都在 84% 以上，所以实际采购按能买到的功率档选就行，差异小于个体眼睑差异。</p>
+
+<div class="note warn">
+  <h5>最容易踩的坑：以为「深红穿透力最强，所以效率最高」</h5>
+  <p>660 nm 的眼睑透射率 13.0%，确实比 620 nm 的 7.5% 高 73%；680 nm 更是 14.2%，几乎最高。但它们落在视见函数的尾巴上（V = 0.061 / 0.017），乘积反而只剩峰值的 <b>35% / 10%</b>。波长再往长走，透射率涨得越来越慢（趋于 15% 的天花板），V 却按对数往下掉——<strong>于是「最深的红」恰恰是「最不划算的红」</strong>。这一条对做植物灯的人反过来，因为植物看的是 PPFD 不看 V(λ)。</p>
+</div>
+
+<h3>第三步：两色配对，要付多少倍功率</h3>
+
+<p>三色唯一的不可替代用途是<strong>等亮度色度闪烁</strong>（见下一节 C 模式）：两色调到主观等亮、反相闪，亮度通道几乎不动。要等亮，非红那一色就得付功率。以 620 nm 为基准，各候选波长需要的电功率倍数是 η 的倒数：</p>
+
+<table>
+  <thead>
+    <tr><th style="text-transform:none">与 620 nm 配成等亮度</th><th>需付功率</th><th>判断</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="num-cell">650 nm 深红</td><td class="num-cell ok">1.8 ×</td><td>最便宜的配对，但色差也最小——两个都是红，色度闪烁会很弱</td></tr>
+    <tr><td class="num-cell">660 nm 深红</td><td class="num-cell">2.8 ×</td><td>同上，色差稍大一点；注意它<b>只作为配对</b>才划算，作剂量通道只剩 35%</td></tr>
+    <tr><td class="num-cell"><b>590 nm 琥珀</b></td><td class="num-cell ok"><b>3.1 ×</b></td><td><b>最便宜的「真异色」配对 ← 选它</b></td></tr>
+    <tr><td class="num-cell">550 nm 绿</td><td class="num-cell">6.8 ×</td><td>贵一倍，色差不算大，不值得</td></tr>
+    <tr><td class="num-cell"><b>505 nm 青</b></td><td class="num-cell">15.0 ×</td><td>等亮很贵，但<b>按 10% 亮度用只多花 1.5 ×</b>，作「短波到底有没有用」的对照完全付得起 ← 选它</td></tr>
+    <tr><td class="num-cell">470 nm 蓝</td><td class="num-cell hi">63 ×</td><td>比 505 青还贵 4 倍，且青才是红的对手色。蓝没有理由</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <h5>所以三色这样定：620 / 590 / 505，都落在「能穿眼睑」的窗口里</h5>
+  <p><b>620 nm = 剂量通道</b>（主模式只开它一路，占总功率 100%；三色同开时剂量也主要由它给）：η 峰值，闭眼时每瓦电买到的视觉量最高，也是唯一能用「眼睑照度」直接标定剂量的通道。625 nm 是同一档里最好买的规格（98.4%，差别在噪声内）。</p>
+  <p><b>590 nm 琥珀 = 暖端色相</b>：把橙红扳向琥珀，等亮度代价 3.1 倍，是所有「非红」通道里最便宜的一个。</p>
+  <p><b>505 nm 青 = 冷端对照</b>：红的最佳对手色（互补），比 470 蓝亮 4.2 倍；按低亮度用代价很小。它的价值是<strong>证明短波在闭眼条件下到底有没有用</strong>——这是个真实验，不是摆设。</p>
+  <p><b>不要买：</b>660 / 680 深红当剂量（只剩 35% / 10%）、550 绿（15%）、470 蓝（1.6%，被 505 青全面碾压）。</p>
+</div>
+
+<h3>换成这套三色，功率账变成什么样</h3>
+
+<p>仍以眼睑照度 3000 lux、单眼发光面 30 × 25 mm、扩散板 70% × 几何 60% 计。红单色 0.030 W 辐射 ≈ 0.12 W 电，作为基准：</p>
+
+<table>
+  <thead>
+    <tr><th>方案</th><th style="text-transform:none">620 nm 红</th><th style="text-transform:none">590 nm 琥珀</th><th style="text-transform:none">505 nm 青</th><th>电功率（单眼）</th><th>双眼</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>纯红单色</b></td><td class="num-cell">0.030 W</td><td class="num-cell">—</td><td class="num-cell">—</td><td class="num-cell ok">0.12 W</td><td class="num-cell">0.24 W</td></tr>
+    <tr><td><b>红 + 琥珀</b>（同电流）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.020 W</td><td class="num-cell">—</td><td class="num-cell">0.24 W</td><td class="num-cell">0.48 W</td></tr>
+    <tr><td><b>三色等亮度</b>（实验）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.063 W</td><td class="num-cell">0.501 W</td><td class="num-cell hi">2.3 W</td><td class="num-cell hi">4.6 W</td></tr>
+    <tr><td><s>老 RGB 三色等亮度</s></td><td class="num-cell">0.030 W</td><td class="num-cell">0.142 W</td><td class="num-cell">0.848 W</td><td class="num-cell">4.1 W</td><td class="num-cell">8.2 W</td></tr>
+  </tbody>
+</table>
+
+<p class="figcap">辐射通量比 红 : 琥珀 : 青 = <span class="mono">1 : 2.10 : 16.7</span>，换成驱动电流比约 <span class="mono">1 : 3.1 : 15.0</span>（因为三色 WPE 不同）。老 RGB 那行按 630 : 550 : 490 的 <span class="mono">1 : 4.79 : 28.7</span> 反解。</p>
+
+<p>换成 620 / 590 / 505 之后，三色等亮度混合的电功率从 <strong>8.2 W 降到 4.6 W</strong>——省下的是绿光鸿沟和深蓝这两笔冤枉钱。但请注意倍数：即便优化到底，<strong>三色等亮度混合仍然比纯红贵 19 倍</strong>。这才是真正的结论——不是「三色配比怎么调」，而是<strong>「闭眼条件下三色混白永远不划算，主模式必须是红单色」</strong>。</p>
+
+<div class="note warn">
+  <h5>更正：上一版这里写的「绿 = 色相通道，几十毫瓦就能扳到暖白」是错的</h5>
+  <p>按上面的 η 表，550 nm 绿每瓦只能买到 620 nm 红的 <b>15%</b>；要和红等亮，绿得付 <b>6.8 倍</b>电功率，不是几十毫瓦。而且它扳不到白——红加绿混出来的是黄，要凑到白得让短波出八成以上的功率。绿在这里<strong>既贵、又到不了目的地</strong>。真正的暖端色相通道是 590 琥珀，不是 550 绿。</p>
+</div>
+
+<div class="note">
+  <h5>三色定案带来两个副作用（都是好事）</h5>
+  <p><b>一、波长都落在 505–620 nm，外壳、层序、光路一根线都不用改。</b>下图那张三维图与波长无关——它画的是机械形态，换波长只改灯珠型号与驱动电流。</p>
+  <p><b>二、620 与 590 都是 AlGaInP，正向压降几乎一样（2.0–2.2 V）。</b>老 RGB 方案里绿蓝要 3.0–3.4 V、红只要 2.1 V，逼着电源做两档；现在只有 505 青一路需要高一点（约 3.2 V），电源简单一档。</p>
+</div>
+
+<h2><span class="num">03</span>三色能做的四件事</h2>
+
+<table>
+  <thead><tr><th style="width:20%">模式</th><th style="width:26%">驱动方式</th><th>有什么用 / 代价</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>A 单色红闪</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">推荐主线</span></td>
+      <td>只驱动 620 nm，8–13 Hz 方波</td>
+      <td>功率最低（0.1 W 级）、剂量最好标定、暗相能做到真黑。这是把机器做「准」的基线配置，先把它调到可重复，再谈颜色。</td>
+    </tr>
+    <tr>
+      <td><b>B 三色同步</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">拟白</span></td>
+      <td>620 : 590 : 505 按 1 : 2.1 : 16.7 辐射比（电流约 1 : 3.1 : 15.0）</td>
+      <td>观感最接近「暖白闪烁」，但仍要 2.3 W/眼，其中 505 青吃掉 65% 的功率。适合短时实验，不适合长时间连续运行。</td>
+    </tr>
+    <tr>
+      <td><b>C 异色反相</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">等亮度色度闪烁</span></td>
+      <td>620 与 590 反相方波（要更强的色差就换 620 与 505）</td>
+      <td><strong>三色唯一不可替代的用法。</strong>亮度通道几乎不调制，只驱动色通路，可与「亮度闪烁」做对照实验。前提是先做等亮度标定（见下），否则会混入亮度成分，实验就白做了。</td>
+    </tr>
+    <tr>
+      <td><b>D 色轮</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">观赏</span></td>
+      <td>620 → 590 → 505 依次点亮，每色 1/3 周期</td>
+      <td>观感最花，但每一色的绝对亮度只有 1/3，且三色不等权会让「轮流」实际变成「红—暗—暗」。只适合低强度把玩。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>等亮度点怎么标定（C 模式的前提）</h3>
+
+<p>「620 和 590 一样亮」不是查表能得到的，必须对具体的人、具体的波长实测。标准做法是 <strong>异色闪烁光度法</strong>（heterochromatic flicker photometry, HFP）：</p>
+
+<ol class="steps">
+  <li><b>把两色以同一频率反相闪烁</b>（约 12–15 Hz 最好，此时亮度通路响应远快于色通路）。620 与 590 这一对色差小，闪烁感会很难消到零——这正是它「不干扰亮度通道」的优点，也是它「实验信号弱」的缺点。要强信号就换 620 与 505，但标定时对面那路要开大 15 倍。</li>
+  <li><b>受试者只调一个旋钮</b>——琥珀（或青）通道的电流，直到闪烁感「消失」或降到最弱。闪烁消失的那一刻，两条通路的亮度贡献相等。</li>
+  <li><b>记录该点的两路电流比</b>，写进固件作为该用户的等亮度常数。</li>
+  <li><b>换人必须重标。</b>这个比值因人而异（黄斑色素密度、晶状体黄化、年龄都会改），差 30% 是常事。</li>
+</ol>
+
+<div class="note">
+  <p>闭眼条件下这一步会变难：眼睑把两色的光谱都「红移」了一点，短波那一路的有效亮度被压得更低，等亮度点会往短波侧大幅偏移——620 与 505 的理论比值是 15.0，实测常落在 10–25 之间。所以<strong>标定必须在闭眼、装机、最终亮度下做</strong>，不能在台面上睁眼标完就装进去。</p>
+</div>
+
+<h2><span class="num">04</span>电气：三通道独立恒流</h2>
+
+<p>三种颜色必须<strong>三路独立恒流</strong>，不能共用一个限流电阻，也不能用串联降压。理由有两个，第二个更硬：</p>
+
+<p><b>一是电流差得太远。</b>按上一节的等亮度比，620 : 590 : 505 的驱动电流是 <span class="mono">1 : 3.1 : 15.0</span>，共一路必然一路过流、两路欠流。</p>
+
+<p><b>二是压降这一关虽然变容易了，但并联仍然不行。</b>620 与 590 都是 AlGaInP，Vf 几乎一样（2.0–2.2 V）——这是换成 620/590/505 之后白捡的好处：老 RGB 方案里红 2.1 V、绿蓝 3.0–3.4 V，逼着电源做两档；现在只有 505 青一路要 3.2 V 左右，5 V 单档就够。但「Vf 相同」不等于「能并联」：AlGaInP 的 Vf 有约 −2 mV/K 的负温度系数，并联时谁先热谁抢电流，最终热失控。所以三路恒流不能省，省下来的只是电源档位。</p>
+
+<table>
+  <thead><tr><th style="width:20%">环节</th><th style="width:30%">选型</th><th>要点</th></tr></thead>
+  <tbody>
+    <tr><td>主控</td><td>ESP32-S3 / Teensy 4.x / STM32</td><td>需要至少 3 路独立硬件 PWM 通道，且同一时基——三色反相要求通道之间相位严格对齐</td></tr>
+    <tr><td>恒流</td><td>三片 AMC7135（350 mA）或三路运放 + MOSFET 恒流</td><td>恒流而非恒压：电池掉压时亮度不能变，幻觉强度对亮度敏感</td></tr>
+    <tr><td>开关</td><td>AO3400 ×3（SOT-23）</td><td>低边开关；栅极 100 Ω 串阻 + 10 kΩ 下拉（防上电误闪一次强光）</td></tr>
+    <tr><td>灯珠</td><td>620 / 590 / 505 三芯封装，或三颗单色 3535 拼一个灯位</td><td>共阳便于三路低边恒流；<strong>不要 WS2812</strong>——内置 IC 有最小脉宽与刷新抖动，做不了精确占空比与严格反相</td></tr>
+    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器，或 1×18650 + 升压</td><td>设备贴脸，绝不接市电裸露部分；5 V 足够覆盖三路 Vf + 恒流余量</td></tr>
+    <tr><td>保护</td><td>SS34 反接保护 + SMAJ5.0A TVS + 1000 µF/10 V</td><td>脉冲负载会让电源纹波变大，储能必须留在板上</td></tr>
+  </tbody>
+</table>
+
+<h3>PWM 周期与占空比</h3>
+
+<p>频率由晶振决定，不能用软件延时——软件延时的抖动在 1–5 ms，占 100 ms 周期的 1–5%，频率会漂，锁相就无从谈起。</p>
+
+<p class="mono" style="display:block;background:#f4f8fb;padding:12px 14px;border-left:3px solid #0f6f66;font-size:13px;line-height:1.9">
+period = (F_CPU / prescaler) / f_out<br>
+duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<br>
+反相模式：duty_G(t) = period − duty_R(t)，两路共用同一个计数器即可严格对齐
+</p>
+
+<p>8–13 Hz 的周期是 77–125 ms，而 LED 的开关边沿是纳秒级——<strong>相差六个数量级</strong>。所以在这里追求 ns 级边沿、推挽驱动、高速驱动器，全是无效优化。真正决定成败的是三件事：<strong>恒流精度、三通道相位对齐、散热</strong>。</p>
+
+<h2><span class="num">05</span>物料清单</h2>
+
+<table>
+  <thead><tr><th style="width:24%">项</th><th style="width:38%">规格</th><th style="width:8%">数量</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td>三色灯珠</td><td><b>620 / 590 / 505 nm</b> 单色大功率（3535 或 5050 三芯定制），各 3–4 颗</td><td class="num-cell">8 灯位 ×3 芯</td><td>单颗 0.2–0.5 W；<strong>620 占多数功率</strong>，别按三色均分买。买不到三芯就贴 12 颗 3535</td></tr>
+    <tr><td>铝基板</td><td>1.6 mm 铝基，单面，定制或洞洞板手焊</td><td class="num-cell">2</td><td>灯珠焊在朝内一面，走线从背面出</td></tr>
+    <tr><td>扩散板</td><td>PC 乳白 2 mm，雾度 &gt;90%，透光 65–75%</td><td class="num-cell">2（62×52）</td><td>扩散板质量直接决定均匀度</td></tr>
+    <tr><td>混光腔 / 遮光腔</td><td>3D 打印（PETG / ABS），混光腔内壁贴高反射白膜</td><td class="num-cell">2 套</td><td>白膜可用 PTFE 胶带或 3M ESR；遮光腔内壁哑光黑植绒</td></tr>
+    <tr><td>面垫</td><td>硅胶或记忆棉，厚 12–14 mm</td><td class="num-cell">1</td><td>贴合眶骨、压住不漏光，是舒适度的关键</td></tr>
+    <tr><td>外壳</td><td>VR 头显外壳（可买现成空壳改）或 3D 打印</td><td class="num-cell">1</td><td><strong>拆掉原透镜与屏幕</strong>，只留壳体与头带</td></tr>
+    <tr><td>散热</td><td>铝散热片 30×40×6 + 导热硅脂</td><td class="num-cell">2</td><td>连续 30 min 结温必须 &lt;60 ℃</td></tr>
+    <tr><td>驱动</td><td>AMC7135 ×3 或运放恒流 ×3；AO3400 ×3</td><td class="num-cell">3 套</td><td>低边恒流 + 硬件 PWM</td></tr>
+    <tr><td>主控</td><td>ESP32-S3 开发板</td><td class="num-cell">1</td><td>三路 PWM 同时基；带 WiFi 便于记录参数</td></tr>
+    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器</td><td class="num-cell">1</td><td>或 1×18650 + 5 V 升压 + 保护板</td></tr>
+    <tr><td>显示与输入</td><td>0.96″ OLED + 旋转编码器 + 急停按钮</td><td class="num-cell">1 套</td><td>急停要能物理断电，不能只靠固件</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="num">06</span>装配工序</h2>
+
+<ol class="steps">
+  <li><b>拆壳</b>：把 VR 头显原有透镜组、显示屏、主板全部拆除，只留壳体、面垫与头带。壳体内部若有透镜支架，一并磨平——残留的支架会在光路里投出硬阴影。</li>
+  <li><b>灯珠上板</b>：铝基板涂锡膏，回流焊每个灯位的三芯（620 / 590 / 505）。注意共阳方向统一，三通道走线分开引出。<b>焊完逐颗测三色</b>，一颗反接就要整板返工。</li>
+  <li><b>灯板贴散热</b>：涂导热硅脂，四颗 M2 螺丝对角压紧。此时先单独通电，跑 10 Hz / 40% 占空比 30 min，用热电偶测基板温度，<b>必须 &lt;60 ℃</b>。这一步要在装腔之前做，装进去就测不准了。</li>
+  <li><b>装混光腔</b>：3D 打印件内壁贴满高反射白膜，边缘不留缝。这一步决定三个颜色能不能在板面之前混匀——混光腔短了，会在扩散板上看到三个分离的色斑。</li>
+  <li><b>装扩散板</b>：嵌进槽位，边缘用黑胶完全密封。<b>任何一条缝都会在眼前形成一道亮线</b>，这是最常见的失败点。</li>
+  <li><b>装遮光腔</b>：20 mm 亚光黑腔体，双眼之间加一块不透明隔板（否则左眼的光会串到右眼，双眼异相模式直接失效）。</li>
+  <li><b>装面垫与外壳</b>：面垫压住眶骨，戴上去用手电从外面照，确认<b>无漏光</b>——漏光不仅破坏暗相，还会让受试者看到房间。</li>
+  <li><b>走线与接口</b>：电源从后脑出线，用航空插头，线材留应力释放。头带调好配重，避免向前坠。</li>
+  <li><b>烧固件</b>：先跑固定参数（红 10 Hz / 40%），三通道相位对齐用示波器核一遍。<b>反相模式下两路必须共用同一计数器</b>，否则相位会随频率漂移。</li>
+  <li><b>光学标定</b>：照度计贴在眼睑位置（真人佩戴、闭眼），逐档记录照度，把「档位 → 眼睑照度」写成表贴在机上。以后所有实验参数都按照度记，不按「亮度 3 档」记。</li>
+  <li><b>等亮度标定</b>（若用 C 模式）：闭眼、装机、最终亮度下做 HFP，记录 620 : 590 的电流比，写进固件。</li>
+  <li><b>老化与验收</b>：连续跑 2 h，检查温升、有无闪烁抖动、三色有无单颗失效。</li>
+</ol>
+
+<h2><span class="num">07</span>安全阈值（写进固件，不只写说明书）</h2>
+
+<table>
+  <thead><tr><th style="width:26%">项</th><th style="width:30%">阈值</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>15–25 Hz</td><td><b>默认锁定</b>，需长按 3 s 才可进入</td><td>光敏性癫痫的最高危频段（峰值 15–20 Hz）；即使用户主动选择，也要多一道确认</td></tr>
+    <tr><td>有效危险区</td><td>3–30 Hz，避免连续长时间运行</td><td>多来源一致</td></tr>
+    <tr><td>单次时长</td><td>20 min 自动停，冷却 5 min</td><td>视疲劳；也限制累积光剂量</td></tr>
+    <tr><td>亮度上限</td><td>眼睑照度 ≤5000 lux</td><td>文献诱发区间上限；再高只增加不适与热，不增加效果</td></tr>
+    <tr><td>蓝通道</td><td>单次连续 &lt;10 min</td><td>蓝光光化学危害（视网膜）在短波端最高；闭眼虽衰减 99.6%，但功率被推到 28 倍时必须重新算</td></tr>
+    <tr><td>光生物安全</td><td>目标 IEC 62471 RG1 / GB/T 20145</td><td>需要按实际辐照度做评估，不能凭经验</td></tr>
+    <tr><td>禁忌</td><td>癫痫史、偏头痛、光敏史、孕期、服用光敏药物</td><td>写在说明书首行，且开机时强制确认</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>同一组参数，两个结果</h5>
+  <p>1959 年 Brainwave Synchronizer 在商业推广中诱发多名使用者癫痫发作，产品很快退场。它用的正是这套「闪光 + 闭眼 + 全视野」的参数空间——<strong>产生图案和产生风险用的是同一组旋钮</strong>，没法只取其一。所以「戴上去很好玩」和「这台机器必须有限幅」是同一件事的两面。</p>
+</div>
+
+<h2><span class="num">08</span>这套设计决定不了什么</h2>
+
+<p>把边界写清楚，比把功能写多更重要：</p>
+
+<table>
+  <thead><tr><th style="width:30%">硬件能决定</th><th>硬件决定不了</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>频率、占空比、亮度、波长构成、视野张角——这五个量可以做到亚毫秒级重复。</td>
+      <td>
+        ① <b>眼前出现什么图案</b>。文献至今没有可靠的「频率 → 形状」映射；能引的只有「8–12 Hz 附近最强」与单例报告的「频率加倍、图案空间频率加倍」。任何「调到某个 Hz 就出曼陀罗」的说法都没有依据。<br>
+        ② <b>三色会不会让图案更丰富</b>。没有证据支持这一点；三色的作用在<strong>色度通路</strong>上，不在<strong>几何图案</strong>上，两者是不同的神经机制。<br>
+        ③ <b>个体差异</b>。眼睑透射率可差 2–3 倍，等亮度点可差 30%，同一个参数在两个人身上不是同一个剂量。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>所以这台机器的正确定位是：<strong>一个参数可重复、剂量可标定的刺激器</strong>，而不是一台「图案生成器」。它能保证同一组参数在同一个受试者身上产生同样的输入；至于输入之后脑子里出现什么，那属于受试者的视觉系统，不属于这台机器的规格书。</p>
+
+
+<h2><span class="num">09</span>附录：先在屏幕上把参数跑一遍</h2>
+
+<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把三件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>分区频闪的相位是不是真的独立</strong>。</p>
+
+<p>算法沿用本机 <span class="mono">harmonograph/vr眼镜闪屏</span> 那套引擎的口径：四相数按 <span class="mono">k = 基频 / max(a,b,c,d)</span> 换算，<strong>左眼取 (a, d)、右眼取 (b, c)</strong>，两路亮度相加后自然出现 <span class="mono">|f₁−f₂|</span> 的拍频；<span class="mono">a+d = b+c</span> 作为校验条件，实时判 ✓ / ✗。</p>
+
+<p>默认值 <span class="mono">220 / 189 / 252 / 221</span> 是「冠军 1105 态」除以 5 的骨架（原式 1100 / 945 / 1260 / 1105，<span class="mono">a+d = b+c = 2205</span>），所以校验是 ✓——边界闭合成圆。左眼 (220, 221) 两频几乎相等，看起来是稳的 5.25 Hz；右眼 (189, 252) 差得远，拍频 1.5 Hz，会明显「呼吸」。这一组恰好把「拍频」这件事演给人看。</p>
+
+<div class="note warn">
+  <h5>开始之前</h5>
+  <p>下面这块会真的闪。8–30 Hz 是光敏性癫痫的敏感区，<strong>没有病史也可能首次诱发</strong>，同屋的人同样暴露。默认参数已压在 10 Hz 以下、亮度 100% 但对比度可调；确认后才会启动，运行 3 分钟自动停，切走标签页自动暂停。</p>
+</div>
+
+<div class="cf">
+  <div class="cfview">
+    <div class="cfcells" id="cfcells">
+      <div class="cfcell"></div><div class="cfcell"></div><div class="cfcell"></div><div class="cfcell"></div>
+    </div>
+    <div class="cftag">屏幕模拟 · 非实测</div>
+    <div class="cfhud" id="cfhud">未运行</div>
+  </div>
+
+  <div class="cfpanel">
+    <div class="cffld">
+      <div class="cflab"><span>频率源</span></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-src="free">自由（双眼独立）</button>
+        <button class="cfbtn" data-src="sq">四相数</button>
+      </div>
+    </div>
+
+    <div class="cffld" id="cffree">
+      <div class="cflab"><span>左眼</span><b id="cfFLv">10.0 Hz</b></div>
+      <input type="range" id="cfFL" min="1" max="40" step="0.1" value="10">
+      <div class="cflab" style="margin-top:8px"><span>右眼</span><b id="cfFRv">10.0 Hz</b></div>
+      <input type="range" id="cfFR" min="1" max="40" step="0.1" value="10">
+    </div>
+
+    <div class="cffld" id="cfsq" style="display:none">
+      <div class="cflab"><span>二阶方 a b / c d</span></div>
+      <div class="cfnum">
+        <input type="number" id="cfA" value="220" min="1" max="9999">
+        <input type="number" id="cfB" value="189" min="1" max="9999">
+        <input type="number" id="cfC" value="252" min="1" max="9999">
+        <input type="number" id="cfD" value="221" min="1" max="9999">
+      </div>
+      <div class="cflab" style="margin-top:9px"><span>基频</span><b id="cfBASEv">6.0 Hz</b></div>
+      <input type="range" id="cfBASE" min="0.5" max="20" step="0.1" value="6">
+      <div class="cfread" id="cfsqread">—</div>
+      <div class="cfrow" style="margin-top:7px">
+        <button class="cfbtn" data-sq="220,189,252,221,6">冠军 1105 态 ÷5</button>
+        <button class="cfbtn" data-sq="1,4,5,8,6">素对 1·4/5·8</button>
+        <button class="cfbtn" data-sq="200,180,225,205,6">呼吸 200·205/180·225</button>
+      </div>
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>波形</span></div>
+      <div class="cfrow">
+        <button class="cfbtn" data-wave="square">方波</button>
+        <button class="cfbtn on" data-wave="sine">正弦</button>
+        <button class="cfbtn" data-wave="tri">三角</button>
+      </div>
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>占空比</span><b id="cfDUTYv">50 %</b></div>
+      <input type="range" id="cfDUTY" min="10" max="90" step="1" value="50">
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>亮度</span><b id="cfBRv">100 %</b></div>
+      <input type="range" id="cfBR" min="5" max="100" step="1" value="100">
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>分区</span></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-part="full">整屏</button>
+        <button class="cfbtn" data-part="ud">上下</button>
+        <button class="cfbtn" data-part="lr">左右</button>
+        <button class="cfbtn" data-part="quad">四象限</button>
+      </div>
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>双眼相位差</span><b id="cfPHv">180°</b></div>
+      <input type="range" id="cfPH" min="0" max="270" step="90" value="180">
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>三色配比</span></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-col="red">620 单色</button>
+        <button class="cfbtn" data-col="ra">620 + 590</button>
+        <button class="cfbtn" data-col="rac">620 + 590 + 505</button>
+      </div>
+      <div class="cfsw"><i id="cfsw1"></i><span id="cfsw2">—</span></div>
+    </div>
+
+    <label class="cfcheck">
+      <input type="checkbox" id="cfok">
+      <span>我确认本人及同处一室者<strong>无癫痫、偏头痛、光敏史</strong>，并已把亮度调到舒适。</span>
+    </label>
+
+    <div class="cfgo">
+      <button class="cfbtn main" id="cfgo" disabled>开始</button>
+      <button class="cfbtn" id="cfstop" disabled>停止</button>
+    </div>
+    <div class="cfread" id="cfmeta" style="margin-top:9px">屏率待测 · 上限 3 分钟</div>
+  </div>
+</div>
+
+<p class="figcap">屏幕版与真机的差别，按重要性排序：① 屏幕没有眼睑那一层衰减，三色比例看起来会比真机「白」得多；② 屏幕亮度上限远低于 1000–5000 lux 的目标；③ 屏幕是单平面、贴脸近距，视野填充度不如 20 mm 遮光腔后的扩散板。所以这里只验<strong>时序</strong>，不验<strong>观感</strong>。</p>
+
+<footer>
+  配套长文：<a href="CCC_梦机器_助眠与清明梦_溯源技术全景.html">CCC 梦机器、清明梦与助眠 —— 溯源技术全景</a>（第 1 章有形状常量与对数极坐标映射的完整推导）<br>
+  本页全部图形为 Canvas 实时绘制与内联 SVG，无外部字体、脚本或图片依赖。
+</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ══════════ 图层模型（单位 mm）══════════ */
+  var EYE_DX = 33, PW = 62, PH = 52;
+
+  var LAYERS = [
+    {id:"pad",  nm:"面垫（硅胶 / 记忆棉）", nt:"贴合眶骨、压住不漏光；厚 12–14 mm", z0:-2, z1:12, kind:"ring",  col:"#b9a79b"},
+    {id:"dark", nm:"遮光腔（哑光黑植绒）", nt:"20 mm：把扩散板推离眼睛，避免看到灯珠结构", z0:0, z1:20, kind:"wall", col:"#414a53"},
+    {id:"diff", nm:"扩散板（PC 乳白 2 mm）", nt:"雾度 >90%；整机均匀性全靠这一层", z0:20, z1:22, kind:"plate", col:"#f4fbfa"},
+    {id:"mix",  nm:"混光腔（高反射白壁 12 mm）", nt:"三色在此混匀；内壁贴 PTFE 或 3M ESR", z0:22, z1:34, kind:"wall", col:"#dbe8f2"},
+    {id:"pcb",  nm:"铝基板 + 三色灯珠（4 灯位 / 眼）", nt:"灯珠朝内（−z）；三通道独立走线", z0:34, z1:36, kind:"pcb",  col:"#c6cfd7"},
+    {id:"fin",  nm:"散热齿", nt:"连续 30 min 结温必须 <60 ℃", z0:36, z1:42, kind:"fin",  col:"#95a2ad"},
+    {id:"back", nm:"后盖（兼散热面）", nt:"铝合金；封闭后整机 152 × 86 × 46", z0:42, z1:44, kind:"plate", col:"#78858f"}
+  ];
+
+  var view = {yaw:-0.66, pitch:0.26, zoom:1, explode:1, section:false, opt:false, auto:true, hl:null};
+  var CAMD = 980;
+
+  var cv = document.getElementById("cv");
+  var ctx = cv.getContext("2d");
+  var W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize(){
+    var r = cv.getBoundingClientRect();
+    W = Math.max(320, r.width); H = Math.max(320, r.height);
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+
+  /* ══════════ 几何工具 ══════════ */
+  function hex2rgb(h){
+    return [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)];
+  }
+  function shade(rgb, k){
+    return "rgb(" + Math.round(Math.min(255, rgb[0]*k)) + "," +
+                    Math.round(Math.min(255, rgb[1]*k)) + "," +
+                    Math.round(Math.min(255, rgb[2]*k)) + ")";
+  }
+
+  var faces = [], lines = [];
+  function pushQuad(p, col, alpha, tag){
+    var ax = 0;
+    for (var i = 0; i < p.length; i++) ax += p[i][0];
+    faces.push({p:p, col:col, a:alpha === undefined ? 1 : alpha, tag:tag, ax: ax / p.length});
+  }
+
+  // 一个盒体：kind 决定画哪几面
+  function addBox(x, y, z0, z1, w, h, kind, col, tag, alpha){
+    var x0 = x - w/2, x1 = x + w/2, y0 = y - h/2, y1 = y + h/2;
+    var A = alpha === undefined ? 1 : alpha;
+    var front = [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];   // +z 外侧
+    var back  = [[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[x1,y0,z0]];   // −z 内侧
+    var bot   = [[x0,y0,z0],[x0,y0,z1],[x1,y0,z1],[x1,y0,z0]];
+    var top   = [[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]];
+    var left  = [[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]];
+    var right = [[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]];
+
+    if (kind === "plate" || kind === "pcb" || kind === "fin"){
+      pushQuad(front, col, A, tag); pushQuad(back, col, A, tag);
+      pushQuad(bot, col, A, tag);   pushQuad(top, col, A, tag);
+      pushQuad(left, col, A, tag);  pushQuad(right, col, A, tag);
+    } else if (kind === "wall"){
+      pushQuad(bot, col, A, tag); pushQuad(top, col, A, tag);
+      pushQuad(left, col, A, tag); pushQuad(right, col, A, tag);
+    } else if (kind === "ring"){
+      // 四根边框条：只画外壁 + 内侧壁
+      pushQuad(front, col, A, tag);
+    }
+  }
+
+  // 环形面垫：四条边框（外框减内框 → 用四条矩形代替）
+  function addFrameRing(x, y, z0, z1, w, h, t, col, tag, alpha){
+    var A = alpha === undefined ? 1 : alpha;
+    var x0 = x - w/2, x1 = x + w/2, y0 = y - h/2, y1 = y + h/2;
+    var ix0 = x0 + t, ix1 = x1 - t, iy0 = y0 + t, iy1 = y1 - t;
+    function bar(a,b,c,d){
+      pushQuad([[a,b,z1],[c,b,z1],[c,d,z1],[a,d,z1]], col, A, tag);
+      pushQuad([[a,b,z0],[a,d,z0],[c,d,z0],[c,b,z0]], col, A, tag);
+      pushQuad([[a,b,z0],[a,b,z1],[c,b,z1],[c,b,z0]], col, A, tag);
+      pushQuad([[a,d,z0],[c,d,z0],[c,d,z1],[a,d,z1]], col, A, tag);
+    }
+    bar(x0, y0, x1, iy0);   // 下
+    bar(x0, iy1, x1, y1);   // 上
+    bar(x0, iy0, ix0, iy1); // 左
+    bar(ix1, iy0, x1, iy1); // 右
+  }
+
+  function addEllipse3(x, y, z, rx, ry, col, tag, alpha, seg){
+    seg = seg || 48;
+    var pts = [];
+    for (var i = 0; i < seg; i++){
+      var a = i / seg * Math.PI * 2;
+      pts.push([x + rx*Math.cos(a), y + ry*Math.sin(a), z]);
+    }
+    pushQuad(pts, col, alpha === undefined ? 1 : alpha, tag);
+  }
+
+  /* ══════════ 构建场景 ══════════ */
+  // 闭眼杏仁形（超椭圆 n=1.5）
+  function addEye(cx, z, a0, b0, col, tag, alpha){
+    var seg = 44, pts = [], n = 1.5, pw = 2 / n;
+    for (var i = 0; i < seg; i++){
+      var t = i / seg * Math.PI * 2;
+      var ct = Math.cos(t), st = Math.sin(t);
+      pts.push([cx + a0 * (ct < 0 ? -1 : 1) * Math.pow(Math.abs(ct), pw),
+                    b0 * (st < 0 ? -1 : 1) * Math.pow(Math.abs(st), pw), z]);
+    }
+    pushQuad(pts, col, alpha, tag);
+    pushQuad([[cx - a0*0.8, -0.35, z - 0.5], [cx + a0*0.8, -0.35, z - 0.5],
+              [cx + a0*0.8,  0.35, z - 0.5], [cx - a0*0.8,  0.35, z - 0.5]],
+             "#8f5f52", alpha * 0.75, tag);
+  }
+
+  // 有厚度的框（四根条），读起来比零厚度的墙面像实物
+  function addBarFrame(x, y, z0, z1, w, h, t, col, tag, alpha){
+    var x0 = x - w/2, x1 = x + w/2, y0 = y - h/2, y1 = y + h/2;
+    addBox(x, y0 + t/2, z0, z1, w,  t, "plate", col, tag, alpha);
+    addBox(x, y1 - t/2, z0, z1, w,  t, "plate", col, tag, alpha);
+    addBox(x0 + t/2, y, z0, z1, t, h - 2*t, "plate", col, tag, alpha);
+    addBox(x1 - t/2, y, z0, z1, t, h - 2*t, "plate", col, tag, alpha);
+  }
+
+  // 左通道第 i 层的 x 位置：爆炸时同时向左偏，避开右通道
+  function lxOf(i){ return -EYE_DX - i * 4.2 * view.explode; }
+
+  function build(){
+    faces = []; lines = [];
+    var GAP = 14 * view.explode;
+
+    // ── 外壳 ──
+    if (!view.section){
+      var s0 = -6, s1 = 46, sw = 152, sh = 86;
+      var box = function(z, k){ return [[-sw/2,-sh/2,z],[sw/2,-sh/2,z],[sw/2,sh/2,z],[-sw/2,sh/2,z]]; };
+      pushQuad(box(s1), "#9fb3bf", 0.055, "shell");
+      pushQuad(box(s0), "#9fb3bf", 0.030, "shell");
+      pushQuad([[-sw/2,sh/2,s0],[-sw/2,sh/2,s1],[sw/2,sh/2,s1],[sw/2,sh/2,s0]], "#aebfc9", 0.075, "shell");
+      pushQuad([[-sw/2,-sh/2,s0],[sw/2,-sh/2,s0],[sw/2,-sh/2,s1],[-sw/2,-sh/2,s1]], "#aebfc9", 0.05, "shell");
+      pushQuad([[-sw/2,-sh/2,s0],[-sw/2,-sh/2,s1],[-sw/2,sh/2,s1],[-sw/2,sh/2,s0]], "#b6c6d0", 0.05, "shell");
+      pushQuad([[sw/2,-sh/2,s0],[sw/2,sh/2,s0],[sw/2,sh/2,s1],[sw/2,-sh/2,s1]], "#b6c6d0", 0.05, "shell");
+    }
+
+    // ── 两个通道：左 = 展开详图；右 = 装配态淡显（对照）──
+    [0, 1].forEach(function(k){
+      var ex  = (k === 0 ? -EYE_DX : EYE_DX);
+      var eo  = (k === 0 ? 1 : 0);           // 是否参与爆炸
+      var am  = (k === 0 ? 1 : 0.14);        // 整体权重
+      var lidA = ((view.opt || view.section) ? 1.0 : 0.55) * (k === 0 ? 1 : 0.4);
+
+      addEye(ex, -3.2, 15.5, 10.5, "#e6b5a3", "lid", lidA);
+      addEye(ex, -4.0, 15.5, 10.5, "#d29d8b", "lid", lidA * 0.5);
+
+      var off = 0;
+      LAYERS.forEach(function(L, idx){
+        var z0 = L.z0 + off, z1 = L.z1 + off;
+        var cx = (k === 0 ? lxOf(idx) : ex);
+        if (L.kind === "ring"){
+          addBarFrame(cx, 0, z0, z1, PW + 6, PH + 6, 5, L.col, L.id, am * 0.92);
+        } else if (L.kind === "plate"){
+          addBox(cx, 0, z0, z1, PW, PH, "plate", L.col, L.id, am);
+        } else if (L.kind === "wall"){
+          addBarFrame(cx, 0, z0, z1, PW, PH, 3.5, L.col, L.id, am * 0.88);
+        } else if (L.kind === "pcb"){
+          addBox(cx, 0, z0, z1, PW, PH, "plate", L.col, L.id, am);
+          [[-16,-13],[16,-13],[-16,13],[16,13]].forEach(function(d){
+            addBox(cx + d[0], d[1], z0 - 0.9, z0, 7, 7, "plate", "#2b333a", "pcb", am);
+            addBox(cx + d[0] - 1.9, d[1] - 1.5, z0 - 1.5, z0 - 0.9, 2.2, 2.2, "plate", "#c8442f", "pcb", am);
+            addBox(cx + d[0],       d[1] - 1.5, z0 - 1.5, z0 - 0.9, 2.2, 2.2, "plate", "#2f9e58", "pcb", am);
+            addBox(cx + d[0] + 1.9, d[1] - 1.5, z0 - 1.5, z0 - 0.9, 2.2, 2.2, "plate", "#2f5fc8", "pcb", am);
+          });
+        } else if (L.kind === "fin"){
+          addBox(cx, 0, z0, z0 + 1.8, PW, PH, "plate", L.col, L.id, am);
+          for (var f = 0; f < 7; f++){
+            addBox(cx - PW/2 + 5 + f * ((PW - 10) / 6), 0, z0 + 1.8, z1, 2.2, PH, "plate", L.col, L.id, am);
+          }
+        }
+        if (L.id === "dark" && k === 0){
+          addBox(0, 0, 0, 20, 4, PH + 6, "plate", "#39424b", "dark", 0.55);
+        }
+        off += GAP * eo;
+      });
+    });
+
+    // ── 光路（只画左通道）：束边 + 交叉对角线，用描线画，不遮挡结构 ──
+    if (view.opt){
+      var LO = LAYERS.map(function(_, i){ return i * GAP; });
+      var exd = lxOf(2), exb = lxOf(4);
+      var zb = LAYERS[4].z0 + LO[4], zd = LAYERS[2].z1 + LO[2];
+      var bc = [[exb-PW/2,-PH/2,zb],[exb+PW/2,-PH/2,zb],[exb+PW/2,PH/2,zb],[exb-PW/2,PH/2,zb]];
+      var dc = [[exd-PW/2,-PH/2,zd],[exd+PW/2,-PH/2,zd],[exd+PW/2,PH/2,zd],[exd-PW/2,PH/2,zd]];
+      var ec = [[-EYE_DX-PW/2,-PH/2,-3],[-EYE_DX+PW/2,-PH/2,-3],
+                [-EYE_DX+PW/2,PH/2,-3],[-EYE_DX-PW/2,PH/2,-3]];
+      // 四颗灯珠各向扩散板四角发散 ⇒ 16 束，交叉处即混光
+      [[-16,-13],[16,-13],[-16,13],[16,13]].forEach(function(d){
+        for (var q2 = 0; q2 < 4; q2++){
+          lines.push({a:[exb+d[0], d[1], zb-1.2], b:dc[q2], col:"#d08c3c", w:1.05, al:0.30});
+        }
+      });
+      // 扩散板 → 眼睑：平行段（已匀光，不再发散）
+      for (var q = 0; q < 4; q++){
+        lines.push({a:dc[q], b:ec[q], col:"#a98a5c", w:1.1, al:0.38});
+      }
+      // 三色起点标记（灯珠上的 R / G / B 芯片）
+      [[-16,-13],[16,-13],[-16,13],[16,13]].forEach(function(d){
+        var zz = zb - 1.7;
+        lines.push({a:[exb+d[0]-4.2, d[1], zz], b:[exb+d[0]-1.2, d[1], zz], col:"#d23f28", w:3.0, al:0.95});
+        lines.push({a:[exb+d[0],    d[1], zz], b:[exb+d[0]+2.2, d[1], zz], col:"#2e9455", w:3.0, al:0.95});
+        lines.push({a:[exb+d[0]+3.2, d[1], zz], b:[exb+d[0]+4.4, d[1], zz], col:"#3157b8", w:3.0, al:0.95});
+      });
+    }
+  }
+
+  /* ══════════ 变换与绘制 ══════════ */
+  var cy_, sy_, cp_, sp_;
+  function rot(p){
+    var x = p[0]*cy_ - p[2]*sy_;
+    var z = p[0]*sy_ + p[2]*cy_;
+    var y = p[1]*cp_ - z*sp_;
+    var z2 = p[1]*sp_ + z*cp_;
+    return [x, y, z2];
+  }
+
+  var LB = (function(){ // 光方向（视空间）
+    var v = [-0.42, 0.66, -0.62], n = Math.hypot(v[0], v[1], v[2]);
+    return [v[0]/n, v[1]/n, v[2]/n];
+  })();
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    build();
+
+    cy_ = Math.cos(view.yaw); sy_ = Math.sin(view.yaw);
+    cp_ = Math.cos(view.pitch); sp_ = Math.sin(view.pitch);
+
+    // 第一遍：转到视空间，算包围
+    var items = [], maxU = 1e-6, maxV = 1e-6;
+    for (var i = 0; i < faces.length; i++){
+      var f = faces[i], vp = [], zs = 0;
+      for (var j = 0; j < f.p.length; j++){
+        var p = rot(f.p[j]);
+        var d = Math.max(p[2] + CAMD, 12);
+        var u = p[0] / d, v = p[1] / d;
+        vp.push([u, v, d]);
+        if (Math.abs(u) > maxU) maxU = Math.abs(u);
+        if (Math.abs(v) > maxV) maxV = Math.abs(v);
+        zs += d;
+      }
+      items.push({vp:vp, z:zs / f.p.length, col:f.col, a:f.a, tag:f.tag, n:f.p.length, ax:f.ax});
+    }
+
+    var focal = Math.min((W * 0.44) / maxU, (H * 0.44) / maxV) * view.zoom;
+    var ox = W / 2, oy = H / 2;
+
+    // 逐面：法向、亮度、深度排序
+    for (var i2 = 0; i2 < items.length; i2++){
+      var it = items[i2], a0 = it.vp[0], b0 = it.vp[1], c0 = it.vp[2];
+      var e1 = [b0[0]-a0[0], b0[1]-a0[1], b0[2]-a0[2]];
+      var e2 = [c0[0]-b0[0], c0[1]-b0[1], c0[2]-b0[2]];
+      var nx = e1[1]*e2[2] - e1[2]*e2[1];
+      var ny = e1[2]*e2[0] - e1[0]*e2[2];
+      var nz = e1[0]*e2[1] - e1[1]*e2[0];
+      var nl = Math.hypot(nx, ny, nz) || 1;
+      nx/=nl; ny/=nl; nz/=nl;
+      // 面朝相机？（相机在 (0,0,-CAMD) 方向）
+      var dot = nx*0 + ny*0 + nz*(-1);
+      if (dot < 0){ nx=-nx; ny=-ny; nz=-nz; }
+      var lam = nx*LB[0] + ny*LB[1] + nz*LB[2];
+      it.k = 0.44 + 0.62 * Math.max(0, lam);
+    }
+
+    // 光路作为叠加层，永远画在结构之上
+    for (var oi = 0; oi < items.length; oi++){
+      if (items[oi].tag === "opt") items[oi].z = -1e9;
+    }
+    items.sort(function(A, B){ return B.z - A.z; });
+
+    var hlId = view.hl;
+    for (var m = 0; m < items.length; m++){
+      var it2 = items[m];
+      var alpha = it2.a;
+      if (hlId && it2.tag !== hlId && it2.tag !== "opt") alpha *= 0.13;
+      if (!hlId && it2.tag !== "opt" && it2.a >= 1) alpha = it2.a;
+      if (view.section && (it2.tag === "shell" || it2.ax > 2)) continue;
+
+      ctx.beginPath();
+      for (var n2 = 0; n2 < it2.n; n2++){
+        var s = it2.vp[n2];
+        var X = ox + s[0] * focal, Y = oy - s[1] * focal;
+        if (n2 === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
+      }
+      ctx.closePath();
+
+      var col = (it2.tag === "opt") ? it2.col : shade(hex2rgb(it2.col), it2.k);
+      ctx.globalAlpha = Math.min(1, alpha);
+      ctx.fillStyle = col;
+      ctx.fill();
+
+      if (it2.tag !== "opt" && alpha > 0.25){
+        ctx.globalAlpha = Math.min(1, alpha) * 0.45;
+        ctx.strokeStyle = "rgba(28,44,56,0.55)";
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // 光路描线（叠加在结构之上）
+    if (lines.length){
+      ctx.globalAlpha = 1; ctx.lineCap = "round";
+      for (var li = 0; li < lines.length; li++){
+        var L3 = lines[li];
+        var p1 = rot(L3.a), p2 = rot(L3.b);
+        var d1 = Math.max(p1[2] + CAMD, 12), d2 = Math.max(p2[2] + CAMD, 12);
+        ctx.globalAlpha = L3.al;
+        ctx.strokeStyle = L3.col;
+        ctx.lineWidth = L3.w;
+        ctx.beginPath();
+        ctx.moveTo(ox + (p1[0]/d1) * focal, oy - (p1[1]/d1) * focal);
+        ctx.lineTo(ox + (p2[0]/d2) * focal, oy - (p2[1]/d2) * focal);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // 「眼侧 / 外侧」标注
+    [[-16, lxOf(0), "眼侧"], [LAYERS[6].z1 + 6 * 14 * view.explode, lxOf(6), "外侧"]].forEach(function(pair){
+      var pL = rot([pair[1], -PH/2 - 26, pair[0]]);
+      var dL = Math.max(pL[2] + CAMD, 12);
+      ctx.globalAlpha = 0.75;
+      ctx.font = "600 10.5px ui-monospace,Menlo,Consolas,monospace";
+      ctx.fillStyle = "#6c808c";
+      ctx.textAlign = "center";
+      var tX = ox + (pL[0]/dL) * focal, tY = oy - (pL[1]/dL) * focal;
+      tX = Math.max(20, Math.min(W - 20, tX));
+      tY = Math.max(16, Math.min(H - 14, tY));
+      ctx.fillText(pair[2], tX, tY);
+      ctx.textAlign = "start"; ctx.globalAlpha = 1;
+    });
+
+    // 层号徽标（与下方图例一一对应）
+    var spB = 13 * view.explode;
+    for (var bi = 0; bi < LAYERS.length; bi++){
+      var Lb = LAYERS[bi];
+      var pb = rot([lxOf(bi) - (PW+6)/2 - 17, 0, (Lb.z0 + Lb.z1)/2 + 14 * view.explode * bi]);
+      var db = Math.max(pb[2] + CAMD, 12);
+      var Xb = ox + (pb[0]/db) * focal, Yb = oy - (pb[1]/db) * focal;
+      var act = (view.hl === Lb.id);
+      ctx.globalAlpha = act ? 1 : 0.92;
+      ctx.beginPath(); ctx.arc(Xb, Yb, 9.0, 0, Math.PI*2);
+      ctx.fillStyle = act ? "#0f6f66" : "#ffffff"; ctx.fill();
+      ctx.strokeStyle = "#0f6f66"; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.fillStyle = act ? "#ffffff" : "#0f6f66";
+      ctx.font = "700 10.5px ui-monospace,Menlo,Consolas,monospace";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(String(bi + 1), Xb, Yb + 0.5);
+    }
+    ctx.textAlign = "start"; ctx.textBaseline = "alphabetic"; ctx.globalAlpha = 1;
+
+    // 高亮层的名字
+    if (hlId){
+      var L = null;
+      for (var q = 0; q < LAYERS.length; q++) if (LAYERS[q].id === hlId) L = LAYERS[q];
+      if (L){
+        var off = 0;
+        for (var q2 = 0; q2 < LAYERS.length; q2++){ if (LAYERS[q2].id === hlId) off = 11 * view.explode * q2; }
+        var mid = rot([-EYE_DX, 0, (L.z0 + L.z1) / 2 + off]);
+        var dd = Math.max(mid[2] + CAMD, 12);
+        var X2 = ox + (mid[0]/dd) * focal, Y2 = oy - (mid[1]/dd) * focal;
+        ctx.font = "600 12px ui-monospace,Menlo,Consolas,monospace";
+        var w2 = ctx.measureText(L.nm).width;
+        ctx.globalAlpha = 0.94;
+        ctx.fillStyle = "#0f6f66";
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(X2 - w2/2 - 8, Y2 - 26, w2 + 16, 20, 3)
+                      : ctx.rect(X2 - w2/2 - 8, Y2 - 26, w2 + 16, 20);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(L.nm, X2, Y2 - 16);
+        ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  /* ══════════ 交互 ══════════ */
+  var dragging = false, lx = 0, ly = 0;
+  cv.addEventListener("pointerdown", function(e){
+    dragging = true; lx = e.clientX; ly = e.clientY;
+    cv.classList.add("drag"); cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener("pointermove", function(e){
+    if (!dragging) return;
+    view.yaw += (e.clientX - lx) * 0.008;
+    view.pitch += (e.clientY - ly) * 0.006;
+    view.pitch = Math.max(-1.25, Math.min(1.25, view.pitch));
+    lx = e.clientX; ly = e.clientY;
+  });
+  cv.addEventListener("pointerup", function(e){
+    dragging = false; cv.classList.remove("drag");
+    try { cv.releasePointerCapture(e.pointerId); } catch(err){}
+  });
+  cv.addEventListener("wheel", function(e){
+    e.preventDefault();
+    view.zoom *= (e.deltaY > 0 ? 0.93 : 1.075);
+    view.zoom = Math.max(0.5, Math.min(2.6, view.zoom));
+  }, {passive:false});
+
+  function btn(id, key, invert){
+    var b = document.getElementById(id);
+    b.addEventListener("click", function(){
+      if (key === "reset"){
+        view.yaw = -0.55; view.pitch = 0.30; view.zoom = 1;
+        return;
+      }
+      view[key] = invert ? !view[key] : (key === "explode" ? (view.explode > 0.5 ? 0 : 1) : true);
+      if (key !== "auto"){
+        if (key === "explode"){ view.explode = view.explode > 0.5 ? 0 : 1; b.classList.toggle("on", view.explode > 0.5); }
+        else b.classList.toggle("on", view[key]);
+      } else {
+        b.classList.toggle("on", view.auto);
+      }
+    });
+  }
+  btn("bExp", "explode", false);
+  btn("bSec", "section", true);
+  btn("bOpt", "opt", true);
+  btn("bAuto", "auto", true);
+  btn("bReset", "reset", false);
+
+  // 图例
+  var lg = document.getElementById("lg");
+  LAYERS.forEach(function(L, i){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="n">' + (i+1) + '</span><span><span class="nm">' +
+      L.nm + '</span><span class="nt">' + L.nt + '</span></span>';
+    li.addEventListener("mouseenter", function(){ view.hl = L.id; });
+    li.addEventListener("mouseleave", function(){ view.hl = null; });
+    li.addEventListener("click", function(){ view.hl = (view.hl === L.id ? null : L.id); });
+    lg.appendChild(li);
+  });
+
+  var last = 0;
+  function loop(t){
+    if (!last) last = t;
+    var dt = Math.min(64, t - last); last = t;
+    if (view.auto && !dragging) view.yaw += dt * 0.00018;
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("resize", function(){ resize(); });
+  resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var box=document.getElementById('cfcells');
+  var cells=[].slice.call(box.children);
+  var hud=document.getElementById('cfhud');
+  function el(id){ return document.getElementById(id); }
+
+  var S={src:'free', fL:10, fR:10, wave:'sine', duty:0.5, br:1, part:'full',
+         col:'red', phase:180, run:false, paused:false, t:0, last:0,
+         rate:0, limit:180, sq:{a:220,b:189,c:252,d:221,base:6},
+         ph:[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]};
+
+  var AREA={full:['1/1/3/3'], ud:['1/1/2/3','2/1/3/3'],
+            lr:['1/1/3/2','1/2/3/3'], quad:['1/1/2/2','1/2/2/3','2/1/3/2','2/2/3/3']};
+  var COL={red:[1,0.16,0.06], ra:[1,0.50,0.09], rac:[1,0.56,0.32]};
+  var COLN={
+    red:'620 nm 单色 · 0.12 W/眼 · 闭眼效力 100%',
+    ra:'620 + 590 同电流 · 0.24 W/眼',
+    rac:'620 : 590 : 505 电流 1 : 3.1 : 15.0 · 2.3 W/眼'
+  };
+
+  function layout(){
+    var a=AREA[S.part];
+    for(var i=0;i<4;i++){
+      if(i<a.length){ cells[i].style.display='block'; cells[i].style.gridArea=a[i]; }
+      else cells[i].style.display='none';
+    }
+  }
+  function kk(){
+    var m=Math.max(1e-6, Math.abs(S.sq.a), Math.abs(S.sq.b), Math.abs(S.sq.c), Math.abs(S.sq.d));
+    return S.sq.base/m;
+  }
+  function plan(){
+    var K=kk(), a=S.sq.a*K, b=S.sq.b*K, c=S.sq.c*K, d=S.sq.d*K;
+    var off=S.phase/360;
+    var o=[{fs:[],off:0},{fs:[],off:0},{fs:[],off:0},{fs:[],off:0}];
+    if(S.src==='sq'){
+      if(S.part==='full') o[0]={fs:[a,b,c,d],off:0};
+      else if(S.part==='quad'){
+        o[0]={fs:[a],off:0}; o[1]={fs:[b],off:off};
+        o[2]={fs:[c],off:0}; o[3]={fs:[d],off:off};
+      } else { o[0]={fs:[a,d],off:0}; o[1]={fs:[b,c],off:off}; }
+    } else {
+      if(S.part==='full') o[0]={fs:[S.fL,S.fR],off:0};
+      else if(S.part==='quad'){
+        o[0]={fs:[S.fL],off:0}; o[1]={fs:[S.fR],off:off};
+        o[2]={fs:[S.fR],off:off}; o[3]={fs:[S.fL],off:0};
+      } else { o[0]={fs:[S.fL],off:0}; o[1]={fs:[S.fR],off:off}; }
+    }
+    return o;
+  }
+  function fit(f){
+    if(!S.rate) return {f:f, alg:1};
+    var half=S.rate*0.45;
+    if(f<=half) return {f:f, alg:1};
+    var n=Math.ceil(f/half);
+    return {f:f/n, alg:n};
+  }
+  function wave(ph){
+    var x=ph-Math.floor(ph);
+    if(S.wave==='square') return x<S.duty?1:0;
+    if(S.wave==='tri') return x<0.5 ? x*2 : (1-x)*2;
+    return 0.5-0.5*Math.cos(2*Math.PI*x);
+  }
+  function paint(){
+    var P=plan(), fade=Math.min(1, S.t/1.2), cc=COL[S.col];
+    for(var i=0;i<4;i++){
+      if(cells[i].style.display==='none') continue;
+      var p=P[i], sum=0, n=0;
+      for(var j=0;j<p.fs.length;j++){ sum+=wave((S.ph[i][j]||0)+p.off); n++; }
+      var v=(n?sum/n:0)*S.br*fade;
+      cells[i].style.background='rgb('+Math.round(cc[0]*255*v)+','+Math.round(cc[1]*255*v)+','+Math.round(cc[2]*255*v)+')';
+    }
+  }
+  function black(){
+    for(var i=0;i<4;i++) cells[i].style.background='#000';
+  }
+  function fmt(t){
+    var m=Math.floor(t/60), ss=Math.floor(t%60);
+    return m+':'+(ss<10?'0':'')+ss;
+  }
+  function measure(cb){
+    var ts=[];
+    function f(t){
+      ts.push(t);
+      if(ts.length<14){ requestAnimationFrame(f); return; }
+      var d=[]; for(var i=1;i<ts.length;i++) d.push(ts[i]-ts[i-1]);
+      d.sort(function(x,y){ return x-y; });
+      var med=d[Math.floor(d.length/2)];
+      S.rate = med>0 ? Math.round(1000/med) : 60;
+      cb();
+    }
+    requestAnimationFrame(f);
+  }
+  function start(){
+    if(!el('cfok').checked) return;
+    var go=function(){
+      S.run=true; S.paused=false; S.t=0; S.last=0;
+      S.ph=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      el('cfgo').disabled=true; el('cfstop').disabled=false;
+      el('cfmeta').textContent='屏率 ≈ '+S.rate+' Hz · 上限 '+fmt(S.limit);
+      requestAnimationFrame(loop);
+    };
+    if(!S.rate){ el('cfmeta').textContent='正在测屏率…'; measure(go); }
+    else go();
+  }
+  function stop(){
+    S.run=false; S.paused=false; black();
+    el('cfgo').disabled=!el('cfok').checked; el('cfstop').disabled=true;
+    hud.className='cfhud';
+    hud.textContent='已停止 · '+(S.rate?('屏率 ≈ '+S.rate+' Hz'):'未运行');
+  }
+  function loop(ts){
+    if(!S.run) return;
+    if(!S.last) S.last=ts;
+    var dt=(ts-S.last)/1000; S.last=ts;
+    if(dt>0.12) dt=0.12;
+    if(!S.paused){
+      S.t+=dt;
+      var P=plan();
+      for(var i=0;i<4;i++){
+        for(var j=0;j<P[i].fs.length;j++){
+          var ff=fit(P[i].fs[j]);
+          S.ph[i][j]=(S.ph[i][j]||0)+dt*ff.f;
+        }
+      }
+      paint();
+      var P2=plan(), main=P2[0].fs[0]||0, ff2=fit(main);
+      var alg=ff2.alg>1 ? (' · 谐波折衷 ×1/'+ff2.alg) : '';
+      hud.textContent=fmt(S.t)+' / '+fmt(S.limit)+' · '+ff2.f.toFixed(2)+' Hz · '+S.part+alg;
+      if(S.t>=S.limit){ stop(); return; }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  /* ── 读数 ── */
+  function sqRead(){
+    var K=kk(), a=S.sq.a*K, b=S.sq.b*K, c=S.sq.c*K, d=S.sq.d*K;
+    var sA=S.sq.a+S.sq.d, sB=S.sq.b+S.sq.c, ok=Math.abs(sA-sB)<1e-9;
+    el('cfsqread').innerHTML =
+      'k = <b>'+K.toFixed(5)+'</b><br>'+
+      '左眼 '+a.toFixed(2)+' + '+d.toFixed(2)+' Hz　拍 '+Math.abs(a-d).toFixed(3)+'<br>'+
+      '右眼 '+b.toFixed(2)+' + '+c.toFixed(2)+' Hz　拍 '+Math.abs(b-c).toFixed(3)+'<br>'+
+      'a+d = '+sA+'　b+c = '+sB+'　'+
+      (ok?'<span class="ok">✔ 和相等</span>':'<span class="no">✘ 和不等</span>');
+  }
+  function swatch(){
+    var r=COL[S.col];
+    el('cfsw1').style.background='rgb('+Math.round(r[0]*255)+','+Math.round(r[1]*255)+','+Math.round(r[2]*255)+')';
+    el('cfsw2').textContent=COLN[S.col]||'—';
+  }
+
+  /* ── 绑定 ── */
+  function grp(attr, key, after){
+    var bs=document.querySelectorAll('[data-'+attr+']');
+    for(var i=0;i<bs.length;i++){
+      (function(b){
+        b.addEventListener('click', function(){
+          for(var j=0;j<bs.length;j++) bs[j].classList.remove('on');
+          b.classList.add('on');
+          var v=b.getAttribute('data-'+attr);
+          if(attr==='sq'){
+            var n=v.split(',').map(Number);
+            S.sq={a:n[0],b:n[1],c:n[2],d:n[3],base:n[4]};
+            el('cfA').value=n[0]; el('cfB').value=n[1]; el('cfC').value=n[2]; el('cfD').value=n[3];
+            el('cfBASE').value=n[4]; el('cfBASEv').textContent=n[4].toFixed(1)+' Hz';
+          } else S[key]=v;
+          if(after) after();
+        });
+      })(bs[i]);
+    }
+  }
+  grp('src','src', function(){
+    el('cffree').style.display = S.src==='free'?'block':'none';
+    el('cfsq').style.display  = S.src==='sq'?'block':'none';
+    sqRead();
+  });
+  grp('wave','wave');
+  grp('part','part', layout);
+  grp('col','col', swatch);
+  grp('sq','sq', sqRead);
+
+  el('cfFL').addEventListener('input', function(){ S.fL=+this.value; el('cfFLv').textContent=(+this.value).toFixed(1)+' Hz'; });
+  el('cfFR').addEventListener('input', function(){ S.fR=+this.value; el('cfFRv').textContent=(+this.value).toFixed(1)+' Hz'; });
+  el('cfDUTY').addEventListener('input', function(){ S.duty=+this.value/100; el('cfDUTYv').textContent=this.value+' %'; });
+  el('cfBR').addEventListener('input', function(){ S.br=+this.value/100; el('cfBRv').textContent=this.value+' %'; });
+  el('cfPH').addEventListener('input', function(){ S.phase=+this.value; el('cfPHv').textContent=this.value+'°'; });
+  el('cfBASE').addEventListener('input', function(){ S.sq.base=+this.value; el('cfBASEv').textContent=(+this.value).toFixed(1)+' Hz'; sqRead(); });
+  ['cfA','cfB','cfC','cfD'].forEach(function(id,ix){
+    el(id).addEventListener('input', function(){
+      var v=Math.max(1, Math.min(9999, Math.round(+this.value||1)));
+      S.sq[['a','b','c','d'][ix]]=v;
+      sqRead();
+    });
+  });
+  el('cfok').addEventListener('change', function(){ el('cfgo').disabled = !this.checked || S.run; });
+  el('cfgo').addEventListener('click', start);
+  el('cfstop').addEventListener('click', stop);
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && S.run){ S.paused=true; el('cfmeta').textContent='已暂停（切走标签页）· 回来点「开始」继续计时'; }
+  });
+
+  layout(); sqRead(); swatch(); black();
+})();
+</script>
+
+</body>
+</html>
