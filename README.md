@@ -1,6 +1,13 @@
 # 类脑干细胞 × AI 硬件 × 硅光芯片 —— 技术资料包
 
 > 整理日期：2026-11-05（最后更新 2026-11-06）
+>
+> **在线阅读（GitHub Pages）**：<https://awakeninglanxin.github.io/brain-organoid-ai-atlas/>
+> 入口页 `index.html` 汇总三份文档；也可直接访问：
+> [A 类脑 × AI 硬件 × 硅光](https://awakeninglanxin.github.io/brain-organoid-ai-atlas/AAA_类脑干细胞连接AI_技术全景.html) ·
+> [B 松果体](https://awakeninglanxin.github.io/brain-organoid-ai-atlas/BBB_松果体_结构与体外再造路线.html) ·
+> [C 梦机器](https://awakeninglanxin.github.io/brain-organoid-ai-atlas/CCC_梦机器_助眠与清明梦_溯源技术全景.html)
+>
 > 主文档：`AAA_类脑干细胞连接AI_技术全景.html`（约 8 万字，24 张表，7 张自制结构图，24 条一手文献链接）
 > 2026-11-05 追加：两份文档各补一章<b>数学推导</b>，把正文里所有定量结论还原成公式（见文末"数学附录"）。
 > 2026-11-06 追加：`BBB` 补第 10 章<b>外部调控接口</b>（清醒梦设备 / 超声 / 松果体轴，H1–H8）。
