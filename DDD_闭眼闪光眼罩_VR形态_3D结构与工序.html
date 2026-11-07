@@ -598,6 +598,63 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
 <p>470 nm 蓝已从调色板里拿掉，两条理由叠在一起：闭眼透射仅 0.35%，功率要推到 63 倍才够亮，几乎全部变成贴在脸上的热；而 435–470 nm 又正好是蓝光危害（BLH）的作用峰，<strong>闪烁加短波是双重不利</strong>。505 青属于青绿端、离峰值已远，留着当红的对照色，默认不选。</p>
 
+<h3>波形与占空比：三个量很容易混成一个</h3>
+
+<p>「占空比是不是波形整流后的那个占空比」——这一问点到了一个真问题：<strong>它们是两个不同的量，在窄脉冲下能差一倍以上</strong>。面板现在把三个数分开列，就是为了不再混着叫「占空比」。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:20%">量</th><th style="width:34%">定义</th><th>它在管什么</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>亮相宽度</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">脉冲档才有效</span></td>
+      <td>脉冲在周期里占的时间比例，即 <span class="mono">duty = t_on / T</span></td>
+      <td>暗相是真零（LED 全关），不是「暗一点」。所以它直接决定<strong>调制深度</strong>：占空比越小，闪得越像「一下一下」，而不是「一亮一暗」。</td>
+    </tr>
+    <tr>
+      <td><b>脉宽</b></td>
+      <td><span class="mono">t_on = duty × T = duty / f</span></td>
+      <td>实际亮多少毫秒。<strong>占空比离开频率就没有物理意义</strong>：同样 0.1 %，10 Hz 是 100 µs，1 Hz 是 1 ms。所以面板直接给出毫秒数。</td>
+    </tr>
+    <tr>
+      <td><b>等效占空比</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">= 您问的那个</span></td>
+      <td><span class="mono">∫ f(t)dt / T</span>，即平均亮度 ÷ 峰值亮度</td>
+      <td>波形整流后取平均、再比峰值。<strong>这才是算光剂量、跟连续光比曝光的数</strong>。它和亮相宽度不是一回事：指数衰减档亮相 12 % 时等效只有 3.9 %；升余弦与三角脉冲的等效恒为亮相的一半；正弦与三角恒为 50 %，滑块怎么拨都不变。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>由此得到一条必须记住的关系：<strong>平均光功率 = 峰值亮度 × 等效占空比</strong>。所以「把亮度调到一半」和「把占空比砍到一半」对剂量的作用一样，对<strong>闪烁</strong>的作用完全不同——前者整体变暗、调制深度不变；后者暗相拉长、调制深度上升。这两件事在这台机器上由两个滑块分别负责，别互相顶替。</p>
+
+<h3>八档波形，各自解决什么问题</h3>
+
+<p>原来只有方波、正弦、三角三档，其中<strong>只有方波读占空比</strong>——正弦与三角是连续波，整周期都在发光，没有暗相，滑块拨到哪儿都不影响输出（上一版就是这么空转的，现在这两档会自动置灰）。这次补齐的是「脉冲形态」：同一套占空比，用不同的边沿形状发出来。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:16%">档</th><th style="width:12%">类别</th><th style="width:22%">占空比管什么</th><th style="width:14%">等效占空比</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>正弦</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>传统 photic driving 最常用；调制深度最浅，主观最温和</td></tr>
+    <tr><td><b>三角</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>同上，线性上升下降；对称三角其实就是锯齿在 50 % 的特例</td></tr>
+    <tr><td><b>锯齿</b></td><td>连续</td><td>两侧斜率比（上升沿占比）</td><td class="num-cell">恒 50 %</td><td>做「快升慢降 / 慢升快降」的不对称刺激，ON 与 OFF 通路不等权</td></tr>
+    <tr><td><b>方波</b></td><td>脉冲</td><td>亮相宽度 = 占空比</td><td class="num-cell">= 占空比</td><td>最常用。暗相彻底，调制深度 100 %；但边沿最硬，驱动器容易振铃</td></tr>
+    <tr><td><b>梯形</b></td><td>脉冲</td><td>宽度 + 边沿时间</td><td class="num-cell">小于占空比<br>（边沿吃掉一部分）</td><td><strong>真机推荐默认</strong>：边沿可调，既保住高调制深度又不刺眼，恒流源也不容易被硬边沿激起过冲</td></tr>
+    <tr><td><b>升余弦</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>最平滑的脉冲，两端斜率为 0，没有任何锐边；本质是「削波后归一的正弦」</td></tr>
+    <tr><td><b>三角脉冲</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>线性上升、线性下降，尖顶；几何上最干净的「一下」</td></tr>
+    <tr><td><b>指数衰减</b></td><td>脉冲</td><td>衰减时间常数</td><td class="num-cell">远小于占空比</td><td>最接近真实闪光（氙灯、相机闪光灯的包络：瞬间起亮、指数拖尾）</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>0.1 % 是可以给的，但要清楚它下面的硬件地板</h5>
+  <p>占空比滑块改成了<strong>对数刻度</strong>：0.1 % → 90 %，每一格是固定倍数而不是固定百分比（线性滑块下 0.1 % 只有一格的千分之一，根本拨不准）。10 Hz 时 0.1 % 就是 <strong>100 µs</strong>——真正的「闪一下」，而不是「亮一小段」。</p>
+  <p>代价在电气上：恒流源的开启延迟、MOS 栅极的充放电、LED 自身的上升时间（几十 ns 到几 µs 量级）都在吃这段。典型 AMC7135 类恒流芯片的使能延迟在微秒量级，加上 MOS 与走线，<strong>脉宽低于约 50 µs 时，实际光输出已经被边沿吃掉一半以上</strong>，面板上的数字会比真实光输出好看。所以这里给的是<strong>命令值，不是实测值</strong>；真机要用光电二极管加示波器核一次，把「设定 0.1 % → 实测多少 µs」标出来写在机壳上。屏幕上的预览同理，60 Hz 的屏连 100 µs 的一个脉冲都呈现不了。</p>
+</div>
+
+<p>峰值亮度那一档是可调的，范围 1 %–100 %，<strong>它调的是脉冲顶端的绝对亮度，不改占空比、不改频率</strong>。按上面的关系，眼睛实际收到的剂量是两者相乘，所以「亮度 × 等效占空比」才是可以和连续光比较的那个数。</p>
+
 <div class="note">
   <h5>屏幕上的螺旋是「看着会像什么」，不是「视网膜收到什么」</h5>
   <p>真机在眼睑后面打出的是<strong>均匀漫射光</strong>——扩散板加 20 mm 遮光腔，眼皮上不会有条纹。屏幕上的螺旋是<strong>对数极坐标映射</strong>推出来的光幻视示意：把皮层平面波 <span class="mono">cos(a·u + b·v)</span> 经 <span class="mono">w = ln z</span> 拉回视场，就成了 <span class="mono">cos(a·ln r + b·θ)</span>——<span class="mono">a</span> 管径向疏密，<span class="mono">b</span> 管臂数，<span class="mono">b</span> 的符号管旋向。它只用来对齐两件事：<strong>左右眼该不该反向</strong>、<strong>臂数对不对</strong>。别把它当照度图看，更别据它去调灯珠。</p>
@@ -668,23 +725,32 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       </div>
     </div>
 
-    <div class="cffld">
-      <div class="cflab"><span>波形</span></div>
+    <div class="cffld wide">
+      <div class="cflab"><span>波形（连续 3 档 / 脉冲 5 档）</span><b id="cfWAVv">正弦 · 连续</b></div>
       <div class="cfrow">
-        <button class="cfbtn" data-wave="square">方波</button>
         <button class="cfbtn on" data-wave="sine">正弦</button>
         <button class="cfbtn" data-wave="tri">三角</button>
+        <button class="cfbtn" data-wave="saw">锯齿</button>
       </div>
+      <div class="cfrow" style="margin-top:6px">
+        <button class="cfbtn" data-wave="square">方波</button>
+        <button class="cfbtn" data-wave="trap">梯形</button>
+        <button class="cfbtn" data-wave="hann">升余弦</button>
+        <button class="cfbtn" data-wave="tpulse">三角脉冲</button>
+        <button class="cfbtn" data-wave="exp">指数衰减</button>
+      </div>
+      <canvas id="cfWAV" style="width:100%;height:56px;display:block;margin-top:8px"></canvas>
+    </div>
+
+    <div class="cffld span2">
+      <div class="cflab"><span>脉冲宽度 / 占空比</span><b id="cfDUTYv">50 %</b></div>
+      <input type="range" id="cfDUTY" min="0" max="1000" step="1" value="914">
+      <div class="cfread" id="cfEQD" style="margin-top:6px">—</div>
     </div>
 
     <div class="cffld">
-      <div class="cflab"><span>占空比</span><b id="cfDUTYv">50 %</b></div>
-      <input type="range" id="cfDUTY" min="10" max="90" step="1" value="50">
-    </div>
-
-    <div class="cffld">
-      <div class="cflab"><span>亮度</span><b id="cfBRv">100 %</b></div>
-      <input type="range" id="cfBR" min="5" max="100" step="1" value="100">
+      <div class="cflab"><span>峰值亮度</span><b id="cfBRv">100 %</b></div>
+      <input type="range" id="cfBR" min="1" max="100" step="1" value="100">
     </div>
 
     <div class="cffld">
@@ -1393,7 +1459,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       if(c.width!==bw||c.height!==bh){ c.width=bw; c.height=bh; }
       if(id==='cfL') setRes(w,h);
     });
-    drawIdle();
+    drawIdle(); drawWave();
   }
   function drawIdle(){
     if(S.run) return;
@@ -1418,11 +1484,140 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(f<=half) return {f:f, alg:1};
     return {f:f/Math.ceil(f/half), alg:Math.ceil(f/half)};
   }
+  /* ── 波形表 ──────────────────────────────────────────────────────────
+     连续档（WCONT=1）：整周期都在发光，没有暗相，滑块对它无效；
+     脉冲档：亮相宽度 = duty × 周期，暗相是真 0（不是「暗一点」）。
+     所有函数返回 0..1，乘进亮度。 */
+  var WN={sine:'正弦', tri:'三角', saw:'锯齿', square:'方波',
+          trap:'梯形', hann:'升余弦', tpulse:'三角脉冲', exp:'指数衰减'};
+  var WCONT={sine:1, tri:1};
   function wave(ph){
-    var x=ph-Math.floor(ph);
-    if(S.wave==='square') return x<S.duty?1:0;
-    if(S.wave==='tri') return x<0.5 ? x*2 : (1-x)*2;
-    return 0.5-0.5*Math.cos(2*Math.PI*x);
+    var x=ph-Math.floor(ph), d=S.duty;
+    switch(S.wave){
+      case 'square':
+        return x<d?1:0;
+      case 'tri':
+        return x<0.5 ? x*2 : (1-x)*2;          /* 对称三角 = 锯齿在 d=0.5 的特例 */
+      case 'saw':
+        return x<d ? x/d : (1-x)/(1-d);        /* 占空比 = 上升沿占比，即两侧斜率比 */
+      case 'trap':{
+        if(x>=d) return 0;
+        var e=Math.min(d*0.42, 0.12);          /* 边沿宽度，窄脉冲时自动收窄 */
+        if(x<e) return x/e;
+        if(x>d-e) return (d-x)/e;
+        return 1;
+      }
+      case 'hann':
+        return x<d ? 0.5-0.5*Math.cos(2*Math.PI*x/d) : 0;   /* 升余弦包络 = 削波后的正弦 */
+      case 'tpulse':{
+        if(x>=d) return 0;
+        var h=d*0.5;
+        return x<h ? x/h : (d-x)/h;
+      }
+      case 'exp':{
+        if(x>=d) return 0;
+        var tau=d/2.2, t1=Math.exp(-d/tau);    /* 瞬时起亮 + 指数衰减，尾部归零 */
+        return (Math.exp(-x/tau)-t1)/(1-t1);
+      }
+      default:
+        return 0.5-0.5*Math.cos(2*Math.PI*x);
+    }
+  }
+
+  /* 占空比滑块用对数刻度：0.1 % ↔ 90 %。线性滑块下 0.1 % 只有 1/900 的一格，
+     根本拨不准，而对数刻度每一格都是固定的「倍数」。 */
+  var DUTY_MIN=0.001, DUTY_MAX=0.90;
+  var DUTY_LN=Math.log(DUTY_MAX/DUTY_MIN);
+  function dutyOf(v){ return DUTY_MIN*Math.exp(DUTY_LN*v/1000); }
+  function sliderOf(d){
+    return Math.round(1000*Math.log(Math.max(DUTY_MIN,Math.min(DUTY_MAX,d))/DUTY_MIN)/DUTY_LN);
+  }
+  function pctS(d){
+    var q=d*100;
+    if(q<1) return q.toFixed(2);
+    if(q<10) return q.toFixed(1);
+    return q.toFixed(0);
+  }
+
+  /* 等效占空比 = 平均亮度 / 峰值亮度（对波形整流后取平均再比峰值）。
+     这才是算剂量、比曝光要用的那个数：它和「亮多久」不是一回事，
+     连续波也有等效占空比（正弦恒 50%），窄脉冲则远小于它的亮相宽度。 */
+  function eqDuty(){
+    /* 必须用解析式：0.1 % 的脉冲只有 1/1000 个周期，400 点采样一个点都落不进去，
+       数值积分会直接给 0。下面每一档都是手算的整周期面积。 */
+    var d=S.duty;
+    switch(S.wave){
+      case 'square': return d;
+      case 'trap':   return d-Math.min(d*0.42,0.12);       /* 平顶 + 两侧三角 */
+      case 'hann':   return d/2;                            /* 升余弦整段均值 0.5 */
+      case 'tpulse': return d/2;                            /* 三角面积 d/2 */
+      case 'exp':{
+        var tau=d/2.2, t1=Math.exp(-d/tau);
+        return (tau*(1-t1)-t1*d)/(1-t1);                    /* ∫ 指数尾巴 */
+      }
+      default:       return 0.5;                            /* 正弦 / 三角 / 锯齿 */
+    }
+  }
+
+  /* 波形预览：一次画两个周期，浅色带 = 亮相窗口（暗相为 0 的位置） */
+  function drawWave(){
+    var c=el('cfWAV'); if(!c) return;
+    var w=Math.max(80, c.clientWidth || 240), h=56;
+    var r=Math.min(2, window.devicePixelRatio||1);
+    c.width=Math.round(w*r); c.height=Math.round(h*r);
+    var g=c.getContext('2d');
+    g.setTransform(r,0,0,r,0,0);
+    g.clearRect(0,0,w,h);
+    var cc=COL[S.col];
+    var rgb='rgb('+Math.round(cc[0]*255)+','+Math.round(cc[1]*255)+','+Math.round(cc[2]*255)+')';
+    var top=8, bot=h-10;
+    if(!WCONT[S.wave]){
+      g.fillStyle='rgba(20,60,90,.06)';
+      g.fillRect(0, top, w*S.duty*0.5, bot-top);
+      g.fillRect(w*0.5, top, w*S.duty*0.5, bot-top);
+    }
+    g.strokeStyle='#e6edf2'; g.lineWidth=1;
+    g.beginPath(); g.moveTo(0,bot+0.5); g.lineTo(w,bot+0.5); g.stroke();
+    g.beginPath(); g.moveTo(Math.round(w/2)+0.5,top); g.lineTo(Math.round(w/2)+0.5,bot+4); g.stroke();
+    g.strokeStyle=rgb; g.lineWidth=1.7; g.lineJoin='round'; g.lineCap='round';
+    g.beginPath();
+    var px=function(t){ return t/2*w; };
+    var py=function(v){ return bot-(bot-top)*v; };
+    if(WCONT[S.wave]){
+      for(var i=0;i<=w;i++){ var t=i/w*2, q=py(wave(t)); if(i===0) g.moveTo(0,q); else g.lineTo(i,q); }
+    } else {
+      /* 脉冲档按关键点折线画：亮相窗内取 24 个采样点，落沿之后补一个零点。
+         0.1 % 的脉冲只有 w/2000 px 宽，逐像素采样会整条丢掉。 */
+      var first=true;
+      for(var k=0;k<2;k++){
+        for(var j=0;j<=24;j++){
+          var u=k+j/24*S.duty, X=px(u), Y=py(wave(u));
+          if(first){ g.moveTo(X,Y); first=false; } else g.lineTo(X,Y);
+        }
+        var X2=px(k+S.duty+1e-7), Y2=py(0);
+        g.lineTo(X2,Y2);
+        g.lineTo(px(k+1), Y2);
+      }
+    }
+    g.stroke();
+  }
+
+  /* 波形名 + 滑块是否适用 + 等效占空比 */
+  function wRead(){
+    var cont=!!WCONT[S.wave];
+    el('cfWAVv').innerHTML = (WN[S.wave]||'—') +
+      (cont ? '<em style="font-style:normal;color:#8a9aa5"> · 连续 · 无暗相</em>'
+            : '<em style="font-style:normal;color:#8a9aa5"> · 脉冲 · 亮相 '+Math.round(S.duty*100)+' %</em>');
+    el('cfDUTY').disabled = cont;
+    el('cfDUTY').style.opacity = cont ? .35 : 1;
+    var eq=eqDuty()*100, f0=(plan()[0].fs[0]||0);
+    var pw = f0>0 ? S.duty/f0*1000 : 0;          /* 亮相宽度，ms */
+    el('cfDUTYv').textContent = pctS(S.duty)+' %';
+    el('cfEQD').innerHTML =
+      (cont ? '连续波无暗相 · 等效占空比 <b>'+eq.toFixed(1)+' %</b>'
+            : '亮相 '+pctS(S.duty)+' % · 脉宽 <b>'+(pw<0.1?pw.toFixed(3):(pw<10?pw.toFixed(2):pw.toFixed(1)))+' ms</b>'+
+              '（@ '+f0.toFixed(1)+' Hz）<br>等效占空比 <b>'+eq.toFixed(2)+' %</b>（平均/峰值）');
+    drawWave();
   }
   function black(){
     for(var e=0;e<2;e++){
@@ -1512,6 +1707,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     el('cfsw2').textContent=COLN[S.col]||'—';
     glRead();
     if(!S.run) drawIdle();
+    drawWave();
   }
 
   /* ── 眼镜读数：每只眼透过镜片后还剩多少 ── */
@@ -1573,7 +1769,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     el('cfsq').style.display  = S.src==='sq'?'block':'none';
     sqRead();
   });
-  grp('wave','wave', function(){ if(!S.run) drawIdle(); });
+  grp('wave','wave', function(){ if(!S.run) drawIdle(); el('cfDUTY').value=sliderOf(S.duty); wRead(); });
   grp('part','part', layout);
   grp('col','col', function(){
     if(S.gl==='ana' && (!S.colR || S.colR===S.col)){
@@ -1612,7 +1808,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
   el('cfFL').addEventListener('input', function(){ S.fL=+this.value; el('cfFLv').textContent=(+this.value).toFixed(1)+' Hz'; labels(); });
   el('cfFR').addEventListener('input', function(){ S.fR=+this.value; el('cfFRv').textContent=(+this.value).toFixed(1)+' Hz'; labels(); });
-  el('cfDUTY').addEventListener('input', function(){ S.duty=+this.value/100; el('cfDUTYv').textContent=this.value+' %'; });
+  el('cfDUTY').addEventListener('input', function(){ S.duty=dutyOf(+this.value); wRead(); });
   el('cfBR').addEventListener('input', function(){ S.br=+this.value/100; el('cfBRv').textContent=this.value+' %'; drawIdle(); });
   el('cfPH').addEventListener('input', function(){ S.phase=+this.value; el('cfPHv').textContent=this.value+'°'; });
   el('cfROT').addEventListener('input', function(){ S.rot=+this.value; el('cfROTv').textContent=this.value+' °/s'; drawIdle(); });
@@ -1630,7 +1826,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   document.addEventListener('visibilitychange', function(){
     if(document.hidden && S.run){ S.paused=true; el('cfmeta').textContent='已暂停（切走标签页）· 回来点「开始」继续计时'; }
   });
-  window.addEventListener('resize', function(){ if(!S.run) fitCanvas(); });
+  window.addEventListener('resize', function(){ drawWave(); if(!S.run) fitCanvas(); });
 
   /* ── 一键全屏：优先原生 Fullscreen，被拒则退化为「剧场模式」 ── */
   var cfv=el('cfview'), fslbl=el('cfFSlbl');
@@ -1668,7 +1864,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     }
   });
 
-  layout(); sqRead(); swatch(); labels(); syncR(); fitCanvas();
+  layout(); sqRead(); swatch(); labels(); syncR(); wRead(); fitCanvas();
 })();
 </script>
 
