@@ -103,8 +103,8 @@
   /* ══ 屏幕试跑控制台 ══ */
   .cf{display:grid;gap:14px;margin:20px 0 0}
   .cfview{position:relative;height:432px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
-  .cfeyes{position:absolute;inset:0;display:flex;gap:6px;padding:6px 6px 30px}
-  .cfpane{position:relative;flex:1;min-width:0;background:#000;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px #12171b}
+  .cfeyes{position:absolute;inset:0;display:flex;gap:8px;padding:6px 6px 30px;align-items:center;justify-content:center}
+  .cfpane{position:relative;flex:0 1 auto;height:100%;aspect-ratio:1/1;max-width:calc(50% - 6px);background:#000;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px #12171b}
   .cfpane canvas{display:block;width:100%;height:100%}
   .cfph{position:absolute;left:7px;top:6px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
     color:rgba(255,255,255,.40);pointer-events:none}
@@ -120,7 +120,22 @@
   .cfhud{position:absolute;left:8px;bottom:7px;font-family:var(--mono);font-size:11px;color:#8fa3ad;
     letter-spacing:.02em;z-index:3}
   .cfhud.on{color:#d8e6ee}
-  .cftag{position:absolute;right:8px;bottom:7px;font-family:var(--mono);font-size:10px;color:#5d6f79;letter-spacing:.12em;z-index:3}
+  .cftag{position:absolute;right:78px;bottom:7px;font-family:var(--mono);font-size:10px;color:#5d6f79;letter-spacing:.12em;z-index:3}
+  /* 一键全屏：右下角常驻，全屏后仍可退出 */
+  .cffs{position:absolute;right:6px;bottom:4px;z-index:4;display:inline-flex;align-items:center;gap:4px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:#9fb2bd;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.14);border-radius:3px;padding:3px 7px;cursor:pointer;line-height:1}
+  .cffs:hover{color:#e6f0f5;background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.3)}
+  .cffs svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .cfview:fullscreen,.cfview:-webkit-full-screen,.cfview.theater{width:100vw;height:100vh;border:0;border-radius:0;background:#000}
+  .cfview.theater{position:fixed;left:0;top:0;z-index:9999}
+  .cfview:fullscreen .cfeyes,.cfview:-webkit-full-screen .cfeyes,.cfview.theater .cfeyes{padding:0 0 40px;gap:3px}
+  .cfview:fullscreen .cfph,.cfview:-webkit-full-screen .cfph,.cfview.theater .cfph{left:16px;top:12px;font-size:13px;letter-spacing:.18em;color:rgba(255,255,255,.55)}
+  .cfview:fullscreen .cfpt,.cfview:-webkit-full-screen .cfpt,.cfview.theater .cfpt{right:16px;top:12px;font-size:13px;color:rgba(255,255,255,.62)}
+  .cfview:fullscreen .cfhud,.cfview:-webkit-full-screen .cfhud,.cfview.theater .cfhud{left:16px;bottom:13px;font-size:13px}
+  .cfview:fullscreen .cftag,.cfview:-webkit-full-screen .cftag,.cfview.theater .cftag{display:none}
+  .cfview:fullscreen .cffs,.cfview:-webkit-full-screen .cffs,.cfview.theater .cffs{bottom:11px;right:14px;font-size:12px;padding:5px 10px}
+  .cfview.theater .cffs span{font-size:12px}
   .cfpanel{border:1px solid var(--line);border-radius:4px;background:#fff;padding:14px 15px;font-size:13px;
     display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px 18px;align-items:start}
   .cfpanel .wide{grid-column:1/-1}
@@ -149,6 +164,19 @@
   .cfcheck input{margin-top:3px;accent-color:var(--teal)}
   .cfsw{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:6px}
   .cfsw i{width:26px;height:14px;border-radius:2px;border:1px solid #ccd6dd;display:inline-block}
+  /* 光色 chips：色点 + 波长 */
+  .cfchips{display:flex;flex-wrap:wrap;gap:5px}
+  .cchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--ink2);
+    border:1px solid var(--line);background:#fff;padding:4px 8px 4px 6px;border-radius:3px;cursor:pointer}
+  .cchip:hover{border-color:#b9c8d2}
+  .cchip.on{border-color:var(--teal);background:#f2f9f8;color:var(--teal);font-weight:700}
+  .cchip u{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto;
+    box-shadow:0 0 0 1px rgba(0,0,0,.18) inset}
+  .cchip em{font-style:normal;color:var(--muted);font-size:10px}
+  .cchip.on em{color:#5f8f88}
+  .cfhint{font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--muted);max-width:86ch;
+    margin-top:8px;padding-left:8px;border-left:2px solid #e2e9ee}
+  .cfhint b{color:var(--ink2);font-weight:700}
   .kbd{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:#fff}
 </style>
 </head>
@@ -548,7 +576,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
 <h2><span class="num">09</span>附录：先在屏幕上把参数跑一遍</h2>
 
-<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把三件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>每眼两路灯位的相位是不是真的独立</strong>。</p>
+<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把四件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>每眼两路灯位的相位是不是真的独立</strong>、以及<strong>戴上眼镜后每一眼还剩下多少光</strong>。</p>
 
 <h3>预览区为什么是两块，不是一块</h3>
 
@@ -557,6 +585,18 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 <p>左右之间的第二层关系是<strong>旋向</strong>。它不能靠软件「给」出来：两眼视网膜到两半球的投射本身就是镜像的，同一束均匀漫射光进去，两边皮层跑出的行波方向天然相反，看到的就是一对镜像螺旋——<strong>镜像才是默认，同向反而是需要额外条件才出现的异常</strong>。所以「右眼镜像」默认打开，它标的不是「加了个特效」，而是「没有人为干预」。</p>
 
 <p>要让旋向真的可编程，唯一办法是<strong>造出空间相位梯度</strong>。整屏均匀时四路灯珠同相，视场里没有梯度，旋向只能听生理的；一旦改成上下 / 左右 / 四象限分区，每区各走各的相位，梯度就出来了，旋向才真由参数决定。这条同时给出一个装配要求：真机的<strong>右板必须做成左板的镜像布线</strong>——两块板若只是平移复制，四灯位相对视网膜的位置不对称，「镜像图案」从源头就做不出来。</p>
+
+<h3>第三层：看屏幕的人戴什么</h3>
+
+<p>红青眼镜的两片镜是<strong>左红右青</strong>，它按<strong>颜色</strong>而不是按位置把光劈成两路——这是单块显示器做出「双眼各看一幅」的唯一廉价办法：左眼只收到长波那半、右眼只收到短波那半。代价是两幅图<strong>必须配色互补</strong>，都设成红就全被右镜挡掉，右眼一片黑。所以面板里选「红青眼镜」时右眼会<strong>自动配成 505 青</strong>，也可以手动换成 540 绿或 590 琥珀，读数框会直接算出透过率。<br>
+线偏是另一个极端：普通 LCD 出光本身就是线偏振的，镜片转过 90° 就按 <span class="mono">cos²θ</span> 消光到黑——<strong>这不是软件效果，是屏幕物理</strong>，转头就能自己验证。<br>
+影院那种圆偏（RealD）在没贴 1/4 波片的屏幕上两眼各得 50%、<strong>分不开</strong>，只有贴了波片才有左右旋之分。</p>
+
+<h3>颜色可以换，但换颜色不是换剂量</h3>
+
+<p>屏幕上 620 红与 540 绿看起来差不多亮，装进眼罩后差 <strong>约 7 倍</strong>——眼睑在 540 nm 只透 0.48%，在 620 nm 透 7.5%。所以调色板每一档都直接标了「等亮度要付几倍电功率」：590 琥珀 3.1×、570 黄 6.4×、540 绿 6.9×、505 青 15×、三色暖白 19×。<strong>绿是观感舒适档，不是剂量档</strong>；真要加剂量，还是得回到 620。</p>
+
+<p>470 nm 蓝已从调色板里拿掉，两条理由叠在一起：闭眼透射仅 0.35%，功率要推到 63 倍才够亮，几乎全部变成贴在脸上的热；而 435–470 nm 又正好是蓝光危害（BLH）的作用峰，<strong>闪烁加短波是双重不利</strong>。505 青属于青绿端、离峰值已远，留着当红的对照色，默认不选。</p>
 
 <div class="note">
   <h5>屏幕上的螺旋是「看着会像什么」，不是「视网膜收到什么」</h5>
@@ -573,7 +613,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 </div>
 
 <div class="cf">
-  <div class="cfview">
+  <div class="cfview" id="cfview">
     <div class="cfeyes">
       <div class="cfpane" id="cfPaneL">
         <div class="cfph">左眼 L<s>· 左旋</s></div>
@@ -588,6 +628,10 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     </div>
     <div class="cfhud" id="cfhud">未运行</div>
     <div class="cftag">屏幕模拟 · 非实测</div>
+    <button class="cffs" id="cfFS" type="button" title="全屏观看（Esc 退出）">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      <span id="cfFSlbl">全屏</span>
+    </button>
   </div>
 
   <div class="cfpanel">
@@ -665,7 +709,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     </div>
 
     <div class="cffld">
-      <div class="cflab"><span>分区（每眼内部）</span></div>
+      <div class="cflab"><span>分区（每眼独立切分）</span></div>
       <div class="cfrow">
         <button class="cfbtn on" data-part="full">整屏</button>
         <button class="cfbtn" data-part="ud">上下</button>
@@ -679,14 +723,39 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       <input type="range" id="cfPH" min="0" max="270" step="90" value="180">
     </div>
 
-    <div class="cffld span2">
-      <div class="cflab"><span>三色配比</span></div>
-      <div class="cfrow">
-        <button class="cfbtn on" data-col="red">620 单色</button>
-        <button class="cfbtn" data-col="ra">620 + 590</button>
-        <button class="cfbtn" data-col="rac">620 + 590 + 505</button>
+    <div class="cffld wide">
+      <div class="cflab"><span>光色（单色可换，蓝已剔除）</span></div>
+      <div class="cfchips" id="cfchips">
+        <button class="cchip on" data-col="red"><u style="background:#ff2b0f"></u>620 红</button>
+        <button class="cchip" data-col="amb"><u style="background:#ff850f"></u>590 琥珀<em>×3.1</em></button>
+        <button class="cchip" data-col="yel"><u style="background:#ffc61e"></u>570 黄<em>×6.4</em></button>
+        <button class="cchip" data-col="grn"><u style="background:#8cff22"></u>540 绿<em>×6.9</em></button>
+        <button class="cchip" data-col="cyn"><u style="background:#22ffd2"></u>505 青<em>×15</em></button>
+        <button class="cchip" data-col="warm"><u style="background:#ffbf99"></u>三色暖白<em>×19</em></button>
       </div>
       <div class="cfsw"><i id="cfsw1"></i><span id="cfsw2">—</span></div>
+      <p class="cfhint">×N = 闭眼时凑到与 620 同等亮度所需的<b>电功率倍数</b>。<b>绿在屏幕上看着比红还亮，是因为屏幕光不经过眼睑</b>；装进眼罩后 540 nm 只透 0.48%，同功率下比 620 暗约 7 倍。所以绿是「观感舒适档」，不是「剂量档」。<br>470 nm 蓝已从调色板移除：眼睑只透 0.35%，闭眼时它基本只贡献热；435–470 nm 又正是蓝光危害（BLH）峰值区，<b>闪烁＋短波是双重不利</b>。505 青属青绿端，留着做对照，默认不选。</p>
+    </div>
+
+    <div class="cffld wide">
+      <div class="cflab"><span>佩戴眼镜（对着屏幕看时）</span></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-gl="none">裸眼</button>
+        <button class="cfbtn" data-gl="ana">红青眼镜</button>
+        <button class="cfbtn" data-gl="lin">线偏（正交）</button>
+        <button class="cfbtn" data-gl="cir">圆偏（RealD）</button>
+      </div>
+      <div class="cfrow" id="cfRCOL" style="display:none;margin-top:6px">
+        <button class="cfbtn" data-rcol="red">右眼 620</button>
+        <button class="cfbtn" data-rcol="amb">右眼 590</button>
+        <button class="cfbtn" data-rcol="grn">右眼 540</button>
+        <button class="cfbtn" data-rcol="cyn">右眼 505</button>
+        <button class="cfbtn on" data-rcol="">与左眼同色</button>
+      </div>
+      <div class="cflab" id="cfPOLw" style="margin-top:8px;display:none"><span>偏光轴相对屏幕</span><b id="cfPOLv">0°</b></div>
+      <input type="range" id="cfPOL" min="0" max="90" step="5" value="0" style="display:none">
+      <div class="cfread" id="cfglread">—</div>
+      <p class="cfhint">红青眼镜的镜片是<b>左红右青</b>：左镜只放长波、右镜只放短波，所以它能把屏幕上的两色<b>按颜色劈成两路</b>——这是单块显示器做出「双眼各看一幅」的唯一廉价办法。前提是两幅图<b>颜色互补</b>，都设成红就全被右镜挡掉。<br>线偏：普通 LCD 本身就是线偏振出光，镜片转过 90° 会按 cos²θ 变暗直至全黑，这是屏幕物理、不是软件效果。<br>并排两块给出的是「<b>分眼呈现</b>」——每眼各得一幅；要让两幅图严格<b>重合</b>成真融合，得靠半透半反镜或投影叠像，靠并排摆是做不到的。<br>圆偏：屏幕没贴 1/4 波片时两眼各得 50%、<b>完全不能分离</b>，只有贴了波片才有左右旋之分。</p>
     </div>
 
     <label class="cfcheck wide">
@@ -1176,17 +1245,30 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   var hud=el('cfhud');
 
   var S={src:'free', fL:10, fR:10, wave:'sine', duty:0.5, br:1, part:'full',
-         col:'red', phase:180, pat:'spiral', turn:1, mir:true, rot:18,
+         col:'red', colR:'', gl:'none', pol:0, phase:180, pat:'spiral', turn:1, mir:true, rot:18,
          run:false, paused:false, t:0, last:0, rate:0, limit:180,
          sq:{a:220,b:189,c:252,d:221,base:6},
          ph:[[0,0],[0,0]]};
 
-  var COL={red:[1,0.16,0.06], ra:[1,0.50,0.09], rac:[1,0.56,0.32]};
-  var COLN={
-    red:'620 nm 单色 · 0.12 W/眼 · 闭眼效力 100%',
-    ra:'620 + 590 同电流 · 0.24 W/眼',
-    rac:'620 : 590 : 505 电流 1 : 3.1 : 15.0 · 2.3 W/眼'
+  /* 单色板：屏幕上用 sRGB 近似各单色波长的观感；蓝（470）已剔除 */
+  var COL={
+    red :[1.00,0.17,0.06],
+    amb :[1.00,0.52,0.10],
+    yel :[1.00,0.78,0.16],
+    grn :[0.55,1.00,0.13],
+    cyn :[0.13,1.00,0.82],
+    warm:[1.00,0.75,0.60]
   };
+  var COLN={
+    red :'620 nm · 闭眼效力 100%（基准）· 0.12 W/眼 · 主模式',
+    amb :'590 nm · 效力 32% · 等亮度需 3.1× 功率（0.37 W/眼）· 最便宜的非红',
+    yel :'570 nm · 效力 16% · 需 6.4×（0.77 W/眼）· 570 处眼睑透射陡升，性价比跳档',
+    grn :'540 nm · 效力 14% · 需 6.9×（0.83 W/眼）· 观感最舒适，但不是剂量档',
+    cyn :'505 nm · 效力 6.7% · 需 15×（1.8 W/眼）· 红的最佳互补色，含短波',
+    warm:'620 : 590 : 505 等亮度 · 2.3 W/眼 · 比纯红贵 19×（不划算，仅作对照）'
+  };
+  /* 镜片：0..1 的三通道透过率。红青眼镜是「左红右青」，这是它唯一有意义的用法 */
+  var GLN={none:'裸眼', ana:'红青眼镜', lin:'线偏（正交）', cir:'圆偏（RealD）'};
   var PARTN={full:'整屏',ud:'上下',lr:'左右',quad:'四象限'};
 
   /* 每只眼内部的视场划分：[x,y,w,h,ch]，ch=0/1 取该眼第几路恒流，-1 = 两路平均 */
@@ -1206,7 +1288,8 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   var dpr=Math.min(2, window.devicePixelRatio||1);
 
   function setRes(w,h){
-    var rw=132, rh=Math.max(70, Math.min(300, Math.round(132*h/Math.max(1,w))));
+    var rw=Math.max(132, Math.min(240, Math.round(w/5)));
+    var rh=Math.max(70, Math.min(360, Math.round(rw*h/Math.max(1,w))));
     if(rw===RW && rh===RH) return;
     RW=rw; RH=rh; off.width=RW; off.height=RH;
     img=octx.createImageData(RW,RH);
@@ -1233,11 +1316,27 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     return {cw:cw, sw:sw, fd:fd};
   }
 
+  /* ── 镜片光学：每只眼各自的透过率（0..1，三通道）与总衰减 ── */
+  function eyeCol(e){ return COL[(e===1 && S.colR) ? S.colR : S.col] || COL.red; }
+  function lensF(e){
+    if(S.gl==='ana') return e===0 ? [1.00,0.05,0.03] : [0.04,0.90,1.00];
+    return [1,1,1];
+  }
+  function lensG(e){
+    if(S.gl==='lin'){
+      var th=(S.pol + (e===0?0:90))*Math.PI/180;
+      return Math.cos(th)*Math.cos(th);
+    }
+    if(S.gl==='cir') return 0.5;
+    return 1;
+  }
+
   function frame(eye, ctx, W, H, lv0, lv1, rotPhi){
     var gm=GEOM[eye] || (GEOM[eye]=buildGeom(eye));
-    var c=Math.cos(rotPhi), s=Math.sin(rotPhi), cc=COL[S.col];
+    var c=Math.cos(rotPhi), s=Math.sin(rotPhi);
+    var cc=eyeCol(eye), F=lensF(eye), gg=lensG(eye);
     var d=img.data, cw=gm.cw, sw=gm.sw, fd=gm.fd;
-    var R8=Math.round(cc[0]*255), G8=Math.round(cc[1]*255), B8=Math.round(cc[2]*255);
+    var R8=cc[0]*F[0]*gg*255, G8=cc[1]*F[1]*gg*255, B8=cc[2]*F[2]*gg*255;
     for(var k=0,n=RW*RH;k<n;k++){
       var g=(0.5+0.5*(cw[k]*c - sw[k]*s))*fd[k];
       var o=k*4;
@@ -1246,6 +1345,8 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     octx.putImageData(img,0,0);
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    /* 等比绘制：眼屏无论什么比例，图案都是正圆，不被拉成椭圆 */
+    var sc2=Math.min(W/RW, H/RH), dw=RW*sc2, dh=RH*sc2, dx=(W-dw)/2, dy=(H-dh)/2;
     var rs=REG[S.part];
     for(var q=0;q<rs.length;q++){
       var rr=rs[q];
@@ -1255,7 +1356,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       ctx.beginPath(); ctx.rect(rr[0]*W, rr[1]*H, rr[2]*W, rr[3]*H); ctx.clip();
       ctx.globalAlpha=Math.min(1,a);
       ctx.imageSmoothingEnabled=true;
-      ctx.drawImage(off, 0,0, RW,RH, 0,0, W,H);
+      ctx.drawImage(off, 0,0, RW,RH, dx,dy,dw,dh);
       ctx.restore();
     }
     ctx.globalAlpha=1;
@@ -1409,7 +1510,42 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     var r=COL[S.col];
     el('cfsw1').style.background='rgb('+Math.round(r[0]*255)+','+Math.round(r[1]*255)+','+Math.round(r[2]*255)+')';
     el('cfsw2').textContent=COLN[S.col]||'—';
+    glRead();
     if(!S.run) drawIdle();
+  }
+
+  /* ── 眼镜读数：每只眼透过镜片后还剩多少 ── */
+  function thru(c, F){
+    var w=[0.30,0.59,0.11], a=0, b=0;
+    for(var i=0;i<3;i++){ a+=w[i]*c[i]; b+=w[i]*c[i]*F[i]; }
+    return a>0 ? b/a : 0;
+  }
+  var COLNM={red:'620 红',amb:'590 琥珀',yel:'570 黄',grn:'540 绿',cyn:'505 青',warm:'三色暖白'};
+  function glRead(){
+    var box=el('cfglread');
+    el('cfRCOL').style.display = S.gl==='ana' ? 'flex' : 'none';
+    el('cfPOL').style.display  = S.gl==='lin' ? 'block' : 'none';
+    el('cfPOLw').style.display = S.gl==='lin' ? 'flex' : 'none';
+    var L=eyeCol(0), R=eyeCol(1), FL=lensF(0), FR=lensF(1);
+    var nameL=COLNM[S.col]||'—', nameR=COLNM[(S.colR||S.col)]||'—';
+    if(S.gl==='none'){
+      box.innerHTML='裸眼 · 两眼各自看到整块屏，颜色都一样（'+nameL+'）';
+    } else if(S.gl==='ana'){
+      var tL=thru(L,FL), tR=thru(R,FR);
+      var split = tL>0.35 && tR>0.35;
+      box.innerHTML='左眼镜片（红）对 '+nameL+' 透过 <b>'+Math.round(tL*100)+'%</b>　·　'+
+        '右眼镜片（青）对 '+nameR+' 透过 <b>'+Math.round(tR*100)+'%</b><br>'+
+        (split ? '✔ 两路颜色互补，可劈成「左眼看 '+nameL+'、右眼看 '+nameR+'」'
+               : '✘ 右眼几乎被挡黑 —— 把右眼配色换成 505 青（或 540 绿）才能分开');
+    } else if(S.gl==='lin'){
+      var g0=lensG(0), g1=lensG(1);
+      box.innerHTML='左上镜片 '+g0.toFixed(2)+'　·　右镜片（正交 +90°）'+g1.toFixed(2)+'<br>'+
+        (g0<0.02||g1<0.02 ? '✘ 已接近全黑 —— LCD 出光本身线偏振，正交即消光'
+                           : '按 cos²θ 衰减，两片之和恒为 1：左亮右暗、右亮左暗');
+    } else {
+      box.innerHTML='左旋圆偏 0.50　·　右旋圆偏 0.50<br>'+
+        '✘ 屏幕未贴 1/4 波片 ⇒ 出光不是圆偏振，两眼同样亮度、<b>不能分离</b>；贴了波片也只有 50% 效率';
+    }
   }
 
   /* ── 绑定 ── */
@@ -1439,7 +1575,33 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   });
   grp('wave','wave', function(){ if(!S.run) drawIdle(); });
   grp('part','part', layout);
-  grp('col','col', swatch);
+  grp('col','col', function(){
+    if(S.gl==='ana' && (!S.colR || S.colR===S.col)){
+      S.colR = (S.col==='cyn' ? 'red' : 'cyn');
+      syncR();
+    }
+    swatch();
+  });
+  /* 眼镜：红青自动配成互补两色，线偏/圆偏只改衰减 */
+  function syncR(){
+    var bs=document.querySelectorAll('[data-rcol]');
+    for(var i=0;i<bs.length;i++){
+      bs[i].classList.toggle('on', (bs[i].getAttribute('data-rcol')||'')===S.colR);
+    }
+  }
+  grp('gl','gl', function(){
+    if(S.gl==='ana'){
+      if(!S.colR || S.colR===S.col){ S.colR = (S.col==='cyn' ? 'red' : 'cyn'); }
+    } else if(S.gl==='none'){
+      S.colR='';
+    }
+    syncR(); swatch();
+  });
+  grp('rcol','colR', swatch);
+  el('cfPOL').addEventListener('input', function(){
+    S.pol=+this.value; el('cfPOLv').textContent=this.value+'°'; glRead();
+    if(!S.run) drawIdle();
+  });
   grp('sq','sq', sqRead);
   grp('pat','pat', function(){ GEOM=[null,null]; layout(); });
   grp('turn','turn', function(){ S.turn=+S.turn||1; GEOM=[null,null]; layout(); });
@@ -1470,7 +1632,43 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   });
   window.addEventListener('resize', function(){ if(!S.run) fitCanvas(); });
 
-  layout(); sqRead(); swatch(); labels(); fitCanvas();
+  /* ── 一键全屏：优先原生 Fullscreen，被拒则退化为「剧场模式」 ── */
+  var cfv=el('cfview'), fslbl=el('cfFSlbl');
+  function isFS(){ return document.fullscreenElement===cfv || cfv.classList.contains('theater'); }
+  function afterFS(){
+    var on=isFS();
+    fslbl.textContent = on ? '退出' : '全屏';
+    el('cfFS').title = on ? '退出全屏（Esc）' : '全屏观看（Esc 退出）';
+    document.body.style.overflow = cfv.classList.contains('theater') ? 'hidden' : '';
+    setTimeout(fitCanvas, 50);
+    setTimeout(fitCanvas, 300);
+  }
+  function toggleFS(){
+    if(isFS()){
+      cfv.classList.remove('theater');
+      if(document.fullscreenElement && document.exitFullscreen){
+        try{ document.exitFullscreen(); }catch(e){}
+      }
+      afterFS(); return;
+    }
+    var asked=false;
+    if(cfv.requestFullscreen){
+      try{
+        var p=cfv.requestFullscreen();
+        if(p && p.then){ p.then(afterFS).catch(function(){ cfv.classList.add('theater'); afterFS(); }); asked=true; }
+      }catch(e){}
+    }
+    if(!asked){ cfv.classList.add('theater'); afterFS(); }
+  }
+  el('cfFS').addEventListener('click', toggleFS);
+  document.addEventListener('fullscreenchange', afterFS);
+  document.addEventListener('keydown', function(ev){
+    if((ev.key==='Escape'||ev.key==='Esc') && cfv.classList.contains('theater')){
+      cfv.classList.remove('theater'); afterFS();
+    }
+  });
+
+  layout(); sqRead(); swatch(); labels(); syncR(); fitCanvas();
 })();
 </script>
 
