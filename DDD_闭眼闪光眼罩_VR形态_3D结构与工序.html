@@ -101,18 +101,31 @@
   footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);line-height:2}
 
   /* ══ 屏幕试跑控制台 ══ */
-  .cf{display:grid;gap:16px;margin:20px 0 0}
-  @media(min-width:780px){.cf{grid-template-columns:1fr 320px}}
-  .cfview{position:relative;height:500px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
-  .cfcells{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;background:#1a1f24}
-  .cfcell{background:#000;transition:none}
-  .cfhud{position:absolute;left:10px;bottom:8px;font-family:var(--mono);font-size:11px;color:#8fa3ad;
-    background:rgba(8,9,11,.72);padding:3px 8px;border-radius:3px;letter-spacing:.02em}
+  .cf{display:grid;gap:14px;margin:20px 0 0}
+  .cfview{position:relative;height:432px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
+  .cfeyes{position:absolute;inset:0;display:flex;gap:6px;padding:6px 6px 30px}
+  .cfpane{position:relative;flex:1;min-width:0;background:#000;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px #12171b}
+  .cfpane canvas{display:block;width:100%;height:100%}
+  .cfph{position:absolute;left:7px;top:6px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+    color:rgba(255,255,255,.40);pointer-events:none}
+  .cfph s{text-decoration:none;color:rgba(255,255,255,.20);margin-left:3px}
+  .cfpt{position:absolute;right:7px;top:6px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.02em;
+    color:rgba(255,255,255,.50);pointer-events:none}
+  .cfpane.seam::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      linear-gradient(to right,transparent calc(50% - .5px),rgba(255,255,255,.10) calc(50% - .5px),rgba(255,255,255,.10) calc(50% + .5px),transparent calc(50% + .5px)),
+      linear-gradient(to bottom,transparent calc(50% - .5px),rgba(255,255,255,.10) calc(50% - .5px),rgba(255,255,255,.10) calc(50% + .5px),transparent calc(50% + .5px))}
+  .cfpane.seamH::before{background:linear-gradient(to bottom,transparent calc(50% - .5px),rgba(255,255,255,.10) calc(50% - .5px),rgba(255,255,255,.10) calc(50% + .5px),transparent calc(50% + .5px))}
+  .cfpane.seamV::before{background:linear-gradient(to right,transparent calc(50% - .5px),rgba(255,255,255,.10) calc(50% - .5px),rgba(255,255,255,.10) calc(50% + .5px),transparent calc(50% + .5px))}
+  .cfhud{position:absolute;left:8px;bottom:7px;font-family:var(--mono);font-size:11px;color:#8fa3ad;
+    letter-spacing:.02em;z-index:3}
   .cfhud.on{color:#d8e6ee}
-  .cftag{position:absolute;right:10px;top:8px;font-family:var(--mono);font-size:10px;color:#5d6f79;letter-spacing:.12em}
-  .cfpanel{border:1px solid var(--line);border-radius:4px;background:#fff;padding:14px 15px;font-size:13px}
-  .cffld{margin-bottom:12px}
-  .cffld:last-child{margin-bottom:0}
+  .cftag{position:absolute;right:8px;bottom:7px;font-family:var(--mono);font-size:10px;color:#5d6f79;letter-spacing:.12em;z-index:3}
+  .cfpanel{border:1px solid var(--line);border-radius:4px;background:#fff;padding:14px 15px;font-size:13px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px 18px;align-items:start}
+  .cfpanel .wide{grid-column:1/-1}
+  @media(min-width:760px){.cfpanel .span2{grid-column:span 2}}
+  .cffld{margin-bottom:0}
   .cflab{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
   .cflab b{color:var(--ink);letter-spacing:0;font-size:11.5px}
   .cfrow{display:flex;flex-wrap:wrap;gap:5px}
@@ -461,7 +474,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   <thead><tr><th style="width:24%">项</th><th style="width:38%">规格</th><th style="width:8%">数量</th><th>备注</th></tr></thead>
   <tbody>
     <tr><td>三色灯珠</td><td><b>620 / 590 / 505 nm</b> 单色大功率（3535 或 5050 三芯定制），各 3–4 颗</td><td class="num-cell">8 灯位 ×3 芯</td><td>单颗 0.2–0.5 W；<strong>620 占多数功率</strong>，别按三色均分买。买不到三芯就贴 12 颗 3535</td></tr>
-    <tr><td>铝基板</td><td>1.6 mm 铝基，单面，定制或洞洞板手焊</td><td class="num-cell">2</td><td>灯珠焊在朝内一面，走线从背面出</td></tr>
+    <tr><td>铝基板</td><td>1.6 mm 铝基，单面，定制或洞洞板手焊</td><td class="num-cell">2</td><td>灯珠焊在朝内一面，走线从背面出；<strong>左右两块互为镜像</strong>（不是同一块做两遍）</td></tr>
     <tr><td>扩散板</td><td>PC 乳白 2 mm，雾度 &gt;90%，透光 65–75%</td><td class="num-cell">2（62×52）</td><td>扩散板质量直接决定均匀度</td></tr>
     <tr><td>混光腔 / 遮光腔</td><td>3D 打印（PETG / ABS），混光腔内壁贴高反射白膜</td><td class="num-cell">2 套</td><td>白膜可用 PTFE 胶带或 3M ESR；遮光腔内壁哑光黑植绒</td></tr>
     <tr><td>面垫</td><td>硅胶或记忆棉，厚 12–14 mm</td><td class="num-cell">1</td><td>贴合眶骨、压住不漏光，是舒适度的关键</td></tr>
@@ -479,6 +492,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 <ol class="steps">
   <li><b>拆壳</b>：把 VR 头显原有透镜组、显示屏、主板全部拆除，只留壳体、面垫与头带。壳体内部若有透镜支架，一并磨平——残留的支架会在光路里投出硬阴影。</li>
   <li><b>灯珠上板</b>：铝基板涂锡膏，回流焊每个灯位的三芯（620 / 590 / 505）。注意共阳方向统一，三通道走线分开引出。<b>焊完逐颗测三色</b>，一颗反接就要整板返工。</li>
+  <li><b>左右板镜像核对</b>：把两块板灯珠朝上并排，从同一侧看，两者的灯位排布应当是「照镜子」的关系而不是平移复制。搞错了不影响亮，但会让两眼的视场图案同向，<strong>闭眼看到的是一对同旋向螺旋而不是镜像</strong>——这是装完之后最难查的一类错。</li>
   <li><b>灯板贴散热</b>：涂导热硅脂，四颗 M2 螺丝对角压紧。此时先单独通电，跑 10 Hz / 40% 占空比 30 min，用热电偶测基板温度，<b>必须 &lt;60 ℃</b>。这一步要在装腔之前做，装进去就测不准了。</li>
   <li><b>装混光腔</b>：3D 打印件内壁贴满高反射白膜，边缘不留缝。这一步决定三个颜色能不能在板面之前混匀——混光腔短了，会在扩散板上看到三个分离的色斑。</li>
   <li><b>装扩散板</b>：嵌进槽位，边缘用黑胶完全密封。<b>任何一条缝都会在眼前形成一道亮线</b>，这是最常见的失败点。</li>
@@ -534,7 +548,20 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
 <h2><span class="num">09</span>附录：先在屏幕上把参数跑一遍</h2>
 
-<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把三件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>分区频闪的相位是不是真的独立</strong>。</p>
+<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把三件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>每眼两路灯位的相位是不是真的独立</strong>。</p>
+
+<h3>预览区为什么是两块，不是一块</h3>
+
+<p>这是设备的第一层结构，也是上一版画错的地方：<strong>眼罩有两个互不相通的发光面，左眼一块、右眼一块，谁也照不到谁</strong>。所以「整屏」这个词本身不成立——真正被切分的是<strong>每只眼内部的视场</strong>，由该眼那四颗灯珠分区照亮。「分区」四档切的都是每一块内部，不是整个预览框。</p>
+
+<p>左右之间的第二层关系是<strong>旋向</strong>。它不能靠软件「给」出来：两眼视网膜到两半球的投射本身就是镜像的，同一束均匀漫射光进去，两边皮层跑出的行波方向天然相反，看到的就是一对镜像螺旋——<strong>镜像才是默认，同向反而是需要额外条件才出现的异常</strong>。所以「右眼镜像」默认打开，它标的不是「加了个特效」，而是「没有人为干预」。</p>
+
+<p>要让旋向真的可编程，唯一办法是<strong>造出空间相位梯度</strong>。整屏均匀时四路灯珠同相，视场里没有梯度，旋向只能听生理的；一旦改成上下 / 左右 / 四象限分区，每区各走各的相位，梯度就出来了，旋向才真由参数决定。这条同时给出一个装配要求：真机的<strong>右板必须做成左板的镜像布线</strong>——两块板若只是平移复制，四灯位相对视网膜的位置不对称，「镜像图案」从源头就做不出来。</p>
+
+<div class="note">
+  <h5>屏幕上的螺旋是「看着会像什么」，不是「视网膜收到什么」</h5>
+  <p>真机在眼睑后面打出的是<strong>均匀漫射光</strong>——扩散板加 20 mm 遮光腔，眼皮上不会有条纹。屏幕上的螺旋是<strong>对数极坐标映射</strong>推出来的光幻视示意：把皮层平面波 <span class="mono">cos(a·u + b·v)</span> 经 <span class="mono">w = ln z</span> 拉回视场，就成了 <span class="mono">cos(a·ln r + b·θ)</span>——<span class="mono">a</span> 管径向疏密，<span class="mono">b</span> 管臂数，<span class="mono">b</span> 的符号管旋向。它只用来对齐两件事：<strong>左右眼该不该反向</strong>、<strong>臂数对不对</strong>。别把它当照度图看，更别据它去调灯珠。</p>
+</div>
 
 <p>算法沿用本机 <span class="mono">harmonograph/vr眼镜闪屏</span> 那套引擎的口径：四相数按 <span class="mono">k = 基频 / max(a,b,c,d)</span> 换算，<strong>左眼取 (a, d)、右眼取 (b, c)</strong>，两路亮度相加后自然出现 <span class="mono">|f₁−f₂|</span> 的拍频；<span class="mono">a+d = b+c</span> 作为校验条件，实时判 ✓ / ✗。</p>
 
@@ -547,11 +574,20 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
 <div class="cf">
   <div class="cfview">
-    <div class="cfcells" id="cfcells">
-      <div class="cfcell"></div><div class="cfcell"></div><div class="cfcell"></div><div class="cfcell"></div>
+    <div class="cfeyes">
+      <div class="cfpane" id="cfPaneL">
+        <div class="cfph">左眼 L<s>· 左旋</s></div>
+        <div class="cfpt" id="cfLt">—</div>
+        <canvas id="cfL"></canvas>
+      </div>
+      <div class="cfpane" id="cfPaneR">
+        <div class="cfph">右眼 R<s>· 右旋（镜像）</s></div>
+        <div class="cfpt" id="cfRt">—</div>
+        <canvas id="cfR"></canvas>
+      </div>
     </div>
-    <div class="cftag">屏幕模拟 · 非实测</div>
     <div class="cfhud" id="cfhud">未运行</div>
+    <div class="cftag">屏幕模拟 · 非实测</div>
   </div>
 
   <div class="cfpanel">
@@ -570,7 +606,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       <input type="range" id="cfFR" min="1" max="40" step="0.1" value="10">
     </div>
 
-    <div class="cffld" id="cfsq" style="display:none">
+    <div class="cffld wide" id="cfsq" style="display:none">
       <div class="cflab"><span>二阶方 a b / c d</span></div>
       <div class="cfnum">
         <input type="number" id="cfA" value="220" min="1" max="9999">
@@ -608,7 +644,28 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     </div>
 
     <div class="cffld">
-      <div class="cflab"><span>分区</span></div>
+      <div class="cflab"><span>幻视图案</span></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-pat="spiral">螺旋</button>
+        <button class="cfbtn" data-pat="target">同心圆</button>
+        <button class="cfbtn" data-pat="checker">棋盘</button>
+        <button class="cfbtn" data-pat="flat">平场</button>
+      </div>
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>旋向</span><b id="cfTURNv">左旋 / 右旋</b></div>
+      <div class="cfrow">
+        <button class="cfbtn on" data-turn="1">左旋</button>
+        <button class="cfbtn" data-turn="-1">右旋</button>
+        <button class="cfbtn on" id="cfMIR">右眼镜像</button>
+      </div>
+      <div class="cflab" style="margin-top:9px"><span>旋转速度</span><b id="cfROTv">18 °/s</b></div>
+      <input type="range" id="cfROT" min="0" max="90" step="1" value="18">
+    </div>
+
+    <div class="cffld">
+      <div class="cflab"><span>分区（每眼内部）</span></div>
       <div class="cfrow">
         <button class="cfbtn on" data-part="full">整屏</button>
         <button class="cfbtn" data-part="ud">上下</button>
@@ -622,7 +679,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       <input type="range" id="cfPH" min="0" max="270" step="90" value="180">
     </div>
 
-    <div class="cffld">
+    <div class="cffld span2">
       <div class="cflab"><span>三色配比</span></div>
       <div class="cfrow">
         <button class="cfbtn on" data-col="red">620 单色</button>
@@ -632,16 +689,16 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       <div class="cfsw"><i id="cfsw1"></i><span id="cfsw2">—</span></div>
     </div>
 
-    <label class="cfcheck">
+    <label class="cfcheck wide">
       <input type="checkbox" id="cfok">
       <span>我确认本人及同处一室者<strong>无癫痫、偏头痛、光敏史</strong>，并已把亮度调到舒适。</span>
     </label>
 
-    <div class="cfgo">
+    <div class="cfgo wide">
       <button class="cfbtn main" id="cfgo" disabled>开始</button>
       <button class="cfbtn" id="cfstop" disabled>停止</button>
     </div>
-    <div class="cfread" id="cfmeta" style="margin-top:9px">屏率待测 · 上限 3 分钟</div>
+    <div class="cfread wide" id="cfmeta">屏率待测 · 上限 3 分钟</div>
   </div>
 </div>
 
@@ -1115,61 +1172,150 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 <script>
 (function(){
   "use strict";
-  var box=document.getElementById('cfcells');
-  var cells=[].slice.call(box.children);
-  var hud=document.getElementById('cfhud');
   function el(id){ return document.getElementById(id); }
+  var hud=el('cfhud');
 
   var S={src:'free', fL:10, fR:10, wave:'sine', duty:0.5, br:1, part:'full',
-         col:'red', phase:180, run:false, paused:false, t:0, last:0,
-         rate:0, limit:180, sq:{a:220,b:189,c:252,d:221,base:6},
-         ph:[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]};
+         col:'red', phase:180, pat:'spiral', turn:1, mir:true, rot:18,
+         run:false, paused:false, t:0, last:0, rate:0, limit:180,
+         sq:{a:220,b:189,c:252,d:221,base:6},
+         ph:[[0,0],[0,0]]};
 
-  var AREA={full:['1/1/3/3'], ud:['1/1/2/3','2/1/3/3'],
-            lr:['1/1/3/2','1/2/3/3'], quad:['1/1/2/2','1/2/2/3','2/1/3/2','2/2/3/3']};
   var COL={red:[1,0.16,0.06], ra:[1,0.50,0.09], rac:[1,0.56,0.32]};
   var COLN={
     red:'620 nm 单色 · 0.12 W/眼 · 闭眼效力 100%',
     ra:'620 + 590 同电流 · 0.24 W/眼',
     rac:'620 : 590 : 505 电流 1 : 3.1 : 15.0 · 2.3 W/眼'
   };
+  var PARTN={full:'整屏',ud:'上下',lr:'左右',quad:'四象限'};
 
-  function layout(){
-    var a=AREA[S.part];
-    for(var i=0;i<4;i++){
-      if(i<a.length){ cells[i].style.display='block'; cells[i].style.gridArea=a[i]; }
-      else cells[i].style.display='none';
-    }
+  /* 每只眼内部的视场划分：[x,y,w,h,ch]，ch=0/1 取该眼第几路恒流，-1 = 两路平均 */
+  var REG={
+    full:[[0,0,1,1,-1]],
+    ud:  [[0,0,1,.5,0],[0,.5,1,1,1]],
+    lr:  [[0,0,.5,1,0],[.5,0,.5,1,1]],
+    quad:[[0,0,.5,.5,0],[.5,0,.5,.5,1],[0,.5,.5,1,1],[.5,.5,.5,1,0]]
+  };
+
+  /* ── 图案几何：log-polar 皮层映射 g = a·ln r + b·θ·turn，预存 cos/sin 省掉逐帧三角函数 ── */
+  var RW=132, RH=120;
+  var GEOM=[null,null];
+  var off=document.createElement('canvas'); off.width=RW; off.height=RH;
+  var octx=off.getContext('2d');
+  var img=octx.createImageData(RW,RH);
+  var dpr=Math.min(2, window.devicePixelRatio||1);
+
+  function setRes(w,h){
+    var rw=132, rh=Math.max(70, Math.min(300, Math.round(132*h/Math.max(1,w))));
+    if(rw===RW && rh===RH) return;
+    RW=rw; RH=rh; off.width=RW; off.height=RH;
+    img=octx.createImageData(RW,RH);
+    GEOM=[null,null];
   }
+
+  function buildGeom(eye){
+    var turn = (eye===0) ? S.turn : (S.mir ? -S.turn : S.turn);
+    var cw=new Float32Array(RW*RH), sw=new Float32Array(RW*RH), fd=new Float32Array(RW*RH);
+    var cx=(RW-1)/2, cy=(RH-1)/2, R=Math.min(RW,RH)/2;
+    for(var j=0;j<RH;j++){
+      for(var i=0;i<RW;i++){
+        var u=(i-cx)/R, v=(j-cy)/R;
+        var r=Math.sqrt(u*u+v*v), th=Math.atan2(v,u), k=j*RW+i, g=0;
+        if(S.pat==='spiral')      g = 5.4*Math.log(Math.max(r,0.05)) + 2*th*turn;
+        else if(S.pat==='target') g = 13.5*r;
+        else if(S.pat==='checker')g = Math.PI*((Math.floor((u+1)*2.4)+Math.floor((v+1)*2.4))%2);
+        cw[k]=Math.cos(g); sw[k]=Math.sin(g);
+        var f=1;
+        if(r>0.93) f=Math.max(0, 1-(r-0.93)/0.25);
+        fd[k]=(S.pat==='flat') ? 1 : f;
+      }
+    }
+    return {cw:cw, sw:sw, fd:fd};
+  }
+
+  function frame(eye, ctx, W, H, lv0, lv1, rotPhi){
+    var gm=GEOM[eye] || (GEOM[eye]=buildGeom(eye));
+    var c=Math.cos(rotPhi), s=Math.sin(rotPhi), cc=COL[S.col];
+    var d=img.data, cw=gm.cw, sw=gm.sw, fd=gm.fd;
+    var R8=Math.round(cc[0]*255), G8=Math.round(cc[1]*255), B8=Math.round(cc[2]*255);
+    for(var k=0,n=RW*RH;k<n;k++){
+      var g=(0.5+0.5*(cw[k]*c - sw[k]*s))*fd[k];
+      var o=k*4;
+      d[o]=R8*g; d[o+1]=G8*g; d[o+2]=B8*g; d[o+3]=255;
+    }
+    octx.putImageData(img,0,0);
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    var rs=REG[S.part];
+    for(var q=0;q<rs.length;q++){
+      var rr=rs[q];
+      var a = rr[4]===0 ? lv0 : (rr[4]===1 ? lv1 : (lv0+lv1)/2);
+      if(a<=0.003) continue;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(rr[0]*W, rr[1]*H, rr[2]*W, rr[3]*H); ctx.clip();
+      ctx.globalAlpha=Math.min(1,a);
+      ctx.imageSmoothingEnabled=true;
+      ctx.drawImage(off, 0,0, RW,RH, 0,0, W,H);
+      ctx.restore();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  /* ── 状态同步 ── */
   function kk(){
     var m=Math.max(1e-6, Math.abs(S.sq.a), Math.abs(S.sq.b), Math.abs(S.sq.c), Math.abs(S.sq.d));
     return S.sq.base/m;
   }
   function plan(){
-    var K=kk(), a=S.sq.a*K, b=S.sq.b*K, c=S.sq.c*K, d=S.sq.d*K;
-    var off=S.phase/360;
-    var o=[{fs:[],off:0},{fs:[],off:0},{fs:[],off:0},{fs:[],off:0}];
-    if(S.src==='sq'){
-      if(S.part==='full') o[0]={fs:[a,b,c,d],off:0};
-      else if(S.part==='quad'){
-        o[0]={fs:[a],off:0}; o[1]={fs:[b],off:off};
-        o[2]={fs:[c],off:0}; o[3]={fs:[d],off:off};
-      } else { o[0]={fs:[a,d],off:0}; o[1]={fs:[b,c],off:off}; }
-    } else {
-      if(S.part==='full') o[0]={fs:[S.fL,S.fR],off:0};
-      else if(S.part==='quad'){
-        o[0]={fs:[S.fL],off:0}; o[1]={fs:[S.fR],off:off};
-        o[2]={fs:[S.fR],off:off}; o[3]={fs:[S.fL],off:0};
-      } else { o[0]={fs:[S.fL],off:0}; o[1]={fs:[S.fR],off:off}; }
+    var K=kk(), a=S.sq.a*K, b=S.sq.b*K, c=S.sq.c*K, d=S.sq.d*K, off2=S.phase/360;
+    if(S.src==='sq') return [{fs:[a,d],off:0},{fs:[b,c],off:off2}];
+    return [{fs:[S.fL,S.fL],off:0},{fs:[S.fR,S.fR],off:off2}];
+  }
+  function labels(){
+    var P=plan();
+    for(var e=0;e<2;e++){
+      var f1=P[e].fs[0], f2=P[e].fs[1], txt;
+      if(Math.abs(f1-f2)<1e-9) txt=f1.toFixed(2)+' Hz';
+      else txt=f1.toFixed(2)+' + '+f2.toFixed(2)+' · 拍 '+Math.abs(f1-f2).toFixed(2)+' Hz';
+      el(e===0?'cfLt':'cfRt').textContent=txt;
     }
-    return o;
+    var lTurn=S.turn>0?'左旋':'右旋';
+    var rTurn=(S.mir ? (S.turn>0?'右旋':'左旋') : lTurn);
+    el('cfPaneL').querySelector('.cfph').innerHTML='左眼 L<s>· '+lTurn+'</s>';
+    el('cfPaneR').querySelector('.cfph').innerHTML='右眼 R<s>· '+rTurn+(S.mir?'（镜像）':'')+'</s>';
+    el('cfTURNv').textContent=lTurn+(S.mir?' / 镜像':' / 同向');
+  }
+  function fitCanvas(){
+    ['cfL','cfR'].forEach(function(id){
+      var c=el(id), w=Math.max(1,c.clientWidth), h=Math.max(1,c.clientHeight);
+      var bw=Math.round(w*dpr), bh=Math.round(h*dpr);
+      if(c.width!==bw||c.height!==bh){ c.width=bw; c.height=bh; }
+      if(id==='cfL') setRes(w,h);
+    });
+    drawIdle();
+  }
+  function drawIdle(){
+    if(S.run) return;
+    var lv=S.br*0.30, rot=2*Math.PI*(S.rot/360)*(S.t||0);
+    for(var e=0;e<2;e++){
+      var c=el(e===0?'cfL':'cfR');
+      frame(e, c.getContext('2d'), c.width, c.height, lv, lv, rot);
+    }
+  }
+  function layout(){
+    ['cfPaneL','cfPaneR'].forEach(function(id){
+      var p=el(id); p.className='cfpane';
+      if(S.part==='quad') p.className+=' seam';
+      else if(S.part==='ud') p.className+=' seamH';
+      else if(S.part==='lr') p.className+=' seamV';
+    });
+    labels(); drawIdle();
   }
   function fit(f){
     if(!S.rate) return {f:f, alg:1};
     var half=S.rate*0.45;
     if(f<=half) return {f:f, alg:1};
-    var n=Math.ceil(f/half);
-    return {f:f/n, alg:n};
+    return {f:f/Math.ceil(f/half), alg:Math.ceil(f/half)};
   }
   function wave(ph){
     var x=ph-Math.floor(ph);
@@ -1177,18 +1323,12 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(S.wave==='tri') return x<0.5 ? x*2 : (1-x)*2;
     return 0.5-0.5*Math.cos(2*Math.PI*x);
   }
-  function paint(){
-    var P=plan(), fade=Math.min(1, S.t/1.2), cc=COL[S.col];
-    for(var i=0;i<4;i++){
-      if(cells[i].style.display==='none') continue;
-      var p=P[i], sum=0, n=0;
-      for(var j=0;j<p.fs.length;j++){ sum+=wave((S.ph[i][j]||0)+p.off); n++; }
-      var v=(n?sum/n:0)*S.br*fade;
-      cells[i].style.background='rgb('+Math.round(cc[0]*255*v)+','+Math.round(cc[1]*255*v)+','+Math.round(cc[2]*255*v)+')';
-    }
-  }
   function black(){
-    for(var i=0;i<4;i++) cells[i].style.background='#000';
+    for(var e=0;e<2;e++){
+      var c=el(e===0?'cfL':'cfR');
+      var x=c.getContext('2d'); x.setTransform(1,0,0,1,0,0);
+      x.fillStyle='#000'; x.fillRect(0,0,c.width,c.height);
+    }
   }
   function fmt(t){
     var m=Math.floor(t/60), ss=Math.floor(t%60);
@@ -1199,9 +1339,9 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     function f(t){
       ts.push(t);
       if(ts.length<14){ requestAnimationFrame(f); return; }
-      var d=[]; for(var i=1;i<ts.length;i++) d.push(ts[i]-ts[i-1]);
-      d.sort(function(x,y){ return x-y; });
-      var med=d[Math.floor(d.length/2)];
+      var dd=[]; for(var i=1;i<ts.length;i++) dd.push(ts[i]-ts[i-1]);
+      dd.sort(function(x,y){ return x-y; });
+      var med=dd[Math.floor(dd.length/2)];
       S.rate = med>0 ? Math.round(1000/med) : 60;
       cb();
     }
@@ -1211,9 +1351,11 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(!el('cfok').checked) return;
     var go=function(){
       S.run=true; S.paused=false; S.t=0; S.last=0;
-      S.ph=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      S.ph=[[0,0],[0,0]];
+      GEOM=[null,null];
       el('cfgo').disabled=true; el('cfstop').disabled=false;
       el('cfmeta').textContent='屏率 ≈ '+S.rate+' Hz · 上限 '+fmt(S.limit);
+      hud.className='cfhud on';
       requestAnimationFrame(loop);
     };
     if(!S.rate){ el('cfmeta').textContent='正在测屏率…'; measure(go); }
@@ -1224,6 +1366,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     el('cfgo').disabled=!el('cfok').checked; el('cfstop').disabled=true;
     hud.className='cfhud';
     hud.textContent='已停止 · '+(S.rate?('屏率 ≈ '+S.rate+' Hz'):'未运行');
+    drawIdle();
   }
   function loop(ts){
     if(!S.run) return;
@@ -1232,17 +1375,19 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(dt>0.12) dt=0.12;
     if(!S.paused){
       S.t+=dt;
-      var P=plan();
-      for(var i=0;i<4;i++){
-        for(var j=0;j<P[i].fs.length;j++){
-          var ff=fit(P[i].fs[j]);
-          S.ph[i][j]=(S.ph[i][j]||0)+dt*ff.f;
+      var P=plan(), fade=Math.min(1, S.t/1.2), phi=2*Math.PI*(S.rot/360)*S.t;
+      for(var e=0;e<2;e++){
+        for(var j=0;j<2;j++){
+          S.ph[e][j]=(S.ph[e][j]||0)+dt*fit(P[e].fs[j]).f;
         }
+        var lv0=wave(S.ph[e][0]+P[e].off)*S.br*fade;
+        var lv1=wave(S.ph[e][1]+P[e].off)*S.br*fade;
+        var c=el(e===0?'cfL':'cfR');
+        frame(e, c.getContext('2d'), c.width, c.height, lv0, lv1, phi);
       }
-      paint();
-      var P2=plan(), main=P2[0].fs[0]||0, ff2=fit(main);
+      var ff2=fit(P[0].fs[0]||0);
       var alg=ff2.alg>1 ? (' · 谐波折衷 ×1/'+ff2.alg) : '';
-      hud.textContent=fmt(S.t)+' / '+fmt(S.limit)+' · '+ff2.f.toFixed(2)+' Hz · '+S.part+alg;
+      hud.textContent=fmt(S.t)+' / '+fmt(S.limit)+' · '+ff2.f.toFixed(2)+' Hz · '+PARTN[S.part]+alg;
       if(S.t>=S.limit){ stop(); return; }
     }
     requestAnimationFrame(loop);
@@ -1258,11 +1403,13 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       '右眼 '+b.toFixed(2)+' + '+c.toFixed(2)+' Hz　拍 '+Math.abs(b-c).toFixed(3)+'<br>'+
       'a+d = '+sA+'　b+c = '+sB+'　'+
       (ok?'<span class="ok">✔ 和相等</span>':'<span class="no">✘ 和不等</span>');
+    labels();
   }
   function swatch(){
     var r=COL[S.col];
     el('cfsw1').style.background='rgb('+Math.round(r[0]*255)+','+Math.round(r[1]*255)+','+Math.round(r[2]*255)+')';
     el('cfsw2').textContent=COLN[S.col]||'—';
+    if(!S.run) drawIdle();
   }
 
   /* ── 绑定 ── */
@@ -1290,16 +1437,23 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     el('cfsq').style.display  = S.src==='sq'?'block':'none';
     sqRead();
   });
-  grp('wave','wave');
+  grp('wave','wave', function(){ if(!S.run) drawIdle(); });
   grp('part','part', layout);
   grp('col','col', swatch);
   grp('sq','sq', sqRead);
+  grp('pat','pat', function(){ GEOM=[null,null]; layout(); });
+  grp('turn','turn', function(){ S.turn=+S.turn||1; GEOM=[null,null]; layout(); });
+  el('cfMIR').addEventListener('click', function(){
+    S.mir=!S.mir; this.classList.toggle('on', S.mir);
+    GEOM=[null,null]; layout();
+  });
 
-  el('cfFL').addEventListener('input', function(){ S.fL=+this.value; el('cfFLv').textContent=(+this.value).toFixed(1)+' Hz'; });
-  el('cfFR').addEventListener('input', function(){ S.fR=+this.value; el('cfFRv').textContent=(+this.value).toFixed(1)+' Hz'; });
+  el('cfFL').addEventListener('input', function(){ S.fL=+this.value; el('cfFLv').textContent=(+this.value).toFixed(1)+' Hz'; labels(); });
+  el('cfFR').addEventListener('input', function(){ S.fR=+this.value; el('cfFRv').textContent=(+this.value).toFixed(1)+' Hz'; labels(); });
   el('cfDUTY').addEventListener('input', function(){ S.duty=+this.value/100; el('cfDUTYv').textContent=this.value+' %'; });
-  el('cfBR').addEventListener('input', function(){ S.br=+this.value/100; el('cfBRv').textContent=this.value+' %'; });
+  el('cfBR').addEventListener('input', function(){ S.br=+this.value/100; el('cfBRv').textContent=this.value+' %'; drawIdle(); });
   el('cfPH').addEventListener('input', function(){ S.phase=+this.value; el('cfPHv').textContent=this.value+'°'; });
+  el('cfROT').addEventListener('input', function(){ S.rot=+this.value; el('cfROTv').textContent=this.value+' °/s'; drawIdle(); });
   el('cfBASE').addEventListener('input', function(){ S.sq.base=+this.value; el('cfBASEv').textContent=(+this.value).toFixed(1)+' Hz'; sqRead(); });
   ['cfA','cfB','cfC','cfD'].forEach(function(id,ix){
     el(id).addEventListener('input', function(){
@@ -1314,8 +1468,9 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   document.addEventListener('visibilitychange', function(){
     if(document.hidden && S.run){ S.paused=true; el('cfmeta').textContent='已暂停（切走标签页）· 回来点「开始」继续计时'; }
   });
+  window.addEventListener('resize', function(){ if(!S.run) fitCanvas(); });
 
-  layout(); sqRead(); swatch(); black();
+  layout(); sqRead(); swatch(); labels(); fitCanvas();
 })();
 </script>
 
