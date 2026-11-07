@@ -136,10 +136,36 @@
   .cfview:fullscreen .cftag,.cfview:-webkit-full-screen .cftag,.cfview.theater .cftag{display:none}
   .cfview:fullscreen .cffs,.cfview:-webkit-full-screen .cffs,.cfview.theater .cffs{bottom:11px;right:14px;font-size:12px;padding:5px 10px}
   .cfview.theater .cffs span{font-size:12px}
-  .cfpanel{border:1px solid var(--line);border-radius:4px;background:#fff;padding:14px 15px;font-size:13px;
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px 18px;align-items:start}
+  /* ── 铁律 189：一切可调参数进右侧「可拖动浮窗」，正文单栏满宽 ──
+     浮窗只改 left/top（right 置 auto），标题栏起拖，夹边界，右上角收起，
+     位置与收起态入 localStorage，标题栏双击归位，窄屏退化为底部抽屉。 */
+  .cfpanel{position:fixed;right:16px;top:76px;width:376px;z-index:900;
+    display:flex;flex-direction:column;max-height:calc(100vh - 92px);
+    border:1px solid var(--line);border-radius:5px;background:#fff;overflow:hidden;
+    box-shadow:0 14px 40px -18px rgba(14,38,48,.42);font-size:13px}
+  .cfphead{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:6px 6px 6px 11px;background:#f2f7f8;border-bottom:1px solid var(--line);
+    cursor:move;user-select:none;-webkit-user-select:none;touch-action:none;
+    font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .cfphead b{color:var(--ink2);font-weight:700;letter-spacing:.08em}
+  .cfphead .pwtgl{width:22px;height:22px;flex:0 0 auto;border:1px solid var(--line);background:#fff;
+    border-radius:3px;color:var(--ink2);cursor:pointer;font-size:13px;line-height:1;
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono)}
+  .cfphead .pwtgl:hover{border-color:#b9c8d2;background:#eef5f6}
+  .cfpanel.min{max-height:none}
+  .cfpanel.min .cfpbody{display:none}
+  .cfpbody{overflow-y:auto;overscroll-behavior:contain;padding:12px 13px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:12px 15px;align-items:start}
   .cfpanel .wide{grid-column:1/-1}
   @media(min-width:760px){.cfpanel .span2{grid-column:span 2}}
+  /* 浮窗按铁律浮在正文之上，正文不为它让宽；要看不挡就把浮窗拖开或收起 */
+  .cfpbody .cffld{min-width:0}
+  .cfpbody canvas{min-width:0;max-width:100%}
+  @media(max-width:1119px){
+    .cfpanel{left:10px!important;right:10px!important;top:auto!important;bottom:10px;
+      width:auto!important;max-height:54vh!important;border-radius:6px}
+    .cfphead{cursor:default}
+  }
   .cffld{margin-bottom:0}
   .cflab{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
   .cflab b{color:var(--ink);letter-spacing:0;font-size:11.5px}
@@ -160,6 +186,7 @@
   .cfgo{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
   .cfgo .main{flex:1;background:var(--teal);color:#fff;border:1px solid var(--teal);font-weight:700;padding:7px 10px;font-size:12.5px}
   .cfgo .main.stop{background:#8d2f28;border-color:#8d2f28}
+  .cfgo .cfkbd{flex:1 1 100%;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
   .cfcheck{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
   .cfcheck input{margin-top:3px;accent-color:var(--teal)}
   .cfsw{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:6px}
@@ -691,7 +718,12 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     </button>
   </div>
 
-  <div class="cfpanel">
+  <div class="cfpanel" id="cfPanel">
+    <div class="cfphead" id="cfPHead">
+      <b>参数 · 全部可调</b>
+      <button class="pwtgl" id="cfPTgl" type="button" aria-expanded="true" aria-label="收起参数面板" title="收起 / 展开（标题栏双击归位）">−</button>
+    </div>
+    <div class="cfpbody" id="cfPBody">
     <div class="cffld">
       <div class="cflab"><span>频率源</span></div>
       <div class="cfrow">
@@ -753,14 +785,27 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       <input type="range" id="cfBR" min="1" max="100" step="1" value="100">
     </div>
 
-    <div class="cffld">
+    <div class="cffld wide">
       <div class="cflab"><span>幻视图案</span></div>
       <div class="cfrow">
         <button class="cfbtn on" data-pat="spiral">螺旋</button>
         <button class="cfbtn" data-pat="target">同心圆</button>
         <button class="cfbtn" data-pat="checker">棋盘</button>
         <button class="cfbtn" data-pat="flat">平场</button>
+        <button class="cfbtn" data-pat="logcyc">对数摆线</button>
+        <button class="cfbtn" data-pat="duocyc">双摆线叠加</button>
       </div>
+    </div>
+
+    <div class="cffld wide" id="cfCYC" style="display:none">
+      <div class="cflab"><span id="cfCYCaL">摆线幅度分离 a</span><b id="cfCYCaV">1.00</b></div>
+      <input type="range" id="cfCYCa" min="0" max="1000" step="1" value="683">
+      <div class="cflab" style="margin-top:8px"><span id="cfCYCkL">螺旋扩张 k</span><b id="cfCYCkV">0.080</b></div>
+      <input type="range" id="cfCYCk" min="0" max="150" step="1" value="80">
+      <div class="cflab" style="margin-top:8px"><span id="cfCYCnL">摆线密度 N</span><b id="cfCYCnV">17</b></div>
+      <input type="range" id="cfCYCn" min="2" max="24" step="1" value="17">
+      <div class="cfread" id="cfCYCread" style="margin-top:7px">—</div>
+      <p class="cfhint" id="cfCYCtip">—</p>
     </div>
 
     <div class="cffld">
@@ -832,8 +877,10 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     <div class="cfgo wide">
       <button class="cfbtn main" id="cfgo" disabled>开始</button>
       <button class="cfbtn" id="cfstop" disabled>停止</button>
+      <span class="cfkbd">全屏后 <span class="kbd">空格</span> 暂停 / 继续</span>
     </div>
     <div class="cfread wide" id="cfmeta">屏率待测 · 上限 3 分钟</div>
+    </div>
   </div>
 </div>
 
@@ -1314,6 +1361,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
          col:'red', colR:'', gl:'none', pol:0, phase:180, pat:'spiral', turn:1, mir:true, rot:18,
          run:false, paused:false, t:0, last:0, rate:0, limit:180,
          sq:{a:220,b:189,c:252,d:221,base:6},
+         cyc:{logcyc:{a:1,k:0.08,n:17}, duocyc:{a:1,k:2,n:5}},
          ph:[[0,0],[0,0]]};
 
   /* 单色板：屏幕上用 sRGB 近似各单色波长的观感；蓝（470）已剔除 */
@@ -1354,15 +1402,108 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   var dpr=Math.min(2, window.devicePixelRatio||1);
 
   function setRes(w,h){
-    var rw=Math.max(132, Math.min(240, Math.round(w/5)));
-    var rh=Math.max(70, Math.min(360, Math.round(rw*h/Math.max(1,w))));
+    /* 摆线是「细线」图案，离屏分辨率不够时 1 px 线放大后成 4 px 粗带，
+       涡旋的层次全糊在一起 —— 所以这里比场模式要更高的底分辨率。 */
+    var rw=Math.max(160, Math.min(256, Math.round(w/3)));
+    var rh=Math.max(90, Math.min(360, Math.round(rw*h/Math.max(1,w))));
     if(rw===RW && rh===RH) return;
     RW=rw; RH=rh; off.width=RW; off.height=RH;
     img=octx.createImageData(RW,RH);
     GEOM=[null,null];
   }
 
+  /* ── 摆线族：这一族不是「条纹场」，是一条参数曲线，所以不能走 log-polar 相位
+     路子，得先把曲线采样成点、再把点盖成有宽度的线（距离场），存成静态灰阶遮罩。
+     只在切换图案 / 改参数 / 窗口尺寸变化时重算一次，运行中只做乘色。 */
+  function buildCurve(eye){
+    /* 旋向与镜像完全复用场模式的口径：左眼跟 turn，右眼镜像时取反。
+       曲线模式下「取反」= 水平翻转（x → −x），视觉上就是旋向反过来。 */
+    var sgn=(eye===0) ? S.turn : (S.mir ? -S.turn : S.turn);
+    var cx=(RW-1)/2, cy=(RH-1)/2, R=Math.min(RW,RH)/2;
+    var m1=new Float32Array(RW*RH), m2=null, TAU=Math.PI*2;
+    var c=S.cyc[S.pat] || S.cyc.logcyc;
+
+    function stamp(pts, m){
+      var rad=1.15, ir=Math.ceil(rad), rr=rad*rad, o, dx, dy, dd, v;
+      for(var i=0;i<pts.length;i++){
+        var X=cx+pts[i][0]*R, Y=cy+pts[i][1]*R;
+        var x0=Math.max(0,Math.floor(X)-ir), x1=Math.min(RW-1,Math.ceil(X)+ir);
+        var y0=Math.max(0,Math.floor(Y)-ir), y1=Math.min(RH-1,Math.ceil(Y)+ir);
+        for(var y=y0;y<=y1;y++){
+          dy=y-Y;
+          for(var x=x0;x<=x1;x++){
+            dx=x-X; dd=dx*dx+dy*dy;
+            if(dd>=rr) continue;
+            v=1-dd/rr; o=y*RW+x;
+            if(v>m[o]) m[o]=v;
+          }
+        }
+      }
+    }
+    /* 自适应细分：按「屏幕上的弦长」递归，弧长密的地方自动多采样，
+       稀疏的大弧自动少采样。这样 k 大时中心那一团不会把点数炸掉。 */
+    function sample(fn, t0, t1){
+      var pts=[], SEG=160;
+      function rec(ta,pa,tb,pb,dep){
+        if(pts.length>60000) return;
+        var dx=(pb[0]-pa[0])*R, dy=(pb[1]-pa[1])*R;
+        if(dx*dx+dy*dy<1.2 || dep>14){ pts.push(pb); return; }   /* 弦长 ≈1.1 px：再密就是给描边重复盖同一批像素 */
+        var tm=(ta+tb)*0.5, pm=fn(tm);
+        rec(ta,pa,tm,pm,dep+1); rec(tm,pm,tb,pb,dep+1);
+      }
+      var ta=t0, pa=fn(t0);
+      for(var i=1;i<=SEG;i++){
+        var tb=t0+(t1-t0)*i/SEG, pb=fn(tb);
+        rec(ta,pa,tb,pb,0); ta=tb; pa=pb;
+      }
+      return pts;
+    }
+
+    if(S.pat==='logcyc'){
+      /* x = (cos t + sin(Nt)/a)·e^{kt}   y = (sin t + cos(Nt)/a)·e^{kt}
+         和 calcplot3d 那张图同一个式子。e^{kt} 是归一化的锚：t=+T 处半径最大，
+         除以 e^{kT} 把外圈钉成 1；再除 (1+1/a) 让摆线瓣不越界。 */
+      var T=6*TAU, N=Math.max(2,Math.round(c.n)), a=Math.max(0.02,c.a), k=c.k;
+      var es=Math.exp(k*T)*(1+1/a);
+      var fn=function(t){
+        var e=Math.exp(k*t)/es;
+        return [ (Math.cos(t)+Math.sin(N*t)/a)*e*sgn,
+                 (Math.sin(t)+Math.cos(N*t)/a)*e ];
+      };
+      stamp(sample(fn,-T,T), m1);
+    } else {
+      /* 双摆线叠加：两条只差高频项的符号，N 与 N+k 节。
+         x = −cos t ± cos(Nt)·d   y = sin t + sin(Nt)·d   d = 1/(3a) */
+      var N1=Math.max(2,Math.round(c.n)), N2=N1+Math.round(c.k);
+      var dd=1/(3*Math.max(0.05,c.a)), sc=1+dd;
+      var f1=function(t){
+        return [ (-Math.cos(t)+Math.cos(N1*t)*dd)*sgn/sc,
+                 ( Math.sin(t)+Math.sin(N1*t)*dd)/sc ];
+      };
+      var f2=function(t){
+        return [ (-Math.cos(t)-Math.cos(N2*t)*dd)*sgn/sc,
+                 ( Math.sin(t)+Math.sin(N2*t)*dd)/sc ];
+      };
+      m2=new Float32Array(RW*RH);
+      stamp(sample(f1,0,TAU), m1);
+      stamp(sample(f2,0,TAU), m2);
+    }
+
+    /* 圆形视场暗角，和其余图案的边界一致 */
+    for(var j=0;j<RH;j++){
+      for(var i=0;i<RW;i++){
+        var u=(i-cx)/R, v=(j-cy)/R, r=Math.sqrt(u*u+v*v), idx=j*RW+i;
+        if(r>0.93){
+          var f=Math.max(0,1-(r-0.93)/0.25);
+          m1[idx]*=f; if(m2) m2[idx]*=f;
+        }
+      }
+    }
+    return {kind:'curve', ml:m1, mr:m2};
+  }
+
   function buildGeom(eye){
+    if(S.pat==='logcyc' || S.pat==='duocyc') return buildCurve(eye);
     var turn = (eye===0) ? S.turn : (S.mir ? -S.turn : S.turn);
     var cw=new Float32Array(RW*RH), sw=new Float32Array(RW*RH), fd=new Float32Array(RW*RH);
     var cx=(RW-1)/2, cy=(RH-1)/2, R=Math.min(RW,RH)/2;
@@ -1399,14 +1540,25 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
   function frame(eye, ctx, W, H, lv0, lv1, rotPhi){
     var gm=GEOM[eye] || (GEOM[eye]=buildGeom(eye));
-    var c=Math.cos(rotPhi), s=Math.sin(rotPhi);
     var cc=eyeCol(eye), F=lensF(eye), gg=lensG(eye);
-    var d=img.data, cw=gm.cw, sw=gm.sw, fd=gm.fd;
-    var R8=cc[0]*F[0]*gg*255, G8=cc[1]*F[1]*gg*255, B8=cc[2]*F[2]*gg*255;
-    for(var k=0,n=RW*RH;k<n;k++){
-      var g=(0.5+0.5*(cw[k]*c - sw[k]*s))*fd[k];
-      var o=k*4;
-      d[o]=R8*g; d[o+1]=G8*g; d[o+2]=B8*g; d[o+3]=255;
+    var d=img.data;
+    var R8=cc[0]*F[0]*gg*255, G8=cc[1]*F[1]*gg*255, B8=cc[2]*F[2]*gg*255, o, v, k, n;
+    if(gm.kind==='curve'){
+      /* 曲线是静态遮罩：亮度只做整体乘色，旋向靠绘制时旋转画布。
+         双摆线用同一光色的两档明度区分两条线（硬件是单色 LED，不引入第二色相）。 */
+      var ml=gm.ml, mr=gm.mr;
+      for(k=0,n=RW*RH;k<n;k++){
+        v=mr ? (ml[k]+mr[k]*0.58) : ml[k];
+        if(v>1) v=1;
+        o=k*4; d[o]=R8*v; d[o+1]=G8*v; d[o+2]=B8*v; d[o+3]=255;
+      }
+    } else {
+      var c=Math.cos(rotPhi), s=Math.sin(rotPhi);
+      var cw=gm.cw, sw=gm.sw, fd=gm.fd;
+      for(k=0,n=RW*RH;k<n;k++){
+        v=(0.5+0.5*(cw[k]*c - sw[k]*s))*fd[k];
+        o=k*4; d[o]=R8*v; d[o+1]=G8*v; d[o+2]=B8*v; d[o+3]=255;
+      }
     }
     octx.putImageData(img,0,0);
     ctx.setTransform(1,0,0,1,0,0);
@@ -1422,7 +1574,13 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       ctx.beginPath(); ctx.rect(rr[0]*W, rr[1]*H, rr[2]*W, rr[3]*H); ctx.clip();
       ctx.globalAlpha=Math.min(1,a);
       ctx.imageSmoothingEnabled=true;
-      ctx.drawImage(off, 0,0, RW,RH, dx,dy,dw,dh);
+      if(gm.kind==='curve'){
+        ctx.translate(dx+dw/2, dy+dh/2);
+        if(rotPhi) ctx.rotate(rotPhi);
+        ctx.drawImage(off, -dw/2, -dh/2, dw, dh);
+      } else {
+        ctx.drawImage(off, 0,0, RW,RH, dx,dy,dw,dh);
+      }
       ctx.restore();
     }
     ctx.globalAlpha=1;
@@ -1799,7 +1957,69 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(!S.run) drawIdle();
   });
   grp('sq','sq', sqRead);
-  grp('pat','pat', function(){ GEOM=[null,null]; layout(); });
+  /* ── 摆线族参数（a / k / N）：两个模式各存各的，切回来还是上次那组 ── */
+  var CYCL={logcyc:{a:[0.05,4], n:[2,24]}, duocyc:{a:[0.30,3], n:[2,24]}};
+  function curCyc(){ return S.cyc[S.pat] || S.cyc.logcyc; }
+  function a2v(a,L){ return Math.round(1000*Math.log(a/L[0])/Math.log(L[1]/L[0])); }
+  function v2a(v,L){ return L[0]*Math.pow(L[1]/L[0], v/1000); }
+  /* 曲线遮罩重建要采样几千个点，拖滑块时一帧最多做一次，避免连发卡顿 */
+  var rbPending=false;
+  function rebuildNow(){ GEOM=[null,null]; if(!S.run) drawIdle(); }
+  function rebuild(){
+    if(rbPending) return;
+    rbPending=true;
+    requestAnimationFrame(function(){ rbPending=false; rebuildNow(); });
+  }
+
+  function cycRead(){
+    if(S.pat!=='logcyc' && S.pat!=='duocyc') return;
+    var c=curCyc(), T=6*Math.PI*2;
+    el('cfCYCaV').textContent=c.a.toFixed(2);
+    el('cfCYCkV').textContent = (S.pat==='logcyc') ? c.k.toFixed(3)
+      : ((Math.round(c.k)>0?'+':'')+Math.round(c.k));
+    el('cfCYCnV').textContent = Math.round(c.n);
+    if(S.pat==='logcyc'){
+      var kT=c.k*T;
+      el('cfCYCread').innerHTML='外圈 / 中心半径比 <b>'+Math.exp(kT).toFixed(1)+'×</b>（e^'+kT.toFixed(2)+'）<br>'+
+        '6 圈基础螺旋 · 每圈 <b>'+Math.round(c.n)+'</b> 个摆线瓣'+
+        (Math.abs(c.a-1)<0.06
+          ? '<br><span class="ok">a = 1：两侧涡旋在中心对撞</span>'
+          : '<br><span class="no">a ≠ 1：对面涡旋不再对撞</span>');
+      el('cfCYCtip').innerHTML=
+        '<b>x = (cos t + sin(Nt)/a)·e<sup>kt</sup></b>　<b>y = (sin t + cos(Nt)/a)·e<sup>kt</sup></b>，'+
+        't ∈ [−6·2π, 6·2π] —— 和 calcplot3d 那张图是同一个式子。'+
+        '<br><b>a</b> 是摆线幅度分离：<b>a = 1</b> 时两条摆线的涡旋正好在中心相撞，憋出那个「黑洞」；a ≠ 1 就错开了。a 越小，高频项越强，环越密。'+
+        '<br><b>k</b> 是螺旋扩张：k = 0 只剩 6 个重叠的环；k 越大外圈甩得越开、中心缩成一团。'+
+        '<br><b>N</b> 是摆线密度：17 → 8 就是「水里的涡旋数量减少」。';
+    } else {
+      var N1=Math.round(c.n), N2=N1+Math.round(c.k), dd=1/(3*c.a);
+      el('cfCYCread').innerHTML='线 1 <b>'+N1+'</b> 节　线 2 <b>'+N2+'</b> 节（差 '+Math.round(c.k)+'）<br>'+
+        '幅度项 1/(3a) = <b>'+dd.toFixed(3)+'</b>'+
+        (Math.abs(c.a-1)<0.06 ? '<br><span class="ok">a = 1：两线等幅，几乎重合</span>' : '');
+      el('cfCYCtip').innerHTML=
+        '<b>x = −cos t ± cos(Nt)/(3a)</b>　<b>y = sin t + sin(Nt)/(3a)</b>，t ∈ [0, 2π]。两条曲线只差高频项的<b>符号</b>和节数。'+
+        '<br><b>a</b> 是两线幅度比：a = 1 等幅（两条几乎重合），偏离越大分得越开。'+
+        '<br><b>k</b> 是两线的节数差：k = 2 就是 5 节 / 7 节那一组。'+
+        '<br>本机屏幕是单色 LED，两条线用同一光色的两档明度区分 —— 不引入第二个色相。';
+    }
+  }
+  function cycSync(){
+    var on = (S.pat==='logcyc' || S.pat==='duocyc');
+    el('cfCYC').style.display = on ? 'block' : 'none';
+    if(!on) return;
+    var L=CYCL[S.pat], c=curCyc();
+    el('cfCYCaL').textContent = (S.pat==='logcyc') ? '摆线幅度分离 a' : '双线幅度比 a';
+    el('cfCYCkL').textContent = (S.pat==='logcyc') ? '螺旋扩张 k' : '双线节数差 k';
+    el('cfCYCnL').textContent = (S.pat==='logcyc') ? '摆线密度 N' : '基线节数 N';
+    el('cfCYCa').value = a2v(c.a, L.a);
+    el('cfCYCn').min=L.n[0]; el('cfCYCn').max=L.n[1]; el('cfCYCn').value=Math.round(c.n);
+    var ks=el('cfCYCk');
+    if(S.pat==='duocyc'){ ks.min=-4; ks.max=8; ks.step=1; ks.value=Math.round(c.k); }
+    else { ks.min=0; ks.max=150; ks.step=1; ks.value=Math.round(c.k*1000); }
+    cycRead();
+  }
+
+  grp('pat','pat', function(){ GEOM=[null,null]; cycSync(); layout(); });
   grp('turn','turn', function(){ S.turn=+S.turn||1; GEOM=[null,null]; layout(); });
   el('cfMIR').addEventListener('click', function(){
     S.mir=!S.mir; this.classList.toggle('on', S.mir);
@@ -1812,6 +2032,20 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   el('cfBR').addEventListener('input', function(){ S.br=+this.value/100; el('cfBRv').textContent=this.value+' %'; drawIdle(); });
   el('cfPH').addEventListener('input', function(){ S.phase=+this.value; el('cfPHv').textContent=this.value+'°'; });
   el('cfROT').addEventListener('input', function(){ S.rot=+this.value; el('cfROTv').textContent=this.value+' °/s'; drawIdle(); });
+  el('cfCYCa').addEventListener('input', function(){
+    var L=CYCL[S.pat]; if(!L) return;
+    curCyc().a = v2a(+this.value, L.a);
+    cycRead(); rebuild();
+  });
+  el('cfCYCk').addEventListener('input', function(){
+    var c=curCyc();
+    c.k = (S.pat==='duocyc') ? Math.round(+this.value) : (+this.value)/1000;
+    cycRead(); rebuild();
+  });
+  el('cfCYCn').addEventListener('input', function(){
+    curCyc().n = Math.round(+this.value);
+    cycRead(); rebuild();
+  });
   el('cfBASE').addEventListener('input', function(){ S.sq.base=+this.value; el('cfBASEv').textContent=(+this.value).toFixed(1)+' Hz'; sqRead(); });
   ['cfA','cfB','cfC','cfD'].forEach(function(id,ix){
     el(id).addEventListener('input', function(){
@@ -1826,7 +2060,12 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   document.addEventListener('visibilitychange', function(){
     if(document.hidden && S.run){ S.paused=true; el('cfmeta').textContent='已暂停（切走标签页）· 回来点「开始」继续计时'; }
   });
-  window.addEventListener('resize', function(){ drawWave(); if(!S.run) fitCanvas(); });
+  var rzT=0;
+  window.addEventListener('resize', function(){
+    drawWave();
+    clearTimeout(rzT);
+    rzT=setTimeout(function(){ if(!S.run) fitCanvas(); }, 130);   /* 曲线遮罩重建较慢，拖动窗口时防抖 */
+  });
 
   /* ── 一键全屏：优先原生 Fullscreen，被拒则退化为「剧场模式」 ── */
   var cfv=el('cfview'), fslbl=el('cfFSlbl');
@@ -1858,13 +2097,112 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   }
   el('cfFS').addEventListener('click', toggleFS);
   document.addEventListener('fullscreenchange', afterFS);
+
+  /* ── 空格 = 暂停 / 继续（全屏里尤其要用到，所以全局接管） ── */
+  function togglePause(){
+    if(!S.run){ start(); return; }
+    S.paused = !S.paused;
+    if(S.paused){
+      black();
+      hud.textContent = '已暂停 · '+fmt(S.t)+' / '+fmt(S.limit)+' · 空格继续';
+    } else {
+      S.last = 0;
+      hud.textContent = fmt(S.t)+' / '+fmt(S.limit);
+    }
+  }
+
   document.addEventListener('keydown', function(ev){
+    var sp = (ev.code==='Space' || ev.key===' ' || ev.key==='Spacebar');
+    if(sp){
+      var a=document.activeElement;
+      if(a && (a.tagName==='INPUT' || a.tagName==='TEXTAREA' || a.isContentEditable)) return;
+      /* 焦点在按钮上时，空格原本是「激活按钮」；一旦进全屏就一律让给暂停，
+         免得戴着眼镜一按把「停止」或「分档」误触了。 */
+      if(a && a.tagName==='BUTTON' && !isFS()) return;
+      ev.preventDefault();
+      togglePause();
+      return;
+    }
     if((ev.key==='Escape'||ev.key==='Esc') && cfv.classList.contains('theater')){
       cfv.classList.remove('theater'); afterFS();
     }
   });
 
-  layout(); sqRead(); swatch(); labels(); syncR(); wRead(); fitCanvas();
+  /* ── 参数浮窗：拖动 / 收起 / 记忆 / 双击归位（铁律 189） ──
+     只改 left/top，right 置 auto；拖出屏外要夹回来；窄屏退化为底部抽屉并忽略坐标。 */
+  (function(){
+    var win=el('cfPanel'), head=el('cfPHead'), tgl=el('cfPTgl');
+    var KP='paramwin.DDD-flash.pos', KC='paramwin.DDD-flash.min';
+    var drag=null, NARROW=1120;
+    function narrow(){ return window.innerWidth < NARROW; }
+    function clampTo(){
+      if(narrow()){
+        win.style.left=''; win.style.top=''; win.style.maxHeight=''; return;
+      }
+      if(!win.style.left) return;
+      var w=win.offsetWidth;
+      var L=Math.max(4, Math.min(window.innerWidth-w-4, parseFloat(win.style.left)||4));
+      var T=Math.max(4, Math.min(window.innerHeight-200, parseFloat(win.style.top)||4));
+      win.style.left=L+'px'; win.style.top=T+'px';
+      win.style.maxHeight=Math.max(200, window.innerHeight-T-8)+'px';
+    }
+    function save(){
+      try{
+        localStorage.setItem(KP, JSON.stringify({l:win.style.left||'', t:win.style.top||''}));
+        localStorage.setItem(KC, win.classList.contains('min')?'1':'0');
+      }catch(e){}
+    }
+    function setMin(v){
+      win.classList.toggle('min', v);
+      tgl.textContent = v ? '+' : '−';
+      tgl.setAttribute('aria-expanded', v ? 'false' : 'true');
+      tgl.setAttribute('aria-label', v ? '展开参数面板' : '收起参数面板');
+    }
+    tgl.addEventListener('click', function(e){
+      e.stopPropagation();
+      setMin(!win.classList.contains('min')); save();
+    });
+    head.addEventListener('pointerdown', function(e){
+      if(narrow() || e.target.closest('.pwtgl')) return;
+      var r=win.getBoundingClientRect();
+      win.style.right='auto';
+      win.style.left=r.left+'px'; win.style.top=r.top+'px';
+      drag={dx:e.clientX-r.left, dy:e.clientY-r.top};
+      try{ head.setPointerCapture(e.pointerId); }catch(x){}
+      e.preventDefault();
+    });
+    head.addEventListener('pointermove', function(e){
+      if(!drag) return;
+      var w=win.offsetWidth;
+      var L=Math.max(4, Math.min(window.innerWidth-w-4, e.clientX-drag.dx));
+      var T=Math.max(4, Math.min(window.innerHeight-200, e.clientY-drag.dy));
+      win.style.left=L+'px'; win.style.top=T+'px';
+      win.style.maxHeight=Math.max(200, window.innerHeight-T-8)+'px';
+    });
+    head.addEventListener('pointerup', function(e){
+      if(!drag) return;
+      drag=null;
+      try{ head.releasePointerCapture(e.pointerId); }catch(x){}
+      save();
+    });
+    head.addEventListener('pointercancel', function(){ drag=null; });
+    head.addEventListener('dblclick', function(e){
+      if(e.target.closest('.pwtgl')) return;
+      win.style.left=''; win.style.top=''; win.style.right=''; win.style.maxHeight='';
+      save();
+    });
+    window.addEventListener('resize', clampTo);
+    try{
+      var p=JSON.parse(localStorage.getItem(KP)||'null');
+      if(p && p.l && p.t && !narrow()){
+        win.style.right='auto'; win.style.left=p.l; win.style.top=p.t;
+        clampTo();
+      }
+      if(localStorage.getItem(KC)==='1') setMin(true);
+    }catch(e){}
+  })();
+
+  cycSync(); layout(); sqRead(); swatch(); labels(); syncR(); wRead(); fitCanvas();
 })();
 </script>
 
