@@ -18,9 +18,9 @@
     -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:960px;margin:0 auto;padding:64px 26px 110px}
-  header{border-bottom:2px solid var(--ink);padding-bottom:24px}
-  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
-  h1{font-size:31px;line-height:1.38;margin:0 0 12px;font-weight:700}
+  header{border-bottom:2px solid var(--ink);padding-bottom:18px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  h1{font-size:31px;line-height:1.38;margin:0 0 10px;font-weight:700}
   .sub{font-size:15.5px;color:var(--ink2);margin:0;max-width:700px}
   .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 18px}
   .meta span::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--teal);margin-right:7px;vertical-align:2px;opacity:.55}
@@ -101,6 +101,25 @@
   footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);line-height:2}
 
   /* ══ 屏幕试跑控制台 ══ */
+  /* ── 顶部试跑台：全幅出血，首屏就能跑 ──
+     正文仍是 960 居中单栏，只有这块脱出容器，好让两块眼屏做到 470 px 见方；
+     ≥1120 px 时右侧直接留出浮窗停靠位，眼屏永远不会被浮窗压住。 */
+  .cfhero{width:100%;padding:18px 26px 8px;background:#fff;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .cfhero .cf{max-width:1520px;margin:0 auto;gap:14px}
+  .cfhero .figcap{max-width:1520px;margin:12px auto 0}
+  @media(min-width:1120px){
+    .cfhero .cf{padding-right:404px}
+    .cfhero .figcap,.cfhero .cfintro{padding-right:404px}
+    .cfhero .cfview{height:min(50vh,440px)}
+  }
+  .wrap.top{padding-top:44px;padding-bottom:0}
+  /* 顶部文字块限宽，避免被右侧浮窗压住（浮窗 376 + 边距） */
+  .wrap.top > header,.wrap.top > h2,.wrap.top > .note{max-width:780px}
+  .wrap.cont{padding-top:34px}
+  .lead{font-size:15.5px;color:var(--ink2);margin:0 0 18px;max-width:760px}
+  h2.tight{margin-top:22px}
+  .cfintro{max-width:1520px;margin:10px auto 0;font-size:13.5px;color:var(--ink2)}
   .cf{display:grid;gap:14px;margin:20px 0 0}
   .cfview{position:relative;height:432px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
   .cfeyes{position:absolute;inset:0;display:flex;gap:8px;padding:6px 6px 30px;align-items:center;justify-content:center}
@@ -161,9 +180,11 @@
   /* 浮窗按铁律浮在正文之上，正文不为它让宽；要看不挡就把浮窗拖开或收起 */
   .cfpbody .cffld{min-width:0}
   .cfpbody canvas{min-width:0;max-width:100%}
+  /* 窄屏不再用盖住眼屏的底部抽屉：改为顺排在控制台下方，页面自己滚 */
   @media(max-width:1119px){
-    .cfpanel{left:10px!important;right:10px!important;top:auto!important;bottom:10px;
-      width:auto!important;max-height:54vh!important;border-radius:6px}
+    .cfpanel{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+      width:auto!important;max-height:none!important;border-radius:4px;box-shadow:none}
+    .cfpbody{overflow:visible}
     .cfphead{cursor:default}
   }
   .cffld{margin-bottom:0}
@@ -208,494 +229,26 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap top">
 
 <header>
   <p class="kicker">Build Sheet · 闭眼光刺激 · 2026-11</p>
   <h1>闭眼闪光眼罩：VR 外壳 + 最优三色 + 全视野漫射</h1>
-  <p class="sub">把「戴上去在眼前闪」做成一台能重复工作的设备。形态借 VR 头显，光学反过来做——去掉透镜，留一片漫射面。三色可用，但闭眼时三色的每瓦效力差 60 倍，配比必须先算清——算完的结论是 620 / 590 / 505，不是 RGB。</p>
+  
   <div class="meta">
     <span>三维可交互</span><span>全部内联 · 无依赖</span><span>剂量按眼睑照度算</span>
   </div>
 </header>
 
-<h2><span class="num">00</span>先给三条判断</h2>
-
-<div class="cards">
-  <div class="card">
-    <div class="t">Form</div>
-    <h4>VR 外壳要，VR 透镜不要</h4>
-    <p>头显的价值是密封、遮光、贴脸、配重平衡。但它的光学核心——把微屏成像到 1–2 m 外的透镜组——在这里是有害的：透镜会把 LED 聚成一点，在眼皮内侧打出热斑。闭眼要的是「一片匀光贴着睑」，不是「一个远处的像」。</p>
-  </div>
-  <div class="card">
-    <div class="t">Dose</div>
-    <h4>闭眼时每瓦效力 红 100 : 琥珀 32 : 青 6.7</h4>
-    <p>眼睑对 620 nm 透 7.5%，对 550 nm 只透 0.5%，对 470 nm 透 0.35%；再乘上 LED 自身的电光效率，「每瓦电买到多少闭眼视觉量」差 60 倍。所以「三原色混成白」在闭眼条件下不是调色问题，是功率问题。</p>
-  </div>
-  <div class="card">
-    <div class="t">Use</div>
-    <h4>三色的真正用处不是好看</h4>
-    <p>它能做一件单色做不到的事：<strong>等亮度色度闪烁</strong>——两色调到主观等亮后反相闪，亮度通道几乎不动，只驱动色通路。这是视觉神经科学的标准手段，也是这套三色灯珠唯一不可替代的用途。</p>
-  </div>
-</div>
-
-<h2><span class="num">01</span>三维结构</h2>
-
-<p>下面是单机全貌：外壳半透明，左右两个独立光通道，每通道七层。<strong>左通道展开成详图，右通道保持装配态淡显</strong>作对照——这一张里左右不是对称画法，是有意的。拖动旋转，滚轮缩放；三个按钮分别是<strong>爆炸</strong>（拉开层距）、<strong>剖面</strong>（只留左通道，去掉外壳与右通道）、<strong>光路</strong>（四颗灯珠各向扩散板四角发散的 16 束）。鼠标移到下方图例上，对应那一层会单独亮起并标出名字。</p>
-
-<div class="stage">
-  <canvas id="cv"></canvas>
-  <div class="tools">
-    <button id="bExp" class="on">爆炸</button>
-    <button id="bSec">剖面</button>
-    <button id="bOpt">光路</button>
-    <button id="bAuto" class="on">自动旋转</button>
-    <button id="bReset">复位</button>
-  </div>
-  <div class="hint">拖动旋转 · 滚轮缩放</div>
-</div>
-<ul class="legend" id="lg"></ul>
-
-<p class="figcap">尺寸单位 mm。单通道板面 62 × 52，眼距中心 ±33，外壳 152 × 86 × 46。层序自眼睑向外：面垫 → 遮光腔 20 → 扩散板 2 → 混光腔 12 → 铝基板 2 → 散热齿 6 → 后盖 2。图中央那块淡红的杏仁形是<strong>闭着的眼</strong>，用来定方向：它在哪一端，哪一端就贴脸。</p>
-
-<h3>为什么层序是这样</h3>
-
-<p>光从最外侧的灯板发出，要先在<strong>混光腔</strong>里走满 12 mm，让四颗灯珠、三个颜色在这个空腔里充分叠合；再穿过<strong>扩散板</strong>变成面光；最后留 <strong>20 mm 的遮光腔</strong>。最后这段最容易被省掉，但它有三个作用：</p>
-
-<table>
-  <thead><tr><th style="width:22%">留 20 mm 的作用</th><th>不这么做的后果</th></tr></thead>
-  <tbody>
-    <tr><td><b>看不见灯珠结构</b></td><td>扩散板贴着眼皮，四颗灯珠的位置会以亮斑形式被直接看到，「整片视野均匀亮」的前提就没了</td></tr>
-    <tr><td><b>填满视野</b></td><td>离眼太近时，发光面张角不足，只有中央视野被照到，而全视野刺激的诱发强度显著高于小视场</td></tr>
-    <tr><td><b>容下睫毛与眼动</b></td><td>睁眼模式下睫毛会扫到扩散板；闭眼时眼睑也会随眼球转动微微鼓起</td></tr>
-  </tbody>
-</table>
+<h2 class="tight"><span class="num">00</span>现在就能跑：屏幕试跑台</h2>
 
 <div class="note warn">
-  <h5>闭眼反而放宽了一件事</h5>
-  <p>眼睑本身就是一层强散射体（皮肤 + 肌肉 + 结膜，透射率只有百分之几，其余全被散射）。这意味着<strong>闭眼时对扩散板的均匀性要求比睁眼低得多</strong>——细微的亮度不均会被眼睑抹平。真正要防的不是「花纹」，而是<strong>局部过热点</strong>：一个 10 mm 的热区在闭眼时会被感知成「一侧更亮」，比均匀地暗更难受，也更难标定剂量。</p>
+  <p><b>开始之前</b>　8–30 Hz 属光敏性癫痫敏感区，<strong>无病史也可能首次诱发</strong>；默认已压到 10 Hz 以下，勾选确认后才启动，3 分钟自动停，切走标签页自动暂停。</p>
 </div>
 
-<h2><span class="num">02</span>三色的剂量账：最优三色是算出来的</h2>
-
-<p>这一节是整台机器最反直觉的地方，也是「高亮三原色」这个想法必须先过的一关。三色的权重不是「红好一点」，而是<strong>差 60 倍</strong>。这一节把这个数算透，然后给出真正该买的三条波长——结论和直觉、和市面上的 RGB 套件都不一样。</p>
-
-<h3>第一步：眼睑透射 × 视见函数</h3>
-
-<p>光要过两层才变成「看见」：一是眼睑的透射率 T(λ)（客观光度法实测），二是视网膜的视见函数 V(λ)（CIE 1924 明视觉）。两者相乘，就是同样辐射通量下「闭眼到底看见多少」：</p>
-
-<table>
-  <thead>
-    <tr><th>通道</th><th>波长</th><th>眼睑透射 T</th><th>视见函数 V(λ)</th><th>T · V</th><th>相对</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><b>红</b></td><td class="num-cell">630 nm</td><td class="num-cell">9.0 %</td><td class="num-cell">0.265</td><td class="num-cell">0.0239</td><td class="num-cell ok">100</td></tr>
-    <tr><td><b>绿</b></td><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.0050</td><td class="num-cell">21</td></tr>
-    <tr><td><b>蓝</b></td><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.0008</td><td class="num-cell hi">3.5</td></tr>
-  </tbody>
-</table>
-
-<p class="figcap">眼睑透射率取自客观光度法文献值；个体差异很大（肤色、眼睑厚度、年龄），实测范围可差 2–3 倍，但<strong>红 ≫ 绿 &gt; 蓝 的次序是稳定的</strong>。</p>
-
-<p>只看这一栏，很容易得出两个「常识」：红压倒性有效、绿还剩两成、蓝可以扔。但这一步漏了第三个数——<strong>LED 自己并不把电全部变成光</strong>。</p>
-
-<h3>第二步：乘上 LED 的电光效率，答案就变了</h3>
-
-<p>每瓦电出多少瓦辐射，叫 <b>WPE</b>，它随波长强烈变化：蓝光 InGaN 现在能做到 40–50%，而 550–590 nm 的黄绿正是著名的「<strong>绿光鸿沟</strong>」，只有 20% 上下。三条曲线乘起来，才是真正的<strong>每瓦电买到多少闭眼视觉量</strong>：</p>
-
-<div class="eq">η(λ) = WPE(λ) × T(λ) × V(λ)</div>
-
-<table>
-  <thead>
-    <tr><th>波长</th><th>眼睑透射 T</th><th>V(λ)</th><th>WPE</th><th style="text-transform:none">η × 10⁻⁴</th><th>相对峰值</th><th></th></tr>
-  </thead>
-  <tbody>
-    <tr><td class="num-cell">470 nm</td><td class="num-cell">0.35 %</td><td class="num-cell">0.091</td><td class="num-cell">0.43</td><td class="num-cell">1.36</td><td class="num-cell hi">1.6 %</td><td>蓝</td></tr>
-    <tr><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.40</td><td class="num-cell">3.33</td><td class="num-cell hi">3.9 %</td><td>青蓝</td></tr>
-    <tr><td class="num-cell">505 nm</td><td class="num-cell">0.42 %</td><td class="num-cell">0.407</td><td class="num-cell">0.33</td><td class="num-cell">5.70</td><td class="num-cell">6.7 %</td><td>青</td></tr>
-    <tr><td class="num-cell">520 nm</td><td class="num-cell">0.45 %</td><td class="num-cell">0.710</td><td class="num-cell">0.29</td><td class="num-cell">9.27</td><td class="num-cell">10.8 %</td><td>绿</td></tr>
-    <tr><td class="num-cell">530 nm</td><td class="num-cell">0.47 %</td><td class="num-cell">0.862</td><td class="num-cell">0.28</td><td class="num-cell">11.12</td><td class="num-cell">13.0 %</td><td>绿</td></tr>
-    <tr><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.26</td><td class="num-cell">12.69</td><td class="num-cell">14.8 %</td><td>绿（V 最高，但没用）</td></tr>
-    <tr><td class="num-cell">570 nm</td><td class="num-cell">0.62 %</td><td class="num-cell">0.952</td><td class="num-cell">0.23</td><td class="num-cell">13.43</td><td class="num-cell">15.7 %</td><td>黄绿</td></tr>
-    <tr><td class="num-cell">590 nm</td><td class="num-cell">1.80 %</td><td class="num-cell">0.757</td><td class="num-cell">0.20</td><td class="num-cell">27.25</td><td class="num-cell ok">31.8 %</td><td><b>琥珀 ← 选它</b></td></tr>
-    <tr><td class="num-cell">600 nm</td><td class="num-cell">3.20 %</td><td class="num-cell">0.631</td><td class="num-cell">0.22</td><td class="num-cell">44.42</td><td class="num-cell">51.8 %</td><td>琥珀红</td></tr>
-    <tr><td class="num-cell">610 nm</td><td class="num-cell">5.50 %</td><td class="num-cell">0.503</td><td class="num-cell">0.26</td><td class="num-cell">71.93</td><td class="num-cell">83.9 %</td><td>红</td></tr>
-    <tr style="background:#f2f8f7"><td class="num-cell"><b>620 nm</b></td><td class="num-cell">7.50 %</td><td class="num-cell">0.381</td><td class="num-cell">0.30</td><td class="num-cell">85.73</td><td class="num-cell ok"><b>100 %</b></td><td><b>峰值 ← 剂量通道</b></td></tr>
-    <tr><td class="num-cell">625 nm</td><td class="num-cell">8.22 %</td><td class="num-cell">0.321</td><td class="num-cell">0.32</td><td class="num-cell">84.39</td><td class="num-cell">98.4 %</td><td>红（最好买）</td></tr>
-    <tr><td class="num-cell">630 nm</td><td class="num-cell">9.00 %</td><td class="num-cell">0.265</td><td class="num-cell">0.34</td><td class="num-cell">81.09</td><td class="num-cell">94.6 %</td><td>红</td></tr>
-    <tr><td class="num-cell">640 nm</td><td class="num-cell">10.50 %</td><td class="num-cell">0.175</td><td class="num-cell">0.36</td><td class="num-cell">66.15</td><td class="num-cell">77.2 %</td><td>深红</td></tr>
-    <tr><td class="num-cell">650 nm</td><td class="num-cell">12.00 %</td><td class="num-cell">0.107</td><td class="num-cell">0.38</td><td class="num-cell">48.79</td><td class="num-cell">56.9 %</td><td>深红</td></tr>
-    <tr><td class="num-cell">660 nm</td><td class="num-cell">13.00 %</td><td class="num-cell">0.061</td><td class="num-cell">0.38</td><td class="num-cell">30.13</td><td class="num-cell hi">35.2 %</td><td>深红（透射最高，效率却最差之一）</td></tr>
-    <tr><td class="num-cell">680 nm</td><td class="num-cell">14.20 %</td><td class="num-cell">0.017</td><td class="num-cell">0.36</td><td class="num-cell">8.69</td><td class="num-cell hi">10.1 %</td><td>不可见边缘</td></tr>
-  </tbody>
-</table>
-
-<svg class="chart" viewBox="0 0 680 300" role="img" aria-label="闭眼效力曲线：η 随波长变化，峰值在 620 nm，610–630 为最优窗口">
-  <defs>
-    <linearGradient id="gEta" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0f6f66" stop-opacity=".20"/>
-      <stop offset="1" stop-color="#0f6f66" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-
-  <rect x="436" y="32" width="51" height="218" fill="#a33a32" opacity=".06"/>
-  <text x="461" y="20" text-anchor="middle" font-size="9.5" font-family="ui-monospace,monospace" fill="#a33a32">最优窗口 610–630</text>
-
-  <g stroke="#eef2f5" stroke-width="1">
-    <line x1="56" y1="250" x2="664" y2="250"/>
-    <line x1="56" y1="145" x2="664" y2="145"/>
-    <line x1="56" y1="40"  x2="664" y2="40"/>
-  </g>
-  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
-    <text x="46" y="254" text-anchor="end">0</text>
-    <text x="46" y="149" text-anchor="end">50</text>
-    <text x="46" y="44"  text-anchor="end">100</text>
-  </g>
-
-  <path d="M81,250 L81,246.6 L132,241.8 L170,235.9 L208,227.3 L233,222.7 L284,218.9 L335,217 L385,183.2 L411,141.2 L436,73.8 L461,40 L474,43.4 L487,51.3 L512,87.9 L563,176.1 L613,228.8 L613,250 Z"
-        fill="url(#gEta)"/>
-  <polyline points="81,246.6 132,241.8 170,235.9 208,227.3 233,222.7 284,218.9 335,217 385,183.2 411,141.2 436,73.8 461,40 474,43.4 487,51.3 512,87.9 563,176.1 613,228.8"
-            fill="none" stroke="#0f6f66" stroke-width="2"/>
-
-  <circle cx="170" cy="235.9" r="3" fill="#0f6f66"/>
-  <circle cx="284" cy="218.9" r="3" fill="#0f6f66"/>
-  <circle cx="385" cy="183.2" r="3.5" fill="#0f6f66"/>
-  <circle cx="461" cy="40" r="4.5" fill="#a33a32"/>
-  <circle cx="563" cy="176.1" r="3.5" fill="#a33a32"/>
-  <circle cx="613" cy="228.8" r="3" fill="#c0504a"/>
-
-  <g font-size="10.5" font-family="ui-monospace,monospace" fill="#3c4d58">
-    <text x="461" y="33" text-anchor="middle" fill="#a33a32" font-weight="700">620</text>
-    <text x="170" y="226" text-anchor="middle">505 青 6.7</text>
-    <text x="284" y="209" text-anchor="middle">550 绿 15</text>
-    <text x="370" y="172" text-anchor="end">590 琥珀 32</text>
-    <text x="590" y="192" text-anchor="start" fill="#a33a32">660 深红 35</text>
-  </g>
-
-  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
-    <text x="81"  y="268" text-anchor="middle">470</text>
-    <text x="208" y="268" text-anchor="middle">520</text>
-    <text x="335" y="268" text-anchor="middle">570</text>
-    <text x="461" y="268" text-anchor="middle">620</text>
-    <text x="563" y="268" text-anchor="middle">660</text>
-    <text x="664" y="268" text-anchor="middle">700</text>
-    <text x="664" y="286" text-anchor="end" fill="#16222b">波长 nm</text>
-    <text x="56"  y="286" text-anchor="start">相对闭眼效力 η（峰值 = 100）</text>
-  </g>
-</svg>
-
-<p class="figcap">曲线的形状是三件事叠出来的：<strong>眼睑透射随波长单调上升</strong>（450 → 700 nm 从 0.3% 涨到 14.5%），<strong>视见函数在 555 nm 见顶后陡降</strong>，<strong>WPE 在绿光鸿沟处凹陷</strong>。上升的与下降的在这里交叉，极值落在 620 nm 附近；610–630 整段都在 84% 以上，所以实际采购按能买到的功率档选就行，差异小于个体眼睑差异。</p>
-
-<div class="note warn">
-  <h5>最容易踩的坑：以为「深红穿透力最强，所以效率最高」</h5>
-  <p>660 nm 的眼睑透射率 13.0%，确实比 620 nm 的 7.5% 高 73%；680 nm 更是 14.2%，几乎最高。但它们落在视见函数的尾巴上（V = 0.061 / 0.017），乘积反而只剩峰值的 <b>35% / 10%</b>。波长再往长走，透射率涨得越来越慢（趋于 15% 的天花板），V 却按对数往下掉——<strong>于是「最深的红」恰恰是「最不划算的红」</strong>。这一条对做植物灯的人反过来，因为植物看的是 PPFD 不看 V(λ)。</p>
 </div>
 
-<h3>第三步：两色配对，要付多少倍功率</h3>
-
-<p>三色唯一的不可替代用途是<strong>等亮度色度闪烁</strong>（见下一节 C 模式）：两色调到主观等亮、反相闪，亮度通道几乎不动。要等亮，非红那一色就得付功率。以 620 nm 为基准，各候选波长需要的电功率倍数是 η 的倒数：</p>
-
-<table>
-  <thead>
-    <tr><th style="text-transform:none">与 620 nm 配成等亮度</th><th>需付功率</th><th>判断</th></tr>
-  </thead>
-  <tbody>
-    <tr><td class="num-cell">650 nm 深红</td><td class="num-cell ok">1.8 ×</td><td>最便宜的配对，但色差也最小——两个都是红，色度闪烁会很弱</td></tr>
-    <tr><td class="num-cell">660 nm 深红</td><td class="num-cell">2.8 ×</td><td>同上，色差稍大一点；注意它<b>只作为配对</b>才划算，作剂量通道只剩 35%</td></tr>
-    <tr><td class="num-cell"><b>590 nm 琥珀</b></td><td class="num-cell ok"><b>3.1 ×</b></td><td><b>最便宜的「真异色」配对 ← 选它</b></td></tr>
-    <tr><td class="num-cell">550 nm 绿</td><td class="num-cell">6.8 ×</td><td>贵一倍，色差不算大，不值得</td></tr>
-    <tr><td class="num-cell"><b>505 nm 青</b></td><td class="num-cell">15.0 ×</td><td>等亮很贵，但<b>按 10% 亮度用只多花 1.5 ×</b>，作「短波到底有没有用」的对照完全付得起 ← 选它</td></tr>
-    <tr><td class="num-cell">470 nm 蓝</td><td class="num-cell hi">63 ×</td><td>比 505 青还贵 4 倍，且青才是红的对手色。蓝没有理由</td></tr>
-  </tbody>
-</table>
-
-<div class="note">
-  <h5>所以三色这样定：620 / 590 / 505，都落在「能穿眼睑」的窗口里</h5>
-  <p><b>620 nm = 剂量通道</b>（主模式只开它一路，占总功率 100%；三色同开时剂量也主要由它给）：η 峰值，闭眼时每瓦电买到的视觉量最高，也是唯一能用「眼睑照度」直接标定剂量的通道。625 nm 是同一档里最好买的规格（98.4%，差别在噪声内）。</p>
-  <p><b>590 nm 琥珀 = 暖端色相</b>：把橙红扳向琥珀，等亮度代价 3.1 倍，是所有「非红」通道里最便宜的一个。</p>
-  <p><b>505 nm 青 = 冷端对照</b>：红的最佳对手色（互补），比 470 蓝亮 4.2 倍；按低亮度用代价很小。它的价值是<strong>证明短波在闭眼条件下到底有没有用</strong>——这是个真实验，不是摆设。</p>
-  <p><b>不要买：</b>660 / 680 深红当剂量（只剩 35% / 10%）、550 绿（15%）、470 蓝（1.6%，被 505 青全面碾压）。</p>
-</div>
-
-<h3>换成这套三色，功率账变成什么样</h3>
-
-<p>仍以眼睑照度 3000 lux、单眼发光面 30 × 25 mm、扩散板 70% × 几何 60% 计。红单色 0.030 W 辐射 ≈ 0.12 W 电，作为基准：</p>
-
-<table>
-  <thead>
-    <tr><th>方案</th><th style="text-transform:none">620 nm 红</th><th style="text-transform:none">590 nm 琥珀</th><th style="text-transform:none">505 nm 青</th><th>电功率（单眼）</th><th>双眼</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><b>纯红单色</b></td><td class="num-cell">0.030 W</td><td class="num-cell">—</td><td class="num-cell">—</td><td class="num-cell ok">0.12 W</td><td class="num-cell">0.24 W</td></tr>
-    <tr><td><b>红 + 琥珀</b>（同电流）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.020 W</td><td class="num-cell">—</td><td class="num-cell">0.24 W</td><td class="num-cell">0.48 W</td></tr>
-    <tr><td><b>三色等亮度</b>（实验）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.063 W</td><td class="num-cell">0.501 W</td><td class="num-cell hi">2.3 W</td><td class="num-cell hi">4.6 W</td></tr>
-    <tr><td><s>老 RGB 三色等亮度</s></td><td class="num-cell">0.030 W</td><td class="num-cell">0.142 W</td><td class="num-cell">0.848 W</td><td class="num-cell">4.1 W</td><td class="num-cell">8.2 W</td></tr>
-  </tbody>
-</table>
-
-<p class="figcap">辐射通量比 红 : 琥珀 : 青 = <span class="mono">1 : 2.10 : 16.7</span>，换成驱动电流比约 <span class="mono">1 : 3.1 : 15.0</span>（因为三色 WPE 不同）。老 RGB 那行按 630 : 550 : 490 的 <span class="mono">1 : 4.79 : 28.7</span> 反解。</p>
-
-<p>换成 620 / 590 / 505 之后，三色等亮度混合的电功率从 <strong>8.2 W 降到 4.6 W</strong>——省下的是绿光鸿沟和深蓝这两笔冤枉钱。但请注意倍数：即便优化到底，<strong>三色等亮度混合仍然比纯红贵 19 倍</strong>。这才是真正的结论——不是「三色配比怎么调」，而是<strong>「闭眼条件下三色混白永远不划算，主模式必须是红单色」</strong>。</p>
-
-<div class="note warn">
-  <h5>更正：上一版这里写的「绿 = 色相通道，几十毫瓦就能扳到暖白」是错的</h5>
-  <p>按上面的 η 表，550 nm 绿每瓦只能买到 620 nm 红的 <b>15%</b>；要和红等亮，绿得付 <b>6.8 倍</b>电功率，不是几十毫瓦。而且它扳不到白——红加绿混出来的是黄，要凑到白得让短波出八成以上的功率。绿在这里<strong>既贵、又到不了目的地</strong>。真正的暖端色相通道是 590 琥珀，不是 550 绿。</p>
-</div>
-
-<div class="note">
-  <h5>三色定案带来两个副作用（都是好事）</h5>
-  <p><b>一、波长都落在 505–620 nm，外壳、层序、光路一根线都不用改。</b>下图那张三维图与波长无关——它画的是机械形态，换波长只改灯珠型号与驱动电流。</p>
-  <p><b>二、620 与 590 都是 AlGaInP，正向压降几乎一样（2.0–2.2 V）。</b>老 RGB 方案里绿蓝要 3.0–3.4 V、红只要 2.1 V，逼着电源做两档；现在只有 505 青一路需要高一点（约 3.2 V），电源简单一档。</p>
-</div>
-
-<h2><span class="num">03</span>三色能做的四件事</h2>
-
-<table>
-  <thead><tr><th style="width:20%">模式</th><th style="width:26%">驱动方式</th><th>有什么用 / 代价</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><b>A 单色红闪</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">推荐主线</span></td>
-      <td>只驱动 620 nm，8–13 Hz 方波</td>
-      <td>功率最低（0.1 W 级）、剂量最好标定、暗相能做到真黑。这是把机器做「准」的基线配置，先把它调到可重复，再谈颜色。</td>
-    </tr>
-    <tr>
-      <td><b>B 三色同步</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">拟白</span></td>
-      <td>620 : 590 : 505 按 1 : 2.1 : 16.7 辐射比（电流约 1 : 3.1 : 15.0）</td>
-      <td>观感最接近「暖白闪烁」，但仍要 2.3 W/眼，其中 505 青吃掉 65% 的功率。适合短时实验，不适合长时间连续运行。</td>
-    </tr>
-    <tr>
-      <td><b>C 异色反相</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">等亮度色度闪烁</span></td>
-      <td>620 与 590 反相方波（要更强的色差就换 620 与 505）</td>
-      <td><strong>三色唯一不可替代的用法。</strong>亮度通道几乎不调制，只驱动色通路，可与「亮度闪烁」做对照实验。前提是先做等亮度标定（见下），否则会混入亮度成分，实验就白做了。</td>
-    </tr>
-    <tr>
-      <td><b>D 色轮</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">观赏</span></td>
-      <td>620 → 590 → 505 依次点亮，每色 1/3 周期</td>
-      <td>观感最花，但每一色的绝对亮度只有 1/3，且三色不等权会让「轮流」实际变成「红—暗—暗」。只适合低强度把玩。</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>等亮度点怎么标定（C 模式的前提）</h3>
-
-<p>「620 和 590 一样亮」不是查表能得到的，必须对具体的人、具体的波长实测。标准做法是 <strong>异色闪烁光度法</strong>（heterochromatic flicker photometry, HFP）：</p>
-
-<ol class="steps">
-  <li><b>把两色以同一频率反相闪烁</b>（约 12–15 Hz 最好，此时亮度通路响应远快于色通路）。620 与 590 这一对色差小，闪烁感会很难消到零——这正是它「不干扰亮度通道」的优点，也是它「实验信号弱」的缺点。要强信号就换 620 与 505，但标定时对面那路要开大 15 倍。</li>
-  <li><b>受试者只调一个旋钮</b>——琥珀（或青）通道的电流，直到闪烁感「消失」或降到最弱。闪烁消失的那一刻，两条通路的亮度贡献相等。</li>
-  <li><b>记录该点的两路电流比</b>，写进固件作为该用户的等亮度常数。</li>
-  <li><b>换人必须重标。</b>这个比值因人而异（黄斑色素密度、晶状体黄化、年龄都会改），差 30% 是常事。</li>
-</ol>
-
-<div class="note">
-  <p>闭眼条件下这一步会变难：眼睑把两色的光谱都「红移」了一点，短波那一路的有效亮度被压得更低，等亮度点会往短波侧大幅偏移——620 与 505 的理论比值是 15.0，实测常落在 10–25 之间。所以<strong>标定必须在闭眼、装机、最终亮度下做</strong>，不能在台面上睁眼标完就装进去。</p>
-</div>
-
-<h2><span class="num">04</span>电气：三通道独立恒流</h2>
-
-<p>三种颜色必须<strong>三路独立恒流</strong>，不能共用一个限流电阻，也不能用串联降压。理由有两个，第二个更硬：</p>
-
-<p><b>一是电流差得太远。</b>按上一节的等亮度比，620 : 590 : 505 的驱动电流是 <span class="mono">1 : 3.1 : 15.0</span>，共一路必然一路过流、两路欠流。</p>
-
-<p><b>二是压降这一关虽然变容易了，但并联仍然不行。</b>620 与 590 都是 AlGaInP，Vf 几乎一样（2.0–2.2 V）——这是换成 620/590/505 之后白捡的好处：老 RGB 方案里红 2.1 V、绿蓝 3.0–3.4 V，逼着电源做两档；现在只有 505 青一路要 3.2 V 左右，5 V 单档就够。但「Vf 相同」不等于「能并联」：AlGaInP 的 Vf 有约 −2 mV/K 的负温度系数，并联时谁先热谁抢电流，最终热失控。所以三路恒流不能省，省下来的只是电源档位。</p>
-
-<table>
-  <thead><tr><th style="width:20%">环节</th><th style="width:30%">选型</th><th>要点</th></tr></thead>
-  <tbody>
-    <tr><td>主控</td><td>ESP32-S3 / Teensy 4.x / STM32</td><td>需要至少 3 路独立硬件 PWM 通道，且同一时基——三色反相要求通道之间相位严格对齐</td></tr>
-    <tr><td>恒流</td><td>三片 AMC7135（350 mA）或三路运放 + MOSFET 恒流</td><td>恒流而非恒压：电池掉压时亮度不能变，幻觉强度对亮度敏感</td></tr>
-    <tr><td>开关</td><td>AO3400 ×3（SOT-23）</td><td>低边开关；栅极 100 Ω 串阻 + 10 kΩ 下拉（防上电误闪一次强光）</td></tr>
-    <tr><td>灯珠</td><td>620 / 590 / 505 三芯封装，或三颗单色 3535 拼一个灯位</td><td>共阳便于三路低边恒流；<strong>不要 WS2812</strong>——内置 IC 有最小脉宽与刷新抖动，做不了精确占空比与严格反相</td></tr>
-    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器，或 1×18650 + 升压</td><td>设备贴脸，绝不接市电裸露部分；5 V 足够覆盖三路 Vf + 恒流余量</td></tr>
-    <tr><td>保护</td><td>SS34 反接保护 + SMAJ5.0A TVS + 1000 µF/10 V</td><td>脉冲负载会让电源纹波变大，储能必须留在板上</td></tr>
-  </tbody>
-</table>
-
-<h3>PWM 周期与占空比</h3>
-
-<p>频率由晶振决定，不能用软件延时——软件延时的抖动在 1–5 ms，占 100 ms 周期的 1–5%，频率会漂，锁相就无从谈起。</p>
-
-<p class="mono" style="display:block;background:#f4f8fb;padding:12px 14px;border-left:3px solid #0f6f66;font-size:13px;line-height:1.9">
-period = (F_CPU / prescaler) / f_out<br>
-duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<br>
-反相模式：duty_G(t) = period − duty_R(t)，两路共用同一个计数器即可严格对齐
-</p>
-
-<p>8–13 Hz 的周期是 77–125 ms，而 LED 的开关边沿是纳秒级——<strong>相差六个数量级</strong>。所以在这里追求 ns 级边沿、推挽驱动、高速驱动器，全是无效优化。真正决定成败的是三件事：<strong>恒流精度、三通道相位对齐、散热</strong>。</p>
-
-<h2><span class="num">05</span>物料清单</h2>
-
-<table>
-  <thead><tr><th style="width:24%">项</th><th style="width:38%">规格</th><th style="width:8%">数量</th><th>备注</th></tr></thead>
-  <tbody>
-    <tr><td>三色灯珠</td><td><b>620 / 590 / 505 nm</b> 单色大功率（3535 或 5050 三芯定制），各 3–4 颗</td><td class="num-cell">8 灯位 ×3 芯</td><td>单颗 0.2–0.5 W；<strong>620 占多数功率</strong>，别按三色均分买。买不到三芯就贴 12 颗 3535</td></tr>
-    <tr><td>铝基板</td><td>1.6 mm 铝基，单面，定制或洞洞板手焊</td><td class="num-cell">2</td><td>灯珠焊在朝内一面，走线从背面出；<strong>左右两块互为镜像</strong>（不是同一块做两遍）</td></tr>
-    <tr><td>扩散板</td><td>PC 乳白 2 mm，雾度 &gt;90%，透光 65–75%</td><td class="num-cell">2（62×52）</td><td>扩散板质量直接决定均匀度</td></tr>
-    <tr><td>混光腔 / 遮光腔</td><td>3D 打印（PETG / ABS），混光腔内壁贴高反射白膜</td><td class="num-cell">2 套</td><td>白膜可用 PTFE 胶带或 3M ESR；遮光腔内壁哑光黑植绒</td></tr>
-    <tr><td>面垫</td><td>硅胶或记忆棉，厚 12–14 mm</td><td class="num-cell">1</td><td>贴合眶骨、压住不漏光，是舒适度的关键</td></tr>
-    <tr><td>外壳</td><td>VR 头显外壳（可买现成空壳改）或 3D 打印</td><td class="num-cell">1</td><td><strong>拆掉原透镜与屏幕</strong>，只留壳体与头带</td></tr>
-    <tr><td>散热</td><td>铝散热片 30×40×6 + 导热硅脂</td><td class="num-cell">2</td><td>连续 30 min 结温必须 &lt;60 ℃</td></tr>
-    <tr><td>驱动</td><td>AMC7135 ×3 或运放恒流 ×3；AO3400 ×3</td><td class="num-cell">3 套</td><td>低边恒流 + 硬件 PWM</td></tr>
-    <tr><td>主控</td><td>ESP32-S3 开发板</td><td class="num-cell">1</td><td>三路 PWM 同时基；带 WiFi 便于记录参数</td></tr>
-    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器</td><td class="num-cell">1</td><td>或 1×18650 + 5 V 升压 + 保护板</td></tr>
-    <tr><td>显示与输入</td><td>0.96″ OLED + 旋转编码器 + 急停按钮</td><td class="num-cell">1 套</td><td>急停要能物理断电，不能只靠固件</td></tr>
-  </tbody>
-</table>
-
-<h2><span class="num">06</span>装配工序</h2>
-
-<ol class="steps">
-  <li><b>拆壳</b>：把 VR 头显原有透镜组、显示屏、主板全部拆除，只留壳体、面垫与头带。壳体内部若有透镜支架，一并磨平——残留的支架会在光路里投出硬阴影。</li>
-  <li><b>灯珠上板</b>：铝基板涂锡膏，回流焊每个灯位的三芯（620 / 590 / 505）。注意共阳方向统一，三通道走线分开引出。<b>焊完逐颗测三色</b>，一颗反接就要整板返工。</li>
-  <li><b>左右板镜像核对</b>：把两块板灯珠朝上并排，从同一侧看，两者的灯位排布应当是「照镜子」的关系而不是平移复制。搞错了不影响亮，但会让两眼的视场图案同向，<strong>闭眼看到的是一对同旋向螺旋而不是镜像</strong>——这是装完之后最难查的一类错。</li>
-  <li><b>灯板贴散热</b>：涂导热硅脂，四颗 M2 螺丝对角压紧。此时先单独通电，跑 10 Hz / 40% 占空比 30 min，用热电偶测基板温度，<b>必须 &lt;60 ℃</b>。这一步要在装腔之前做，装进去就测不准了。</li>
-  <li><b>装混光腔</b>：3D 打印件内壁贴满高反射白膜，边缘不留缝。这一步决定三个颜色能不能在板面之前混匀——混光腔短了，会在扩散板上看到三个分离的色斑。</li>
-  <li><b>装扩散板</b>：嵌进槽位，边缘用黑胶完全密封。<b>任何一条缝都会在眼前形成一道亮线</b>，这是最常见的失败点。</li>
-  <li><b>装遮光腔</b>：20 mm 亚光黑腔体，双眼之间加一块不透明隔板（否则左眼的光会串到右眼，双眼异相模式直接失效）。</li>
-  <li><b>装面垫与外壳</b>：面垫压住眶骨，戴上去用手电从外面照，确认<b>无漏光</b>——漏光不仅破坏暗相，还会让受试者看到房间。</li>
-  <li><b>走线与接口</b>：电源从后脑出线，用航空插头，线材留应力释放。头带调好配重，避免向前坠。</li>
-  <li><b>烧固件</b>：先跑固定参数（红 10 Hz / 40%），三通道相位对齐用示波器核一遍。<b>反相模式下两路必须共用同一计数器</b>，否则相位会随频率漂移。</li>
-  <li><b>光学标定</b>：照度计贴在眼睑位置（真人佩戴、闭眼），逐档记录照度，把「档位 → 眼睑照度」写成表贴在机上。以后所有实验参数都按照度记，不按「亮度 3 档」记。</li>
-  <li><b>等亮度标定</b>（若用 C 模式）：闭眼、装机、最终亮度下做 HFP，记录 620 : 590 的电流比，写进固件。</li>
-  <li><b>老化与验收</b>：连续跑 2 h，检查温升、有无闪烁抖动、三色有无单颗失效。</li>
-</ol>
-
-<h2><span class="num">07</span>安全阈值（写进固件，不只写说明书）</h2>
-
-<table>
-  <thead><tr><th style="width:26%">项</th><th style="width:30%">阈值</th><th>理由</th></tr></thead>
-  <tbody>
-    <tr><td>15–25 Hz</td><td><b>默认锁定</b>，需长按 3 s 才可进入</td><td>光敏性癫痫的最高危频段（峰值 15–20 Hz）；即使用户主动选择，也要多一道确认</td></tr>
-    <tr><td>有效危险区</td><td>3–30 Hz，避免连续长时间运行</td><td>多来源一致</td></tr>
-    <tr><td>单次时长</td><td>20 min 自动停，冷却 5 min</td><td>视疲劳；也限制累积光剂量</td></tr>
-    <tr><td>亮度上限</td><td>眼睑照度 ≤5000 lux</td><td>文献诱发区间上限；再高只增加不适与热，不增加效果</td></tr>
-    <tr><td>蓝通道</td><td>单次连续 &lt;10 min</td><td>蓝光光化学危害（视网膜）在短波端最高；闭眼虽衰减 99.6%，但功率被推到 28 倍时必须重新算</td></tr>
-    <tr><td>光生物安全</td><td>目标 IEC 62471 RG1 / GB/T 20145</td><td>需要按实际辐照度做评估，不能凭经验</td></tr>
-    <tr><td>禁忌</td><td>癫痫史、偏头痛、光敏史、孕期、服用光敏药物</td><td>写在说明书首行，且开机时强制确认</td></tr>
-  </tbody>
-</table>
-
-<div class="note warn">
-  <h5>同一组参数，两个结果</h5>
-  <p>1959 年 Brainwave Synchronizer 在商业推广中诱发多名使用者癫痫发作，产品很快退场。它用的正是这套「闪光 + 闭眼 + 全视野」的参数空间——<strong>产生图案和产生风险用的是同一组旋钮</strong>，没法只取其一。所以「戴上去很好玩」和「这台机器必须有限幅」是同一件事的两面。</p>
-</div>
-
-<h2><span class="num">08</span>这套设计决定不了什么</h2>
-
-<p>把边界写清楚，比把功能写多更重要：</p>
-
-<table>
-  <thead><tr><th style="width:30%">硬件能决定</th><th>硬件决定不了</th></tr></thead>
-  <tbody>
-    <tr>
-      <td>频率、占空比、亮度、波长构成、视野张角——这五个量可以做到亚毫秒级重复。</td>
-      <td>
-        ① <b>眼前出现什么图案</b>。文献至今没有可靠的「频率 → 形状」映射；能引的只有「8–12 Hz 附近最强」与单例报告的「频率加倍、图案空间频率加倍」。任何「调到某个 Hz 就出曼陀罗」的说法都没有依据。<br>
-        ② <b>三色会不会让图案更丰富</b>。没有证据支持这一点；三色的作用在<strong>色度通路</strong>上，不在<strong>几何图案</strong>上，两者是不同的神经机制。<br>
-        ③ <b>个体差异</b>。眼睑透射率可差 2–3 倍，等亮度点可差 30%，同一个参数在两个人身上不是同一个剂量。
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<p>所以这台机器的正确定位是：<strong>一个参数可重复、剂量可标定的刺激器</strong>，而不是一台「图案生成器」。它能保证同一组参数在同一个受试者身上产生同样的输入；至于输入之后脑子里出现什么，那属于受试者的视觉系统，不属于这台机器的规格书。</p>
-
-
-<h2><span class="num">09</span>附录：先在屏幕上把参数跑一遍</h2>
-
-<p>硬件没到之前，这套参数可以先在屏幕上跑。它<strong>不替代实测</strong>——屏幕是自发光的平面、视野有限、也没有眼睑那一层衰减，对比度和亮度跟真机不是一回事——但它能把四件最容易算错的事当场验给你看：<strong>频率落在哪个频段</strong>、<strong>双频叠加后的拍频是多少</strong>、<strong>每眼两路灯位的相位是不是真的独立</strong>、以及<strong>戴上眼镜后每一眼还剩下多少光</strong>。</p>
-
-<h3>预览区为什么是两块，不是一块</h3>
-
-<p>这是设备的第一层结构，也是上一版画错的地方：<strong>眼罩有两个互不相通的发光面，左眼一块、右眼一块，谁也照不到谁</strong>。所以「整屏」这个词本身不成立——真正被切分的是<strong>每只眼内部的视场</strong>，由该眼那四颗灯珠分区照亮。「分区」四档切的都是每一块内部，不是整个预览框。</p>
-
-<p>左右之间的第二层关系是<strong>旋向</strong>。它不能靠软件「给」出来：两眼视网膜到两半球的投射本身就是镜像的，同一束均匀漫射光进去，两边皮层跑出的行波方向天然相反，看到的就是一对镜像螺旋——<strong>镜像才是默认，同向反而是需要额外条件才出现的异常</strong>。所以「右眼镜像」默认打开，它标的不是「加了个特效」，而是「没有人为干预」。</p>
-
-<p>要让旋向真的可编程，唯一办法是<strong>造出空间相位梯度</strong>。整屏均匀时四路灯珠同相，视场里没有梯度，旋向只能听生理的；一旦改成上下 / 左右 / 四象限分区，每区各走各的相位，梯度就出来了，旋向才真由参数决定。这条同时给出一个装配要求：真机的<strong>右板必须做成左板的镜像布线</strong>——两块板若只是平移复制，四灯位相对视网膜的位置不对称，「镜像图案」从源头就做不出来。</p>
-
-<h3>第三层：看屏幕的人戴什么</h3>
-
-<p>红青眼镜的两片镜是<strong>左红右青</strong>，它按<strong>颜色</strong>而不是按位置把光劈成两路——这是单块显示器做出「双眼各看一幅」的唯一廉价办法：左眼只收到长波那半、右眼只收到短波那半。代价是两幅图<strong>必须配色互补</strong>，都设成红就全被右镜挡掉，右眼一片黑。所以面板里选「红青眼镜」时右眼会<strong>自动配成 505 青</strong>，也可以手动换成 540 绿或 590 琥珀，读数框会直接算出透过率。<br>
-线偏是另一个极端：普通 LCD 出光本身就是线偏振的，镜片转过 90° 就按 <span class="mono">cos²θ</span> 消光到黑——<strong>这不是软件效果，是屏幕物理</strong>，转头就能自己验证。<br>
-影院那种圆偏（RealD）在没贴 1/4 波片的屏幕上两眼各得 50%、<strong>分不开</strong>，只有贴了波片才有左右旋之分。</p>
-
-<h3>颜色可以换，但换颜色不是换剂量</h3>
-
-<p>屏幕上 620 红与 540 绿看起来差不多亮，装进眼罩后差 <strong>约 7 倍</strong>——眼睑在 540 nm 只透 0.48%，在 620 nm 透 7.5%。所以调色板每一档都直接标了「等亮度要付几倍电功率」：590 琥珀 3.1×、570 黄 6.4×、540 绿 6.9×、505 青 15×、三色暖白 19×。<strong>绿是观感舒适档，不是剂量档</strong>；真要加剂量，还是得回到 620。</p>
-
-<p>470 nm 蓝已从调色板里拿掉，两条理由叠在一起：闭眼透射仅 0.35%，功率要推到 63 倍才够亮，几乎全部变成贴在脸上的热；而 435–470 nm 又正好是蓝光危害（BLH）的作用峰，<strong>闪烁加短波是双重不利</strong>。505 青属于青绿端、离峰值已远，留着当红的对照色，默认不选。</p>
-
-<h3>波形与占空比：三个量很容易混成一个</h3>
-
-<p>「占空比是不是波形整流后的那个占空比」——这一问点到了一个真问题：<strong>它们是两个不同的量，在窄脉冲下能差一倍以上</strong>。面板现在把三个数分开列，就是为了不再混着叫「占空比」。</p>
-
-<table>
-  <thead>
-    <tr><th style="width:20%">量</th><th style="width:34%">定义</th><th>它在管什么</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><b>亮相宽度</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">脉冲档才有效</span></td>
-      <td>脉冲在周期里占的时间比例，即 <span class="mono">duty = t_on / T</span></td>
-      <td>暗相是真零（LED 全关），不是「暗一点」。所以它直接决定<strong>调制深度</strong>：占空比越小，闪得越像「一下一下」，而不是「一亮一暗」。</td>
-    </tr>
-    <tr>
-      <td><b>脉宽</b></td>
-      <td><span class="mono">t_on = duty × T = duty / f</span></td>
-      <td>实际亮多少毫秒。<strong>占空比离开频率就没有物理意义</strong>：同样 0.1 %，10 Hz 是 100 µs，1 Hz 是 1 ms。所以面板直接给出毫秒数。</td>
-    </tr>
-    <tr>
-      <td><b>等效占空比</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">= 您问的那个</span></td>
-      <td><span class="mono">∫ f(t)dt / T</span>，即平均亮度 ÷ 峰值亮度</td>
-      <td>波形整流后取平均、再比峰值。<strong>这才是算光剂量、跟连续光比曝光的数</strong>。它和亮相宽度不是一回事：指数衰减档亮相 12 % 时等效只有 3.9 %；升余弦与三角脉冲的等效恒为亮相的一半；正弦与三角恒为 50 %，滑块怎么拨都不变。</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>由此得到一条必须记住的关系：<strong>平均光功率 = 峰值亮度 × 等效占空比</strong>。所以「把亮度调到一半」和「把占空比砍到一半」对剂量的作用一样，对<strong>闪烁</strong>的作用完全不同——前者整体变暗、调制深度不变；后者暗相拉长、调制深度上升。这两件事在这台机器上由两个滑块分别负责，别互相顶替。</p>
-
-<h3>八档波形，各自解决什么问题</h3>
-
-<p>原来只有方波、正弦、三角三档，其中<strong>只有方波读占空比</strong>——正弦与三角是连续波，整周期都在发光，没有暗相，滑块拨到哪儿都不影响输出（上一版就是这么空转的，现在这两档会自动置灰）。这次补齐的是「脉冲形态」：同一套占空比，用不同的边沿形状发出来。</p>
-
-<table>
-  <thead>
-    <tr><th style="width:16%">档</th><th style="width:12%">类别</th><th style="width:22%">占空比管什么</th><th style="width:14%">等效占空比</th><th>用途</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><b>正弦</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>传统 photic driving 最常用；调制深度最浅，主观最温和</td></tr>
-    <tr><td><b>三角</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>同上，线性上升下降；对称三角其实就是锯齿在 50 % 的特例</td></tr>
-    <tr><td><b>锯齿</b></td><td>连续</td><td>两侧斜率比（上升沿占比）</td><td class="num-cell">恒 50 %</td><td>做「快升慢降 / 慢升快降」的不对称刺激，ON 与 OFF 通路不等权</td></tr>
-    <tr><td><b>方波</b></td><td>脉冲</td><td>亮相宽度 = 占空比</td><td class="num-cell">= 占空比</td><td>最常用。暗相彻底，调制深度 100 %；但边沿最硬，驱动器容易振铃</td></tr>
-    <tr><td><b>梯形</b></td><td>脉冲</td><td>宽度 + 边沿时间</td><td class="num-cell">小于占空比<br>（边沿吃掉一部分）</td><td><strong>真机推荐默认</strong>：边沿可调，既保住高调制深度又不刺眼，恒流源也不容易被硬边沿激起过冲</td></tr>
-    <tr><td><b>升余弦</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>最平滑的脉冲，两端斜率为 0，没有任何锐边；本质是「削波后归一的正弦」</td></tr>
-    <tr><td><b>三角脉冲</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>线性上升、线性下降，尖顶；几何上最干净的「一下」</td></tr>
-    <tr><td><b>指数衰减</b></td><td>脉冲</td><td>衰减时间常数</td><td class="num-cell">远小于占空比</td><td>最接近真实闪光（氙灯、相机闪光灯的包络：瞬间起亮、指数拖尾）</td></tr>
-  </tbody>
-</table>
-
-<div class="note warn">
-  <h5>0.1 % 是可以给的，但要清楚它下面的硬件地板</h5>
-  <p>占空比滑块改成了<strong>对数刻度</strong>：0.1 % → 90 %，每一格是固定倍数而不是固定百分比（线性滑块下 0.1 % 只有一格的千分之一，根本拨不准）。10 Hz 时 0.1 % 就是 <strong>100 µs</strong>——真正的「闪一下」，而不是「亮一小段」。</p>
-  <p>代价在电气上：恒流源的开启延迟、MOS 栅极的充放电、LED 自身的上升时间（几十 ns 到几 µs 量级）都在吃这段。典型 AMC7135 类恒流芯片的使能延迟在微秒量级，加上 MOS 与走线，<strong>脉宽低于约 50 µs 时，实际光输出已经被边沿吃掉一半以上</strong>，面板上的数字会比真实光输出好看。所以这里给的是<strong>命令值，不是实测值</strong>；真机要用光电二极管加示波器核一次，把「设定 0.1 % → 实测多少 µs」标出来写在机壳上。屏幕上的预览同理，60 Hz 的屏连 100 µs 的一个脉冲都呈现不了。</p>
-</div>
-
-<p>峰值亮度那一档是可调的，范围 1 %–100 %，<strong>它调的是脉冲顶端的绝对亮度，不改占空比、不改频率</strong>。按上面的关系，眼睛实际收到的剂量是两者相乘，所以「亮度 × 等效占空比」才是可以和连续光比较的那个数。</p>
-
-<div class="note">
-  <h5>屏幕上的螺旋是「看着会像什么」，不是「视网膜收到什么」</h5>
-  <p>真机在眼睑后面打出的是<strong>均匀漫射光</strong>——扩散板加 20 mm 遮光腔，眼皮上不会有条纹。屏幕上的螺旋是<strong>对数极坐标映射</strong>推出来的光幻视示意：把皮层平面波 <span class="mono">cos(a·u + b·v)</span> 经 <span class="mono">w = ln z</span> 拉回视场，就成了 <span class="mono">cos(a·ln r + b·θ)</span>——<span class="mono">a</span> 管径向疏密，<span class="mono">b</span> 管臂数，<span class="mono">b</span> 的符号管旋向。它只用来对齐两件事：<strong>左右眼该不该反向</strong>、<strong>臂数对不对</strong>。别把它当照度图看，更别据它去调灯珠。</p>
-</div>
-
-<p>算法沿用本机 <span class="mono">harmonograph/vr眼镜闪屏</span> 那套引擎的口径：四相数按 <span class="mono">k = 基频 / max(a,b,c,d)</span> 换算，<strong>左眼取 (a, d)、右眼取 (b, c)</strong>，两路亮度相加后自然出现 <span class="mono">|f₁−f₂|</span> 的拍频；<span class="mono">a+d = b+c</span> 作为校验条件，实时判 ✓ / ✗。</p>
-
-<p>默认值 <span class="mono">220 / 189 / 252 / 221</span> 是「冠军 1105 态」除以 5 的骨架（原式 1100 / 945 / 1260 / 1105，<span class="mono">a+d = b+c = 2205</span>），所以校验是 ✓——边界闭合成圆。左眼 (220, 221) 两频几乎相等，看起来是稳的 5.25 Hz；右眼 (189, 252) 差得远，拍频 1.5 Hz，会明显「呼吸」。这一组恰好把「拍频」这件事演给人看。</p>
-
-<div class="note warn">
-  <h5>开始之前</h5>
-  <p>下面这块会真的闪。8–30 Hz 是光敏性癫痫的敏感区，<strong>没有病史也可能首次诱发</strong>，同屋的人同样暴露。默认参数已压在 10 Hz 以下、亮度 100% 但对比度可调；确认后才会启动，运行 3 分钟自动停，切走标签页自动暂停。</p>
-</div>
-
+<div class="cfhero">
 <div class="cf">
   <div class="cfview" id="cfview">
     <div class="cfeyes">
@@ -885,6 +438,490 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 </div>
 
 <p class="figcap">屏幕版与真机的差别，按重要性排序：① 屏幕没有眼睑那一层衰减，三色比例看起来会比真机「白」得多；② 屏幕亮度上限远低于 1000–5000 lux 的目标；③ 屏幕是单平面、贴脸近距，视野填充度不如 20 mm 遮光腔后的扩散板。所以这里只验<strong>时序</strong>，不验<strong>观感</strong>。</p>
+
+<p class="cfintro">硬件没到之前，参数可以先在屏幕上跑一遍——它<strong>不替代实测</strong>，但能把四件最容易算错的事当场验出来：<strong>频率落点</strong>、<strong>拍频</strong>、<strong>每眼两路相位是否真独立</strong>、<strong>戴眼镜后每眼还剩多少光</strong>。控件的设计理由见 <a href="#s10">§10 附录</a>。</p>
+
+</div>
+
+<div class="wrap cont">
+
+
+<h2><span class="num">01</span>先给三条判断</h2>
+
+<p class="lead">把「戴上去在眼前闪」做成一台能重复工作的设备。形态借 VR 头显，光学反过来做——去掉透镜，留一片漫射面。三色可用，但闭眼时三色的每瓦效力差 60 倍，配比必须先算清——算完的结论是 620 / 590 / 505，不是 RGB。</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="t">Form</div>
+    <h4>VR 外壳要，VR 透镜不要</h4>
+    <p>头显的价值是密封、遮光、贴脸、配重平衡。但它的光学核心——把微屏成像到 1–2 m 外的透镜组——在这里是有害的：透镜会把 LED 聚成一点，在眼皮内侧打出热斑。闭眼要的是「一片匀光贴着睑」，不是「一个远处的像」。</p>
+  </div>
+  <div class="card">
+    <div class="t">Dose</div>
+    <h4>闭眼时每瓦效力 红 100 : 琥珀 32 : 青 6.7</h4>
+    <p>眼睑对 620 nm 透 7.5%，对 550 nm 只透 0.5%，对 470 nm 透 0.35%；再乘上 LED 自身的电光效率，「每瓦电买到多少闭眼视觉量」差 60 倍。所以「三原色混成白」在闭眼条件下不是调色问题，是功率问题。</p>
+  </div>
+  <div class="card">
+    <div class="t">Use</div>
+    <h4>三色的真正用处不是好看</h4>
+    <p>它能做一件单色做不到的事：<strong>等亮度色度闪烁</strong>——两色调到主观等亮后反相闪，亮度通道几乎不动，只驱动色通路。这是视觉神经科学的标准手段，也是这套三色灯珠唯一不可替代的用途。</p>
+  </div>
+</div>
+
+<h2><span class="num">02</span>三维结构</h2>
+
+<p>下面是单机全貌：外壳半透明，左右两个独立光通道，每通道七层。<strong>左通道展开成详图，右通道保持装配态淡显</strong>作对照——这一张里左右不是对称画法，是有意的。拖动旋转，滚轮缩放；三个按钮分别是<strong>爆炸</strong>（拉开层距）、<strong>剖面</strong>（只留左通道，去掉外壳与右通道）、<strong>光路</strong>（四颗灯珠各向扩散板四角发散的 16 束）。鼠标移到下方图例上，对应那一层会单独亮起并标出名字。</p>
+
+<div class="stage">
+  <canvas id="cv"></canvas>
+  <div class="tools">
+    <button id="bExp" class="on">爆炸</button>
+    <button id="bSec">剖面</button>
+    <button id="bOpt">光路</button>
+    <button id="bAuto" class="on">自动旋转</button>
+    <button id="bReset">复位</button>
+  </div>
+  <div class="hint">拖动旋转 · 滚轮缩放</div>
+</div>
+<ul class="legend" id="lg"></ul>
+
+<p class="figcap">尺寸单位 mm。单通道板面 62 × 52，眼距中心 ±33，外壳 152 × 86 × 46。层序自眼睑向外：面垫 → 遮光腔 20 → 扩散板 2 → 混光腔 12 → 铝基板 2 → 散热齿 6 → 后盖 2。图中央那块淡红的杏仁形是<strong>闭着的眼</strong>，用来定方向：它在哪一端，哪一端就贴脸。</p>
+
+<h3>为什么层序是这样</h3>
+
+<p>光从最外侧的灯板发出，要先在<strong>混光腔</strong>里走满 12 mm，让四颗灯珠、三个颜色在这个空腔里充分叠合；再穿过<strong>扩散板</strong>变成面光；最后留 <strong>20 mm 的遮光腔</strong>。最后这段最容易被省掉，但它有三个作用：</p>
+
+<table>
+  <thead><tr><th style="width:22%">留 20 mm 的作用</th><th>不这么做的后果</th></tr></thead>
+  <tbody>
+    <tr><td><b>看不见灯珠结构</b></td><td>扩散板贴着眼皮，四颗灯珠的位置会以亮斑形式被直接看到，「整片视野均匀亮」的前提就没了</td></tr>
+    <tr><td><b>填满视野</b></td><td>离眼太近时，发光面张角不足，只有中央视野被照到，而全视野刺激的诱发强度显著高于小视场</td></tr>
+    <tr><td><b>容下睫毛与眼动</b></td><td>睁眼模式下睫毛会扫到扩散板；闭眼时眼睑也会随眼球转动微微鼓起</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>闭眼反而放宽了一件事</h5>
+  <p>眼睑本身就是一层强散射体（皮肤 + 肌肉 + 结膜，透射率只有百分之几，其余全被散射）。这意味着<strong>闭眼时对扩散板的均匀性要求比睁眼低得多</strong>——细微的亮度不均会被眼睑抹平。真正要防的不是「花纹」，而是<strong>局部过热点</strong>：一个 10 mm 的热区在闭眼时会被感知成「一侧更亮」，比均匀地暗更难受，也更难标定剂量。</p>
+</div>
+
+<h2><span class="num">03</span>三色的剂量账：最优三色是算出来的</h2>
+
+<p>这一节是整台机器最反直觉的地方，也是「高亮三原色」这个想法必须先过的一关。三色的权重不是「红好一点」，而是<strong>差 60 倍</strong>。这一节把这个数算透，然后给出真正该买的三条波长——结论和直觉、和市面上的 RGB 套件都不一样。</p>
+
+<h3>第一步：眼睑透射 × 视见函数</h3>
+
+<p>光要过两层才变成「看见」：一是眼睑的透射率 T(λ)（客观光度法实测），二是视网膜的视见函数 V(λ)（CIE 1924 明视觉）。两者相乘，就是同样辐射通量下「闭眼到底看见多少」：</p>
+
+<table>
+  <thead>
+    <tr><th>通道</th><th>波长</th><th>眼睑透射 T</th><th>视见函数 V(λ)</th><th>T · V</th><th>相对</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>红</b></td><td class="num-cell">630 nm</td><td class="num-cell">9.0 %</td><td class="num-cell">0.265</td><td class="num-cell">0.0239</td><td class="num-cell ok">100</td></tr>
+    <tr><td><b>绿</b></td><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.0050</td><td class="num-cell">21</td></tr>
+    <tr><td><b>蓝</b></td><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.0008</td><td class="num-cell hi">3.5</td></tr>
+  </tbody>
+</table>
+
+<p class="figcap">眼睑透射率取自客观光度法文献值；个体差异很大（肤色、眼睑厚度、年龄），实测范围可差 2–3 倍，但<strong>红 ≫ 绿 &gt; 蓝 的次序是稳定的</strong>。</p>
+
+<p>只看这一栏，很容易得出两个「常识」：红压倒性有效、绿还剩两成、蓝可以扔。但这一步漏了第三个数——<strong>LED 自己并不把电全部变成光</strong>。</p>
+
+<h3>第二步：乘上 LED 的电光效率，答案就变了</h3>
+
+<p>每瓦电出多少瓦辐射，叫 <b>WPE</b>，它随波长强烈变化：蓝光 InGaN 现在能做到 40–50%，而 550–590 nm 的黄绿正是著名的「<strong>绿光鸿沟</strong>」，只有 20% 上下。三条曲线乘起来，才是真正的<strong>每瓦电买到多少闭眼视觉量</strong>：</p>
+
+<div class="eq">η(λ) = WPE(λ) × T(λ) × V(λ)</div>
+
+<table>
+  <thead>
+    <tr><th>波长</th><th>眼睑透射 T</th><th>V(λ)</th><th>WPE</th><th style="text-transform:none">η × 10⁻⁴</th><th>相对峰值</th><th></th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="num-cell">470 nm</td><td class="num-cell">0.35 %</td><td class="num-cell">0.091</td><td class="num-cell">0.43</td><td class="num-cell">1.36</td><td class="num-cell hi">1.6 %</td><td>蓝</td></tr>
+    <tr><td class="num-cell">490 nm</td><td class="num-cell">0.40 %</td><td class="num-cell">0.208</td><td class="num-cell">0.40</td><td class="num-cell">3.33</td><td class="num-cell hi">3.9 %</td><td>青蓝</td></tr>
+    <tr><td class="num-cell">505 nm</td><td class="num-cell">0.42 %</td><td class="num-cell">0.407</td><td class="num-cell">0.33</td><td class="num-cell">5.70</td><td class="num-cell">6.7 %</td><td>青</td></tr>
+    <tr><td class="num-cell">520 nm</td><td class="num-cell">0.45 %</td><td class="num-cell">0.710</td><td class="num-cell">0.29</td><td class="num-cell">9.27</td><td class="num-cell">10.8 %</td><td>绿</td></tr>
+    <tr><td class="num-cell">530 nm</td><td class="num-cell">0.47 %</td><td class="num-cell">0.862</td><td class="num-cell">0.28</td><td class="num-cell">11.12</td><td class="num-cell">13.0 %</td><td>绿</td></tr>
+    <tr><td class="num-cell">550 nm</td><td class="num-cell">0.50 %</td><td class="num-cell">0.995</td><td class="num-cell">0.26</td><td class="num-cell">12.69</td><td class="num-cell">14.8 %</td><td>绿（V 最高，但没用）</td></tr>
+    <tr><td class="num-cell">570 nm</td><td class="num-cell">0.62 %</td><td class="num-cell">0.952</td><td class="num-cell">0.23</td><td class="num-cell">13.43</td><td class="num-cell">15.7 %</td><td>黄绿</td></tr>
+    <tr><td class="num-cell">590 nm</td><td class="num-cell">1.80 %</td><td class="num-cell">0.757</td><td class="num-cell">0.20</td><td class="num-cell">27.25</td><td class="num-cell ok">31.8 %</td><td><b>琥珀 ← 选它</b></td></tr>
+    <tr><td class="num-cell">600 nm</td><td class="num-cell">3.20 %</td><td class="num-cell">0.631</td><td class="num-cell">0.22</td><td class="num-cell">44.42</td><td class="num-cell">51.8 %</td><td>琥珀红</td></tr>
+    <tr><td class="num-cell">610 nm</td><td class="num-cell">5.50 %</td><td class="num-cell">0.503</td><td class="num-cell">0.26</td><td class="num-cell">71.93</td><td class="num-cell">83.9 %</td><td>红</td></tr>
+    <tr style="background:#f2f8f7"><td class="num-cell"><b>620 nm</b></td><td class="num-cell">7.50 %</td><td class="num-cell">0.381</td><td class="num-cell">0.30</td><td class="num-cell">85.73</td><td class="num-cell ok"><b>100 %</b></td><td><b>峰值 ← 剂量通道</b></td></tr>
+    <tr><td class="num-cell">625 nm</td><td class="num-cell">8.22 %</td><td class="num-cell">0.321</td><td class="num-cell">0.32</td><td class="num-cell">84.39</td><td class="num-cell">98.4 %</td><td>红（最好买）</td></tr>
+    <tr><td class="num-cell">630 nm</td><td class="num-cell">9.00 %</td><td class="num-cell">0.265</td><td class="num-cell">0.34</td><td class="num-cell">81.09</td><td class="num-cell">94.6 %</td><td>红</td></tr>
+    <tr><td class="num-cell">640 nm</td><td class="num-cell">10.50 %</td><td class="num-cell">0.175</td><td class="num-cell">0.36</td><td class="num-cell">66.15</td><td class="num-cell">77.2 %</td><td>深红</td></tr>
+    <tr><td class="num-cell">650 nm</td><td class="num-cell">12.00 %</td><td class="num-cell">0.107</td><td class="num-cell">0.38</td><td class="num-cell">48.79</td><td class="num-cell">56.9 %</td><td>深红</td></tr>
+    <tr><td class="num-cell">660 nm</td><td class="num-cell">13.00 %</td><td class="num-cell">0.061</td><td class="num-cell">0.38</td><td class="num-cell">30.13</td><td class="num-cell hi">35.2 %</td><td>深红（透射最高，效率却最差之一）</td></tr>
+    <tr><td class="num-cell">680 nm</td><td class="num-cell">14.20 %</td><td class="num-cell">0.017</td><td class="num-cell">0.36</td><td class="num-cell">8.69</td><td class="num-cell hi">10.1 %</td><td>不可见边缘</td></tr>
+  </tbody>
+</table>
+
+<svg class="chart" viewBox="0 0 680 300" role="img" aria-label="闭眼效力曲线：η 随波长变化，峰值在 620 nm，610–630 为最优窗口">
+  <defs>
+    <linearGradient id="gEta" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f6f66" stop-opacity=".20"/>
+      <stop offset="1" stop-color="#0f6f66" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="436" y="32" width="51" height="218" fill="#a33a32" opacity=".06"/>
+  <text x="461" y="20" text-anchor="middle" font-size="9.5" font-family="ui-monospace,monospace" fill="#a33a32">最优窗口 610–630</text>
+
+  <g stroke="#eef2f5" stroke-width="1">
+    <line x1="56" y1="250" x2="664" y2="250"/>
+    <line x1="56" y1="145" x2="664" y2="145"/>
+    <line x1="56" y1="40"  x2="664" y2="40"/>
+  </g>
+  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
+    <text x="46" y="254" text-anchor="end">0</text>
+    <text x="46" y="149" text-anchor="end">50</text>
+    <text x="46" y="44"  text-anchor="end">100</text>
+  </g>
+
+  <path d="M81,250 L81,246.6 L132,241.8 L170,235.9 L208,227.3 L233,222.7 L284,218.9 L335,217 L385,183.2 L411,141.2 L436,73.8 L461,40 L474,43.4 L487,51.3 L512,87.9 L563,176.1 L613,228.8 L613,250 Z"
+        fill="url(#gEta)"/>
+  <polyline points="81,246.6 132,241.8 170,235.9 208,227.3 233,222.7 284,218.9 335,217 385,183.2 411,141.2 436,73.8 461,40 474,43.4 487,51.3 512,87.9 563,176.1 613,228.8"
+            fill="none" stroke="#0f6f66" stroke-width="2"/>
+
+  <circle cx="170" cy="235.9" r="3" fill="#0f6f66"/>
+  <circle cx="284" cy="218.9" r="3" fill="#0f6f66"/>
+  <circle cx="385" cy="183.2" r="3.5" fill="#0f6f66"/>
+  <circle cx="461" cy="40" r="4.5" fill="#a33a32"/>
+  <circle cx="563" cy="176.1" r="3.5" fill="#a33a32"/>
+  <circle cx="613" cy="228.8" r="3" fill="#c0504a"/>
+
+  <g font-size="10.5" font-family="ui-monospace,monospace" fill="#3c4d58">
+    <text x="461" y="33" text-anchor="middle" fill="#a33a32" font-weight="700">620</text>
+    <text x="170" y="226" text-anchor="middle">505 青 6.7</text>
+    <text x="284" y="209" text-anchor="middle">550 绿 15</text>
+    <text x="370" y="172" text-anchor="end">590 琥珀 32</text>
+    <text x="590" y="192" text-anchor="start" fill="#a33a32">660 深红 35</text>
+  </g>
+
+  <g font-size="10" font-family="ui-monospace,monospace" fill="#6c808c">
+    <text x="81"  y="268" text-anchor="middle">470</text>
+    <text x="208" y="268" text-anchor="middle">520</text>
+    <text x="335" y="268" text-anchor="middle">570</text>
+    <text x="461" y="268" text-anchor="middle">620</text>
+    <text x="563" y="268" text-anchor="middle">660</text>
+    <text x="664" y="268" text-anchor="middle">700</text>
+    <text x="664" y="286" text-anchor="end" fill="#16222b">波长 nm</text>
+    <text x="56"  y="286" text-anchor="start">相对闭眼效力 η（峰值 = 100）</text>
+  </g>
+</svg>
+
+<p class="figcap">曲线的形状是三件事叠出来的：<strong>眼睑透射随波长单调上升</strong>（450 → 700 nm 从 0.3% 涨到 14.5%），<strong>视见函数在 555 nm 见顶后陡降</strong>，<strong>WPE 在绿光鸿沟处凹陷</strong>。上升的与下降的在这里交叉，极值落在 620 nm 附近；610–630 整段都在 84% 以上，所以实际采购按能买到的功率档选就行，差异小于个体眼睑差异。</p>
+
+<div class="note warn">
+  <h5>最容易踩的坑：以为「深红穿透力最强，所以效率最高」</h5>
+  <p>660 nm 的眼睑透射率 13.0%，确实比 620 nm 的 7.5% 高 73%；680 nm 更是 14.2%，几乎最高。但它们落在视见函数的尾巴上（V = 0.061 / 0.017），乘积反而只剩峰值的 <b>35% / 10%</b>。波长再往长走，透射率涨得越来越慢（趋于 15% 的天花板），V 却按对数往下掉——<strong>于是「最深的红」恰恰是「最不划算的红」</strong>。这一条对做植物灯的人反过来，因为植物看的是 PPFD 不看 V(λ)。</p>
+</div>
+
+<h3>第三步：两色配对，要付多少倍功率</h3>
+
+<p>三色唯一的不可替代用途是<strong>等亮度色度闪烁</strong>（见下一节 C 模式）：两色调到主观等亮、反相闪，亮度通道几乎不动。要等亮，非红那一色就得付功率。以 620 nm 为基准，各候选波长需要的电功率倍数是 η 的倒数：</p>
+
+<table>
+  <thead>
+    <tr><th style="text-transform:none">与 620 nm 配成等亮度</th><th>需付功率</th><th>判断</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="num-cell">650 nm 深红</td><td class="num-cell ok">1.8 ×</td><td>最便宜的配对，但色差也最小——两个都是红，色度闪烁会很弱</td></tr>
+    <tr><td class="num-cell">660 nm 深红</td><td class="num-cell">2.8 ×</td><td>同上，色差稍大一点；注意它<b>只作为配对</b>才划算，作剂量通道只剩 35%</td></tr>
+    <tr><td class="num-cell"><b>590 nm 琥珀</b></td><td class="num-cell ok"><b>3.1 ×</b></td><td><b>最便宜的「真异色」配对 ← 选它</b></td></tr>
+    <tr><td class="num-cell">550 nm 绿</td><td class="num-cell">6.8 ×</td><td>贵一倍，色差不算大，不值得</td></tr>
+    <tr><td class="num-cell"><b>505 nm 青</b></td><td class="num-cell">15.0 ×</td><td>等亮很贵，但<b>按 10% 亮度用只多花 1.5 ×</b>，作「短波到底有没有用」的对照完全付得起 ← 选它</td></tr>
+    <tr><td class="num-cell">470 nm 蓝</td><td class="num-cell hi">63 ×</td><td>比 505 青还贵 4 倍，且青才是红的对手色。蓝没有理由</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <h5>所以三色这样定：620 / 590 / 505，都落在「能穿眼睑」的窗口里</h5>
+  <p><b>620 nm = 剂量通道</b>（主模式只开它一路，占总功率 100%；三色同开时剂量也主要由它给）：η 峰值，闭眼时每瓦电买到的视觉量最高，也是唯一能用「眼睑照度」直接标定剂量的通道。625 nm 是同一档里最好买的规格（98.4%，差别在噪声内）。</p>
+  <p><b>590 nm 琥珀 = 暖端色相</b>：把橙红扳向琥珀，等亮度代价 3.1 倍，是所有「非红」通道里最便宜的一个。</p>
+  <p><b>505 nm 青 = 冷端对照</b>：红的最佳对手色（互补），比 470 蓝亮 4.2 倍；按低亮度用代价很小。它的价值是<strong>证明短波在闭眼条件下到底有没有用</strong>——这是个真实验，不是摆设。</p>
+  <p><b>不要买：</b>660 / 680 深红当剂量（只剩 35% / 10%）、550 绿（15%）、470 蓝（1.6%，被 505 青全面碾压）。</p>
+</div>
+
+<h3>换成这套三色，功率账变成什么样</h3>
+
+<p>仍以眼睑照度 3000 lux、单眼发光面 30 × 25 mm、扩散板 70% × 几何 60% 计。红单色 0.030 W 辐射 ≈ 0.12 W 电，作为基准：</p>
+
+<table>
+  <thead>
+    <tr><th>方案</th><th style="text-transform:none">620 nm 红</th><th style="text-transform:none">590 nm 琥珀</th><th style="text-transform:none">505 nm 青</th><th>电功率（单眼）</th><th>双眼</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>纯红单色</b></td><td class="num-cell">0.030 W</td><td class="num-cell">—</td><td class="num-cell">—</td><td class="num-cell ok">0.12 W</td><td class="num-cell">0.24 W</td></tr>
+    <tr><td><b>红 + 琥珀</b>（同电流）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.020 W</td><td class="num-cell">—</td><td class="num-cell">0.24 W</td><td class="num-cell">0.48 W</td></tr>
+    <tr><td><b>三色等亮度</b>（实验）</td><td class="num-cell">0.030 W</td><td class="num-cell">0.063 W</td><td class="num-cell">0.501 W</td><td class="num-cell hi">2.3 W</td><td class="num-cell hi">4.6 W</td></tr>
+    <tr><td><s>老 RGB 三色等亮度</s></td><td class="num-cell">0.030 W</td><td class="num-cell">0.142 W</td><td class="num-cell">0.848 W</td><td class="num-cell">4.1 W</td><td class="num-cell">8.2 W</td></tr>
+  </tbody>
+</table>
+
+<p class="figcap">辐射通量比 红 : 琥珀 : 青 = <span class="mono">1 : 2.10 : 16.7</span>，换成驱动电流比约 <span class="mono">1 : 3.1 : 15.0</span>（因为三色 WPE 不同）。老 RGB 那行按 630 : 550 : 490 的 <span class="mono">1 : 4.79 : 28.7</span> 反解。</p>
+
+<p>换成 620 / 590 / 505 之后，三色等亮度混合的电功率从 <strong>8.2 W 降到 4.6 W</strong>——省下的是绿光鸿沟和深蓝这两笔冤枉钱。但请注意倍数：即便优化到底，<strong>三色等亮度混合仍然比纯红贵 19 倍</strong>。这才是真正的结论——不是「三色配比怎么调」，而是<strong>「闭眼条件下三色混白永远不划算，主模式必须是红单色」</strong>。</p>
+
+<div class="note warn">
+  <h5>更正：上一版这里写的「绿 = 色相通道，几十毫瓦就能扳到暖白」是错的</h5>
+  <p>按上面的 η 表，550 nm 绿每瓦只能买到 620 nm 红的 <b>15%</b>；要和红等亮，绿得付 <b>6.8 倍</b>电功率，不是几十毫瓦。而且它扳不到白——红加绿混出来的是黄，要凑到白得让短波出八成以上的功率。绿在这里<strong>既贵、又到不了目的地</strong>。真正的暖端色相通道是 590 琥珀，不是 550 绿。</p>
+</div>
+
+<div class="note">
+  <h5>三色定案带来两个副作用（都是好事）</h5>
+  <p><b>一、波长都落在 505–620 nm，外壳、层序、光路一根线都不用改。</b>下图那张三维图与波长无关——它画的是机械形态，换波长只改灯珠型号与驱动电流。</p>
+  <p><b>二、620 与 590 都是 AlGaInP，正向压降几乎一样（2.0–2.2 V）。</b>老 RGB 方案里绿蓝要 3.0–3.4 V、红只要 2.1 V，逼着电源做两档；现在只有 505 青一路需要高一点（约 3.2 V），电源简单一档。</p>
+</div>
+
+<h2><span class="num">04</span>三色能做的四件事</h2>
+
+<table>
+  <thead><tr><th style="width:20%">模式</th><th style="width:26%">驱动方式</th><th>有什么用 / 代价</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>A 单色红闪</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">推荐主线</span></td>
+      <td>只驱动 620 nm，8–13 Hz 方波</td>
+      <td>功率最低（0.1 W 级）、剂量最好标定、暗相能做到真黑。这是把机器做「准」的基线配置，先把它调到可重复，再谈颜色。</td>
+    </tr>
+    <tr>
+      <td><b>B 三色同步</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">拟白</span></td>
+      <td>620 : 590 : 505 按 1 : 2.1 : 16.7 辐射比（电流约 1 : 3.1 : 15.0）</td>
+      <td>观感最接近「暖白闪烁」，但仍要 2.3 W/眼，其中 505 青吃掉 65% 的功率。适合短时实验，不适合长时间连续运行。</td>
+    </tr>
+    <tr>
+      <td><b>C 异色反相</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">等亮度色度闪烁</span></td>
+      <td>620 与 590 反相方波（要更强的色差就换 620 与 505）</td>
+      <td><strong>三色唯一不可替代的用法。</strong>亮度通道几乎不调制，只驱动色通路，可与「亮度闪烁」做对照实验。前提是先做等亮度标定（见下），否则会混入亮度成分，实验就白做了。</td>
+    </tr>
+    <tr>
+      <td><b>D 色轮</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">观赏</span></td>
+      <td>620 → 590 → 505 依次点亮，每色 1/3 周期</td>
+      <td>观感最花，但每一色的绝对亮度只有 1/3，且三色不等权会让「轮流」实际变成「红—暗—暗」。只适合低强度把玩。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>等亮度点怎么标定（C 模式的前提）</h3>
+
+<p>「620 和 590 一样亮」不是查表能得到的，必须对具体的人、具体的波长实测。标准做法是 <strong>异色闪烁光度法</strong>（heterochromatic flicker photometry, HFP）：</p>
+
+<ol class="steps">
+  <li><b>把两色以同一频率反相闪烁</b>（约 12–15 Hz 最好，此时亮度通路响应远快于色通路）。620 与 590 这一对色差小，闪烁感会很难消到零——这正是它「不干扰亮度通道」的优点，也是它「实验信号弱」的缺点。要强信号就换 620 与 505，但标定时对面那路要开大 15 倍。</li>
+  <li><b>受试者只调一个旋钮</b>——琥珀（或青）通道的电流，直到闪烁感「消失」或降到最弱。闪烁消失的那一刻，两条通路的亮度贡献相等。</li>
+  <li><b>记录该点的两路电流比</b>，写进固件作为该用户的等亮度常数。</li>
+  <li><b>换人必须重标。</b>这个比值因人而异（黄斑色素密度、晶状体黄化、年龄都会改），差 30% 是常事。</li>
+</ol>
+
+<div class="note">
+  <p>闭眼条件下这一步会变难：眼睑把两色的光谱都「红移」了一点，短波那一路的有效亮度被压得更低，等亮度点会往短波侧大幅偏移——620 与 505 的理论比值是 15.0，实测常落在 10–25 之间。所以<strong>标定必须在闭眼、装机、最终亮度下做</strong>，不能在台面上睁眼标完就装进去。</p>
+</div>
+
+<h2><span class="num">05</span>电气：三通道独立恒流</h2>
+
+<p>三种颜色必须<strong>三路独立恒流</strong>，不能共用一个限流电阻，也不能用串联降压。理由有两个，第二个更硬：</p>
+
+<p><b>一是电流差得太远。</b>按上一节的等亮度比，620 : 590 : 505 的驱动电流是 <span class="mono">1 : 3.1 : 15.0</span>，共一路必然一路过流、两路欠流。</p>
+
+<p><b>二是压降这一关虽然变容易了，但并联仍然不行。</b>620 与 590 都是 AlGaInP，Vf 几乎一样（2.0–2.2 V）——这是换成 620/590/505 之后白捡的好处：老 RGB 方案里红 2.1 V、绿蓝 3.0–3.4 V，逼着电源做两档；现在只有 505 青一路要 3.2 V 左右，5 V 单档就够。但「Vf 相同」不等于「能并联」：AlGaInP 的 Vf 有约 −2 mV/K 的负温度系数，并联时谁先热谁抢电流，最终热失控。所以三路恒流不能省，省下来的只是电源档位。</p>
+
+<table>
+  <thead><tr><th style="width:20%">环节</th><th style="width:30%">选型</th><th>要点</th></tr></thead>
+  <tbody>
+    <tr><td>主控</td><td>ESP32-S3 / Teensy 4.x / STM32</td><td>需要至少 3 路独立硬件 PWM 通道，且同一时基——三色反相要求通道之间相位严格对齐</td></tr>
+    <tr><td>恒流</td><td>三片 AMC7135（350 mA）或三路运放 + MOSFET 恒流</td><td>恒流而非恒压：电池掉压时亮度不能变，幻觉强度对亮度敏感</td></tr>
+    <tr><td>开关</td><td>AO3400 ×3（SOT-23）</td><td>低边开关；栅极 100 Ω 串阻 + 10 kΩ 下拉（防上电误闪一次强光）</td></tr>
+    <tr><td>灯珠</td><td>620 / 590 / 505 三芯封装，或三颗单色 3535 拼一个灯位</td><td>共阳便于三路低边恒流；<strong>不要 WS2812</strong>——内置 IC 有最小脉宽与刷新抖动，做不了精确占空比与严格反相</td></tr>
+    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器，或 1×18650 + 升压</td><td>设备贴脸，绝不接市电裸露部分；5 V 足够覆盖三路 Vf + 恒流余量</td></tr>
+    <tr><td>保护</td><td>SS34 反接保护 + SMAJ5.0A TVS + 1000 µF/10 V</td><td>脉冲负载会让电源纹波变大，储能必须留在板上</td></tr>
+  </tbody>
+</table>
+
+<h3>PWM 周期与占空比</h3>
+
+<p>频率由晶振决定，不能用软件延时——软件延时的抖动在 1–5 ms，占 100 ms 周期的 1–5%，频率会漂，锁相就无从谈起。</p>
+
+<p class="mono" style="display:block;background:#f4f8fb;padding:12px 14px;border-left:3px solid #0f6f66;font-size:13px;line-height:1.9">
+period = (F_CPU / prescaler) / f_out<br>
+duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<br>
+反相模式：duty_G(t) = period − duty_R(t)，两路共用同一个计数器即可严格对齐
+</p>
+
+<p>8–13 Hz 的周期是 77–125 ms，而 LED 的开关边沿是纳秒级——<strong>相差六个数量级</strong>。所以在这里追求 ns 级边沿、推挽驱动、高速驱动器，全是无效优化。真正决定成败的是三件事：<strong>恒流精度、三通道相位对齐、散热</strong>。</p>
+
+<h2><span class="num">06</span>物料清单</h2>
+
+<table>
+  <thead><tr><th style="width:24%">项</th><th style="width:38%">规格</th><th style="width:8%">数量</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td>三色灯珠</td><td><b>620 / 590 / 505 nm</b> 单色大功率（3535 或 5050 三芯定制），各 3–4 颗</td><td class="num-cell">8 灯位 ×3 芯</td><td>单颗 0.2–0.5 W；<strong>620 占多数功率</strong>，别按三色均分买。买不到三芯就贴 12 颗 3535</td></tr>
+    <tr><td>铝基板</td><td>1.6 mm 铝基，单面，定制或洞洞板手焊</td><td class="num-cell">2</td><td>灯珠焊在朝内一面，走线从背面出；<strong>左右两块互为镜像</strong>（不是同一块做两遍）</td></tr>
+    <tr><td>扩散板</td><td>PC 乳白 2 mm，雾度 &gt;90%，透光 65–75%</td><td class="num-cell">2（62×52）</td><td>扩散板质量直接决定均匀度</td></tr>
+    <tr><td>混光腔 / 遮光腔</td><td>3D 打印（PETG / ABS），混光腔内壁贴高反射白膜</td><td class="num-cell">2 套</td><td>白膜可用 PTFE 胶带或 3M ESR；遮光腔内壁哑光黑植绒</td></tr>
+    <tr><td>面垫</td><td>硅胶或记忆棉，厚 12–14 mm</td><td class="num-cell">1</td><td>贴合眶骨、压住不漏光，是舒适度的关键</td></tr>
+    <tr><td>外壳</td><td>VR 头显外壳（可买现成空壳改）或 3D 打印</td><td class="num-cell">1</td><td><strong>拆掉原透镜与屏幕</strong>，只留壳体与头带</td></tr>
+    <tr><td>散热</td><td>铝散热片 30×40×6 + 导热硅脂</td><td class="num-cell">2</td><td>连续 30 min 结温必须 &lt;60 ℃</td></tr>
+    <tr><td>驱动</td><td>AMC7135 ×3 或运放恒流 ×3；AO3400 ×3</td><td class="num-cell">3 套</td><td>低边恒流 + 硬件 PWM</td></tr>
+    <tr><td>主控</td><td>ESP32-S3 开发板</td><td class="num-cell">1</td><td>三路 PWM 同时基；带 WiFi 便于记录参数</td></tr>
+    <tr><td>电源</td><td>5 V 3 A 医疗级隔离适配器</td><td class="num-cell">1</td><td>或 1×18650 + 5 V 升压 + 保护板</td></tr>
+    <tr><td>显示与输入</td><td>0.96″ OLED + 旋转编码器 + 急停按钮</td><td class="num-cell">1 套</td><td>急停要能物理断电，不能只靠固件</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="num">07</span>装配工序</h2>
+
+<ol class="steps">
+  <li><b>拆壳</b>：把 VR 头显原有透镜组、显示屏、主板全部拆除，只留壳体、面垫与头带。壳体内部若有透镜支架，一并磨平——残留的支架会在光路里投出硬阴影。</li>
+  <li><b>灯珠上板</b>：铝基板涂锡膏，回流焊每个灯位的三芯（620 / 590 / 505）。注意共阳方向统一，三通道走线分开引出。<b>焊完逐颗测三色</b>，一颗反接就要整板返工。</li>
+  <li><b>左右板镜像核对</b>：把两块板灯珠朝上并排，从同一侧看，两者的灯位排布应当是「照镜子」的关系而不是平移复制。搞错了不影响亮，但会让两眼的视场图案同向，<strong>闭眼看到的是一对同旋向螺旋而不是镜像</strong>——这是装完之后最难查的一类错。</li>
+  <li><b>灯板贴散热</b>：涂导热硅脂，四颗 M2 螺丝对角压紧。此时先单独通电，跑 10 Hz / 40% 占空比 30 min，用热电偶测基板温度，<b>必须 &lt;60 ℃</b>。这一步要在装腔之前做，装进去就测不准了。</li>
+  <li><b>装混光腔</b>：3D 打印件内壁贴满高反射白膜，边缘不留缝。这一步决定三个颜色能不能在板面之前混匀——混光腔短了，会在扩散板上看到三个分离的色斑。</li>
+  <li><b>装扩散板</b>：嵌进槽位，边缘用黑胶完全密封。<b>任何一条缝都会在眼前形成一道亮线</b>，这是最常见的失败点。</li>
+  <li><b>装遮光腔</b>：20 mm 亚光黑腔体，双眼之间加一块不透明隔板（否则左眼的光会串到右眼，双眼异相模式直接失效）。</li>
+  <li><b>装面垫与外壳</b>：面垫压住眶骨，戴上去用手电从外面照，确认<b>无漏光</b>——漏光不仅破坏暗相，还会让受试者看到房间。</li>
+  <li><b>走线与接口</b>：电源从后脑出线，用航空插头，线材留应力释放。头带调好配重，避免向前坠。</li>
+  <li><b>烧固件</b>：先跑固定参数（红 10 Hz / 40%），三通道相位对齐用示波器核一遍。<b>反相模式下两路必须共用同一计数器</b>，否则相位会随频率漂移。</li>
+  <li><b>光学标定</b>：照度计贴在眼睑位置（真人佩戴、闭眼），逐档记录照度，把「档位 → 眼睑照度」写成表贴在机上。以后所有实验参数都按照度记，不按「亮度 3 档」记。</li>
+  <li><b>等亮度标定</b>（若用 C 模式）：闭眼、装机、最终亮度下做 HFP，记录 620 : 590 的电流比，写进固件。</li>
+  <li><b>老化与验收</b>：连续跑 2 h，检查温升、有无闪烁抖动、三色有无单颗失效。</li>
+</ol>
+
+<h2><span class="num">08</span>安全阈值（写进固件，不只写说明书）</h2>
+
+<table>
+  <thead><tr><th style="width:26%">项</th><th style="width:30%">阈值</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>15–25 Hz</td><td><b>默认锁定</b>，需长按 3 s 才可进入</td><td>光敏性癫痫的最高危频段（峰值 15–20 Hz）；即使用户主动选择，也要多一道确认</td></tr>
+    <tr><td>有效危险区</td><td>3–30 Hz，避免连续长时间运行</td><td>多来源一致</td></tr>
+    <tr><td>单次时长</td><td>20 min 自动停，冷却 5 min</td><td>视疲劳；也限制累积光剂量</td></tr>
+    <tr><td>亮度上限</td><td>眼睑照度 ≤5000 lux</td><td>文献诱发区间上限；再高只增加不适与热，不增加效果</td></tr>
+    <tr><td>蓝通道</td><td>单次连续 &lt;10 min</td><td>蓝光光化学危害（视网膜）在短波端最高；闭眼虽衰减 99.6%，但功率被推到 28 倍时必须重新算</td></tr>
+    <tr><td>光生物安全</td><td>目标 IEC 62471 RG1 / GB/T 20145</td><td>需要按实际辐照度做评估，不能凭经验</td></tr>
+    <tr><td>禁忌</td><td>癫痫史、偏头痛、光敏史、孕期、服用光敏药物</td><td>写在说明书首行，且开机时强制确认</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>同一组参数，两个结果</h5>
+  <p>1959 年 Brainwave Synchronizer 在商业推广中诱发多名使用者癫痫发作，产品很快退场。它用的正是这套「闪光 + 闭眼 + 全视野」的参数空间——<strong>产生图案和产生风险用的是同一组旋钮</strong>，没法只取其一。所以「戴上去很好玩」和「这台机器必须有限幅」是同一件事的两面。</p>
+</div>
+
+<h2><span class="num">09</span>这套设计决定不了什么</h2>
+
+<p>把边界写清楚，比把功能写多更重要：</p>
+
+<table>
+  <thead><tr><th style="width:30%">硬件能决定</th><th>硬件决定不了</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>频率、占空比、亮度、波长构成、视野张角——这五个量可以做到亚毫秒级重复。</td>
+      <td>
+        ① <b>眼前出现什么图案</b>。文献至今没有可靠的「频率 → 形状」映射；能引的只有「8–12 Hz 附近最强」与单例报告的「频率加倍、图案空间频率加倍」。任何「调到某个 Hz 就出曼陀罗」的说法都没有依据。<br>
+        ② <b>三色会不会让图案更丰富</b>。没有证据支持这一点；三色的作用在<strong>色度通路</strong>上，不在<strong>几何图案</strong>上，两者是不同的神经机制。<br>
+        ③ <b>个体差异</b>。眼睑透射率可差 2–3 倍，等亮度点可差 30%，同一个参数在两个人身上不是同一个剂量。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>所以这台机器的正确定位是：<strong>一个参数可重复、剂量可标定的刺激器</strong>，而不是一台「图案生成器」。它能保证同一组参数在同一个受试者身上产生同样的输入；至于输入之后脑子里出现什么，那属于受试者的视觉系统，不属于这台机器的规格书。</p>
+
+
+<h2 id="s10"><span class="num">10</span>附录：试跑台为什么是这么设计的</h2>
+
+<p>「为什么是两块屏、不是一块」「为什么右眼默认镜像」「选了红青眼镜右眼为什么自己变青」「占空比到底指哪一个」——这四问都不是随手定的，各自压在一条生理事实或器件事实上。不想深究可以跳过，默认参数已经是算过的那一组。</p>
+
+<h3>预览区为什么是两块，不是一块</h3>
+
+<p>这是设备的第一层结构，也是上一版画错的地方：<strong>眼罩有两个互不相通的发光面，左眼一块、右眼一块，谁也照不到谁</strong>。所以「整屏」这个词本身不成立——真正被切分的是<strong>每只眼内部的视场</strong>，由该眼那四颗灯珠分区照亮。「分区」四档切的都是每一块内部，不是整个预览框。</p>
+
+<p>左右之间的第二层关系是<strong>旋向</strong>。它不能靠软件「给」出来：两眼视网膜到两半球的投射本身就是镜像的，同一束均匀漫射光进去，两边皮层跑出的行波方向天然相反，看到的就是一对镜像螺旋——<strong>镜像才是默认，同向反而是需要额外条件才出现的异常</strong>。所以「右眼镜像」默认打开，它标的不是「加了个特效」，而是「没有人为干预」。</p>
+
+<p>要让旋向真的可编程，唯一办法是<strong>造出空间相位梯度</strong>。整屏均匀时四路灯珠同相，视场里没有梯度，旋向只能听生理的；一旦改成上下 / 左右 / 四象限分区，每区各走各的相位，梯度就出来了，旋向才真由参数决定。这条同时给出一个装配要求：真机的<strong>右板必须做成左板的镜像布线</strong>——两块板若只是平移复制，四灯位相对视网膜的位置不对称，「镜像图案」从源头就做不出来。</p>
+
+<h3>第三层：看屏幕的人戴什么</h3>
+
+<p>红青眼镜的两片镜是<strong>左红右青</strong>，它按<strong>颜色</strong>而不是按位置把光劈成两路——这是单块显示器做出「双眼各看一幅」的唯一廉价办法：左眼只收到长波那半、右眼只收到短波那半。代价是两幅图<strong>必须配色互补</strong>，都设成红就全被右镜挡掉，右眼一片黑。所以面板里选「红青眼镜」时右眼会<strong>自动配成 505 青</strong>，也可以手动换成 540 绿或 590 琥珀，读数框会直接算出透过率。<br>
+线偏是另一个极端：普通 LCD 出光本身就是线偏振的，镜片转过 90° 就按 <span class="mono">cos²θ</span> 消光到黑——<strong>这不是软件效果，是屏幕物理</strong>，转头就能自己验证。<br>
+影院那种圆偏（RealD）在没贴 1/4 波片的屏幕上两眼各得 50%、<strong>分不开</strong>，只有贴了波片才有左右旋之分。</p>
+
+<h3>颜色可以换，但换颜色不是换剂量</h3>
+
+<p>屏幕上 620 红与 540 绿看起来差不多亮，装进眼罩后差 <strong>约 7 倍</strong>——眼睑在 540 nm 只透 0.48%，在 620 nm 透 7.5%。所以调色板每一档都直接标了「等亮度要付几倍电功率」：590 琥珀 3.1×、570 黄 6.4×、540 绿 6.9×、505 青 15×、三色暖白 19×。<strong>绿是观感舒适档，不是剂量档</strong>；真要加剂量，还是得回到 620。</p>
+
+<p>470 nm 蓝已从调色板里拿掉，两条理由叠在一起：闭眼透射仅 0.35%，功率要推到 63 倍才够亮，几乎全部变成贴在脸上的热；而 435–470 nm 又正好是蓝光危害（BLH）的作用峰，<strong>闪烁加短波是双重不利</strong>。505 青属于青绿端、离峰值已远，留着当红的对照色，默认不选。</p>
+
+<h3>波形与占空比：三个量很容易混成一个</h3>
+
+<p>「占空比是不是波形整流后的那个占空比」——这一问点到了一个真问题：<strong>它们是两个不同的量，在窄脉冲下能差一倍以上</strong>。面板现在把三个数分开列，就是为了不再混着叫「占空比」。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:20%">量</th><th style="width:34%">定义</th><th>它在管什么</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>亮相宽度</b><br><span class="mono" style="background:none;color:#6c808c;font-size:12px">脉冲档才有效</span></td>
+      <td>脉冲在周期里占的时间比例，即 <span class="mono">duty = t_on / T</span></td>
+      <td>暗相是真零（LED 全关），不是「暗一点」。所以它直接决定<strong>调制深度</strong>：占空比越小，闪得越像「一下一下」，而不是「一亮一暗」。</td>
+    </tr>
+    <tr>
+      <td><b>脉宽</b></td>
+      <td><span class="mono">t_on = duty × T = duty / f</span></td>
+      <td>实际亮多少毫秒。<strong>占空比离开频率就没有物理意义</strong>：同样 0.1 %，10 Hz 是 100 µs，1 Hz 是 1 ms。所以面板直接给出毫秒数。</td>
+    </tr>
+    <tr>
+      <td><b>等效占空比</b><br><span class="mono" style="background:none;color:#6f2b8c;font-size:12px">= 您问的那个</span></td>
+      <td><span class="mono">∫ f(t)dt / T</span>，即平均亮度 ÷ 峰值亮度</td>
+      <td>波形整流后取平均、再比峰值。<strong>这才是算光剂量、跟连续光比曝光的数</strong>。它和亮相宽度不是一回事：指数衰减档亮相 12 % 时等效只有 3.9 %；升余弦与三角脉冲的等效恒为亮相的一半；正弦与三角恒为 50 %，滑块怎么拨都不变。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>由此得到一条必须记住的关系：<strong>平均光功率 = 峰值亮度 × 等效占空比</strong>。所以「把亮度调到一半」和「把占空比砍到一半」对剂量的作用一样，对<strong>闪烁</strong>的作用完全不同——前者整体变暗、调制深度不变；后者暗相拉长、调制深度上升。这两件事在这台机器上由两个滑块分别负责，别互相顶替。</p>
+
+<h3>八档波形，各自解决什么问题</h3>
+
+<p>原来只有方波、正弦、三角三档，其中<strong>只有方波读占空比</strong>——正弦与三角是连续波，整周期都在发光，没有暗相，滑块拨到哪儿都不影响输出（上一版就是这么空转的，现在这两档会自动置灰）。这次补齐的是「脉冲形态」：同一套占空比，用不同的边沿形状发出来。</p>
+
+<table>
+  <thead>
+    <tr><th style="width:16%">档</th><th style="width:12%">类别</th><th style="width:22%">占空比管什么</th><th style="width:14%">等效占空比</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>正弦</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>传统 photic driving 最常用；调制深度最浅，主观最温和</td></tr>
+    <tr><td><b>三角</b></td><td>连续</td><td>无效（无暗相）</td><td class="num-cell">恒 50 %</td><td>同上，线性上升下降；对称三角其实就是锯齿在 50 % 的特例</td></tr>
+    <tr><td><b>锯齿</b></td><td>连续</td><td>两侧斜率比（上升沿占比）</td><td class="num-cell">恒 50 %</td><td>做「快升慢降 / 慢升快降」的不对称刺激，ON 与 OFF 通路不等权</td></tr>
+    <tr><td><b>方波</b></td><td>脉冲</td><td>亮相宽度 = 占空比</td><td class="num-cell">= 占空比</td><td>最常用。暗相彻底，调制深度 100 %；但边沿最硬，驱动器容易振铃</td></tr>
+    <tr><td><b>梯形</b></td><td>脉冲</td><td>宽度 + 边沿时间</td><td class="num-cell">小于占空比<br>（边沿吃掉一部分）</td><td><strong>真机推荐默认</strong>：边沿可调，既保住高调制深度又不刺眼，恒流源也不容易被硬边沿激起过冲</td></tr>
+    <tr><td><b>升余弦</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>最平滑的脉冲，两端斜率为 0，没有任何锐边；本质是「削波后归一的正弦」</td></tr>
+    <tr><td><b>三角脉冲</b></td><td>脉冲</td><td>宽度</td><td class="num-cell">= 占空比 ÷ 2</td><td>线性上升、线性下降，尖顶；几何上最干净的「一下」</td></tr>
+    <tr><td><b>指数衰减</b></td><td>脉冲</td><td>衰减时间常数</td><td class="num-cell">远小于占空比</td><td>最接近真实闪光（氙灯、相机闪光灯的包络：瞬间起亮、指数拖尾）</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <h5>0.1 % 是可以给的，但要清楚它下面的硬件地板</h5>
+  <p>占空比滑块改成了<strong>对数刻度</strong>：0.1 % → 90 %，每一格是固定倍数而不是固定百分比（线性滑块下 0.1 % 只有一格的千分之一，根本拨不准）。10 Hz 时 0.1 % 就是 <strong>100 µs</strong>——真正的「闪一下」，而不是「亮一小段」。</p>
+  <p>代价在电气上：恒流源的开启延迟、MOS 栅极的充放电、LED 自身的上升时间（几十 ns 到几 µs 量级）都在吃这段。典型 AMC7135 类恒流芯片的使能延迟在微秒量级，加上 MOS 与走线，<strong>脉宽低于约 50 µs 时，实际光输出已经被边沿吃掉一半以上</strong>，面板上的数字会比真实光输出好看。所以这里给的是<strong>命令值，不是实测值</strong>；真机要用光电二极管加示波器核一次，把「设定 0.1 % → 实测多少 µs」标出来写在机壳上。屏幕上的预览同理，60 Hz 的屏连 100 µs 的一个脉冲都呈现不了。</p>
+</div>
+
+<p>峰值亮度那一档是可调的，范围 1 %–100 %，<strong>它调的是脉冲顶端的绝对亮度，不改占空比、不改频率</strong>。按上面的关系，眼睛实际收到的剂量是两者相乘，所以「亮度 × 等效占空比」才是可以和连续光比较的那个数。</p>
+
+<div class="note">
+  <h5>屏幕上的螺旋是「看着会像什么」，不是「视网膜收到什么」</h5>
+  <p>真机在眼睑后面打出的是<strong>均匀漫射光</strong>——扩散板加 20 mm 遮光腔，眼皮上不会有条纹。屏幕上的螺旋是<strong>对数极坐标映射</strong>推出来的光幻视示意：把皮层平面波 <span class="mono">cos(a·u + b·v)</span> 经 <span class="mono">w = ln z</span> 拉回视场，就成了 <span class="mono">cos(a·ln r + b·θ)</span>——<span class="mono">a</span> 管径向疏密，<span class="mono">b</span> 管臂数，<span class="mono">b</span> 的符号管旋向。它只用来对齐两件事：<strong>左右眼该不该反向</strong>、<strong>臂数对不对</strong>。别把它当照度图看，更别据它去调灯珠。</p>
+</div>
+
+<h3>四相数与那组默认值</h3>
+
+<p>算法沿用本机 <span class="mono">harmonograph/vr眼镜闪屏</span> 那套引擎的口径：四相数按 <span class="mono">k = 基频 / max(a,b,c,d)</span> 换算，<strong>左眼取 (a, d)、右眼取 (b, c)</strong>，两路亮度相加后自然出现 <span class="mono">|f₁−f₂|</span> 的拍频；<span class="mono">a+d = b+c</span> 作为校验条件，实时判 ✓ / ✗。</p>
+
+<p>默认值 <span class="mono">220 / 189 / 252 / 221</span> 是「冠军 1105 态」除以 5 的骨架（原式 1100 / 945 / 1260 / 1105，<span class="mono">a+d = b+c = 2205</span>），所以校验是 ✓——边界闭合成圆。左眼 (220, 221) 两频几乎相等，看起来是稳的 5.25 Hz；右眼 (189, 252) 差得远，拍频 1.5 Hz，会明显「呼吸」。这一组恰好把「拍频」这件事演给人看。</p>
+
 
 <footer>
   配套长文：<a href="CCC_梦机器_助眠与清明梦_溯源技术全景.html">CCC 梦机器、清明梦与助眠 —— 溯源技术全景</a>（第 1 章有形状常量与对数极坐标映射的完整推导）<br>
