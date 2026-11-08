@@ -124,6 +124,9 @@
   .cfview{position:relative;height:432px;background:#08090b;border:1px solid #1d2429;border-radius:4px;overflow:hidden}
   .cfeyes{position:absolute;inset:0;display:flex;gap:8px;padding:6px 6px 30px;align-items:center;justify-content:center}
   .cfpane{position:relative;flex:0 1 auto;height:100%;aspect-ratio:1/1;max-width:calc(50% - 6px);background:#000;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px #12171b}
+  /* 合一模式：两幅叠到同一块屏上（红青 / 行交错），只留中间这一块 */
+  .cfeyes.fuse #cfPaneL,.cfeyes.fuse #cfPaneR{display:none!important}
+  .cfeyes.fuse #cfPaneF{display:block!important;max-width:100%}
   .cfpane canvas{display:block;width:100%;height:100%}
   .cfph{position:absolute;left:7px;top:6px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
     color:rgba(255,255,255,.40);pointer-events:none}
@@ -261,6 +264,11 @@
         <div class="cfph">右眼 R<s>· 右旋（镜像）</s></div>
         <div class="cfpt" id="cfRt">—</div>
         <canvas id="cfR"></canvas>
+      </div>
+      <div class="cfpane" id="cfPaneF" style="display:none">
+        <div class="cfph">合一 F<s>· 单屏叠加</s></div>
+        <div class="cfpt" id="cfFt">—</div>
+        <canvas id="cfF"></canvas>
       </div>
     </div>
     <div class="cfhud" id="cfhud">未运行</div>
@@ -418,8 +426,14 @@
       </div>
       <div class="cflab" id="cfPOLw" style="margin-top:8px;display:none"><span>偏光轴相对屏幕</span><b id="cfPOLv">0°</b></div>
       <input type="range" id="cfPOL" min="0" max="90" step="5" value="0" style="display:none">
+      <label class="cfcheck" id="cfFUSEw" style="margin-top:8px;margin-bottom:2px">
+        <input type="checkbox" id="cfFUSE">
+        <span><b>单屏合一</b>　两幅叠到同一块屏上（红青＝加法叠，线偏/圆偏＝行交错），戴上眼镜才分得开、合成一个 3D 像。<br>不勾＝分眼看两块屏（真机口径，两眼镜像、故意不融合）。</span>
+      </label>
+      <div class="cflab" id="cfPARw" style="margin-top:6px;display:none"><span>视差（+ 在屏后 / − 在屏前）</span><b id="cfPARv">+1.5 %</b></div>
+      <input type="range" id="cfPAR" min="-50" max="50" step="1" value="15" style="display:none">
       <div class="cfread" id="cfglread">—</div>
-      <p class="cfhint">红青眼镜的镜片是<b>左红右青</b>：左镜只放长波、右镜只放短波，所以它能把屏幕上的两色<b>按颜色劈成两路</b>——这是单块显示器做出「双眼各看一幅」的唯一廉价办法。前提是两幅图<b>颜色互补</b>，都设成红就全被右镜挡掉。<br>线偏：普通 LCD 本身就是线偏振出光，镜片转过 90° 会按 cos²θ 变暗直至全黑，这是屏幕物理、不是软件效果。<br>并排两块给出的是「<b>分眼呈现</b>」——每眼各得一幅；要让两幅图严格<b>重合</b>成真融合，得靠半透半反镜或投影叠像，靠并排摆是做不到的。<br>圆偏：屏幕没贴 1/4 波片时两眼各得 50%、<b>完全不能分离</b>，只有贴了波片才有左右旋之分。</p>
+      <p class="cfhint">红青眼镜的镜片是<b>左红右青</b>：左镜只放长波、右镜只放短波，所以它能把屏幕上的两色<b>按颜色劈成两路</b>——这是单块显示器做出「双眼各看一幅」的唯一廉价办法。前提是两幅图<b>颜色互补</b>，都设成红就全被右镜挡掉。<br>线偏：普通 LCD 本身就是线偏振出光，镜片转过 90° 会按 cos²θ 变暗直至全黑，这是屏幕物理、不是软件效果。<br><b>分屏 / 合一</b>是两套口径：不勾「单屏合一」时的并排两块是「<b>分眼呈现</b>」——每眼各得一幅，这是真机（两块眼屏）的样子，但拿它对着显示器戴红青镜是看不到立体的，只会看见两块各偏一色的屏。勾上「单屏合一」才把两幅<b>叠到同一块屏</b>上（红青按 R / GB 通道叠、线偏与圆偏按奇偶行交错），这时两眼各取一幅、位置重合，只差一个<b>水平视差</b>，大脑才会合成<b>一个</b>带深度的像。合一时两幅必须同向同手性，「右眼镜像」会自动让位——镜像的两幅在皮层上是同一幅图，融不出深度。<br>圆偏：屏幕没贴 1/4 波片时两眼各得 50%、<b>完全不能分离</b>，只有贴了波片才有左右旋之分。</p>
     </div>
 
     <label class="cfcheck wide">
@@ -1396,6 +1410,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
   var S={src:'free', fL:10, fR:10, wave:'sine', duty:0.5, br:1, part:'full',
          col:'red', colR:'', gl:'none', pol:0, phase:180, pat:'spiral', turn:1, mir:true, rot:18,
+         fuse:false, par:1.5,
          run:false, paused:false, t:0, last:0, rate:0, limit:180,
          sq:{a:220,b:189,c:252,d:221,base:6},
          cyc:{logcyc:{a:1,k:0.08,n:17}, duocyc:{a:1,k:2,n:5}},
@@ -1455,7 +1470,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   function buildCurve(eye){
     /* 旋向与镜像完全复用场模式的口径：左眼跟 turn，右眼镜像时取反。
        曲线模式下「取反」= 水平翻转（x → −x），视觉上就是旋向反过来。 */
-    var sgn=(eye===0) ? S.turn : (S.mir ? -S.turn : S.turn);
+    var sgn=(eye===0) ? S.turn : (mirEff() ? -S.turn : S.turn);
     var cx=(RW-1)/2, cy=(RH-1)/2, R=Math.min(RW,RH)/2;
     var m1=new Float32Array(RW*RH), m2=null, TAU=Math.PI*2;
     var c=S.cyc[S.pat] || S.cyc.logcyc;
@@ -1541,7 +1556,7 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
 
   function buildGeom(eye){
     if(S.pat==='logcyc' || S.pat==='duocyc') return buildCurve(eye);
-    var turn = (eye===0) ? S.turn : (S.mir ? -S.turn : S.turn);
+    var turn = (eye===0) ? S.turn : (mirEff() ? -S.turn : S.turn);
     var cw=new Float32Array(RW*RH), sw=new Float32Array(RW*RH), fd=new Float32Array(RW*RH);
     var cx=(RW-1)/2, cy=(RH-1)/2, R=Math.min(RW,RH)/2;
     for(var j=0;j<RH;j++){
@@ -1561,7 +1576,9 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
   }
 
   /* ── 镜片光学：每只眼各自的透过率（0..1，三通道）与总衰减 ── */
-  function eyeCol(e){ return COL[(e===1 && S.colR) ? S.colR : S.col] || COL.red; }
+  /* 右眼换色只为红青眼镜服务：线偏 / 圆偏靠偏振分离，两眼的波长必须相同，
+     否则就成了红绿分色，偏振毫无意义。 */
+  function eyeCol(e){ return COL[(e===1 && S.colR && S.gl==='ana') ? S.colR : S.col] || COL.red; }
   function lensF(e){
     if(S.gl==='ana') return e===0 ? [1.00,0.05,0.03] : [0.04,0.90,1.00];
     return [1,1,1];
@@ -1575,33 +1592,47 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     return 1;
   }
 
-  function frame(eye, ctx, W, H, lv0, lv1, rotPhi){
+  /* 合一（单屏叠加）只对戴镜有意义：要把两幅叠到同一块屏上，才谈得上「分开再合成」 */
+  function fusing(){ return !!S.fuse && S.gl!=='none'; }
+  /* 镜像只属于「分眼」口径：合一时两幅必须同向同手性才融得成一个像，
+     镜像会让左右互成反转，大脑只会看到平面甚至双眼竞争。 */
+  function mirEff(){ return S.mir && !fusing(); }
+
+  /* 单眼成图：把 eye 的图案写成 RGBA。gg = 镜片亮度衰减 */
+  function fillEye(eye, phi, dst, gg){
     var gm=GEOM[eye] || (GEOM[eye]=buildGeom(eye));
-    var cc=eyeCol(eye), F=lensF(eye), gg=lensG(eye);
-    var d=img.data;
+    var cc=eyeCol(eye), F=lensF(eye);
     var R8=cc[0]*F[0]*gg*255, G8=cc[1]*F[1]*gg*255, B8=cc[2]*F[2]*gg*255, o, v, k, n;
     if(gm.kind==='curve'){
-      /* 曲线是静态遮罩：亮度只做整体乘色，旋向靠绘制时旋转画布。
+      /* 曲线是静态遮罩：亮度只做整体乘色，旋向靠绘制时旋转。
          双摆线用同一光色的两档明度区分两条线（硬件是单色 LED，不引入第二色相）。 */
       var ml=gm.ml, mr=gm.mr;
       for(k=0,n=RW*RH;k<n;k++){
         v=mr ? (ml[k]+mr[k]*0.58) : ml[k];
         if(v>1) v=1;
-        o=k*4; d[o]=R8*v; d[o+1]=G8*v; d[o+2]=B8*v; d[o+3]=255;
+        o=k*4; dst[o]=R8*v; dst[o+1]=G8*v; dst[o+2]=B8*v; dst[o+3]=255;
       }
     } else {
-      var c=Math.cos(rotPhi), s=Math.sin(rotPhi);
+      var c=Math.cos(phi), s=Math.sin(phi);
       var cw=gm.cw, sw=gm.sw, fd=gm.fd;
       for(k=0,n=RW*RH;k<n;k++){
         v=(0.5+0.5*(cw[k]*c - sw[k]*s))*fd[k];
-        o=k*4; d[o]=R8*v; d[o+1]=G8*v; d[o+2]=B8*v; d[o+3]=255;
+        o=k*4; dst[o]=R8*v; dst[o+1]=G8*v; dst[o+2]=B8*v; dst[o+3]=255;
       }
     }
+  }
+
+  function frame(eye, ctx, W, H, lv0, lv1, rotPhi){
+    var gm=GEOM[eye] || (GEOM[eye]=buildGeom(eye));
+    fillEye(eye, rotPhi, img.data, lensG(eye));
     octx.putImageData(img,0,0);
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
     /* 等比绘制：眼屏无论什么比例，图案都是正圆，不被拉成椭圆 */
     var sc2=Math.min(W/RW, H/RH), dw=RW*sc2, dh=RH*sc2, dx=(W-dw)/2, dy=(H-dh)/2;
+    /* 镜像是两件事：几何翻转（buildGeom 里取反号）+ 旋转反向。
+       只翻不反向，两眼就朝同一侧转，看起来根本不像镜像 —— 曲线图案正是漏了这一步。 */
+    var rphi=(gm.kind==='curve' && eye===1 && mirEff()) ? -rotPhi : rotPhi;
     var rs=REG[S.part];
     for(var q=0;q<rs.length;q++){
       var rr=rs[q];
@@ -1613,11 +1644,81 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       ctx.imageSmoothingEnabled=true;
       if(gm.kind==='curve'){
         ctx.translate(dx+dw/2, dy+dh/2);
-        if(rotPhi) ctx.rotate(rotPhi);
+        if(rphi) ctx.rotate(rphi);
         ctx.drawImage(off, -dw/2, -dh/2, dw, dh);
       } else {
         ctx.drawImage(off, 0,0, RW,RH, dx,dy,dw,dh);
       }
+      ctx.restore();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  /* ── 合一：把两幅图叠到同一块屏上 ──────────────────────────────────
+     红青 → 加法叠加（一块屏能同时发出两路色，眼睛不能，滤色片负责再劈开）；
+     线偏 / 圆偏 → 行交错，现实里的被动 3D 就是这么做的，靠屏前的条纹相位片分给两眼。
+     视差「左图左移半幅、右图右移半幅 ⇒ 像在屏后」。
+     注意视差必须加在旋转之后：加在旋转之前的话，图案转到 90° 时位移也跟着转成垂直，两眼就对不上了。 */
+  var bA=null, bB=null;
+  function bufs(){
+    var n=RW*RH*4;
+    if(!bA || bA.length!==n){ bA=new Uint8ClampedArray(n); bB=new Uint8ClampedArray(n); }
+  }
+  function drawFusion(ctx, W, H, lvL, lvR, phi){
+    bufs();
+    fillEye(0, phi, bA, 1);
+    fillEye(1, phi, bB, 1);
+    var gm=GEOM[0], cur=!!(gm && gm.kind==='curve');
+    var h=Math.round(S.par/100*RW/2);          /* 半幅位移，单位：离屏像素 */
+    var cs=Math.cos(phi), sn=Math.sin(phi), cx=(RW-1)/2, cy=(RH-1)/2;
+    var inter=(S.gl==='lin' || S.gl==='cir');
+    var d=img.data, xL, xR, ux, uy, sx, sy, pL, pR, o, rL, gL, bL, rR, gR, bR, t;
+    for(var y=0;y<RH;y++){
+      for(var x=0;x<RW;x++){
+        xL=x+h; xR=x-h;
+        if(cur){
+          ux=xL-cx; uy=y-cy;
+          sx=Math.round(cx+ux*cs+uy*sn); sy=Math.round(cy-ux*sn+uy*cs);
+          pL=(sx>=0&&sx<RW&&sy>=0&&sy<RH) ? (sy*RW+sx)*4 : -1;
+          ux=xR-cx; uy=y-cy;
+          sx=Math.round(cx+ux*cs+uy*sn); sy=Math.round(cy-ux*sn+uy*cs);
+          pR=(sx>=0&&sx<RW&&sy>=0&&sy<RH) ? (sy*RW+sx)*4 : -1;
+        } else {
+          pL=(xL>=0&&xL<RW) ? (y*RW+xL)*4 : -1;
+          pR=(xR>=0&&xR<RW) ? (y*RW+xR)*4 : -1;
+        }
+        rL=(pL>=0)?bA[pL]:0; gL=(pL>=0)?bA[pL+1]:0; bL=(pL>=0)?bA[pL+2]:0;
+        rR=(pR>=0)?bB[pR]:0; gR=(pR>=0)?bB[pR+1]:0; bR=(pR>=0)?bB[pR+2]:0;
+        o=(y*RW+x)*4;
+        if(inter){
+          /* 行交错：偶行给左眼、奇行给右眼 */
+          if(y&1){ d[o]=rR; d[o+1]=gR; d[o+2]=bR; }
+          else   { d[o]=rL; d[o+1]=gL; d[o+2]=bL; }
+        } else {
+          t=rL+rR; d[o]=t>255?255:t;
+          t=gL+gR; d[o+1]=t>255?255:t;
+          t=bL+bR; d[o+2]=t>255?255:t;
+        }
+        d[o+3]=255;
+      }
+    }
+    octx.putImageData(img,0,0);
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    var sc2=Math.min(W/RW, H/RH), dw=RW*sc2, dh=RH*sc2, dx=(W-dw)/2, dy=(H-dh)/2;
+    var rs=REG[S.part];
+    for(var q=0;q<rs.length;q++){
+      var rr=rs[q];
+      var k0=rr[4];
+      var aL = k0===0 ? lvL[0] : (k0===1 ? lvL[1] : (lvL[0]+lvL[1])/2);
+      var aR = k0===0 ? lvR[0] : (k0===1 ? lvR[1] : (lvR[0]+lvR[1])/2);
+      var a=(aL+aR)/2;
+      if(a<=0.003) continue;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(rr[0]*W, rr[1]*H, rr[2]*W, rr[3]*H); ctx.clip();
+      ctx.globalAlpha=Math.min(1,a);
+      ctx.imageSmoothingEnabled=true;
+      ctx.drawImage(off, 0,0, RW,RH, dx,dy,dw,dh);
       ctx.restore();
     }
     ctx.globalAlpha=1;
@@ -1642,26 +1743,42 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       el(e===0?'cfLt':'cfRt').textContent=txt;
     }
     var lTurn=S.turn>0?'左旋':'右旋';
-    var rTurn=(S.mir ? (S.turn>0?'右旋':'左旋') : lTurn);
+    var rTurn=(mirEff() ? (S.turn>0?'右旋':'左旋') : lTurn);
     el('cfPaneL').querySelector('.cfph').innerHTML='左眼 L<s>· '+lTurn+'</s>';
-    el('cfPaneR').querySelector('.cfph').innerHTML='右眼 R<s>· '+rTurn+(S.mir?'（镜像）':'')+'</s>';
-    el('cfTURNv').textContent=lTurn+(S.mir?' / 镜像':' / 同向');
+    el('cfPaneR').querySelector('.cfph').innerHTML='右眼 R<s>· '+rTurn+(mirEff()?'（镜像）':'')+'</s>';
+    el('cfTURNv').textContent=lTurn+(S.mir?(fusing()?' / 合一·同向':' / 镜像'):' / 同向');
+    /* 合一时镜像失效：两幅在皮层上会变成同一幅图，融不出深度 */
+    el('cfMIR').style.opacity = fusing() ? .42 : 1;
+    el('cfMIR').title = fusing()
+      ? '合一模式下两幅必须同向同手性，镜像不生效（否则融不成一个像）'
+      : '右眼取镜像：几何翻转 + 反向旋转';
+    var ftxt = S.gl==='ana' ? '左红 / 右青'
+             : (S.gl==='lin' ? '行交错 0°/90°' : '行交错 左旋/右旋');
+    el('cfPaneF').querySelector('.cfph').innerHTML='合一 F<s>· '+ftxt+'</s>';
+    el('cfFt').textContent='视差 '+(S.par>0?'+':'')+S.par.toFixed(1)+' %';
   }
   function fitCanvas(){
-    ['cfL','cfR'].forEach(function(id){
-      var c=el(id), w=Math.max(1,c.clientWidth), h=Math.max(1,c.clientHeight);
+    ['cfL','cfR','cfF'].forEach(function(id){
+      var c=el(id), w=c.clientWidth, h=c.clientHeight;
+      if(w<2 || h<2) return;          /* 隐藏中的画布别压成 1×1，切回来还要用 */
       var bw=Math.round(w*dpr), bh=Math.round(h*dpr);
       if(c.width!==bw||c.height!==bh){ c.width=bw; c.height=bh; }
-      if(id==='cfL') setRes(w,h);
     });
+    var rc=el(fusing()?'cfF':'cfL');
+    setRes(Math.max(1,rc.clientWidth), Math.max(1,rc.clientHeight));
     drawIdle(); drawWave();
   }
   function drawIdle(){
     if(S.run) return;
     var lv=S.br*0.30, rot=2*Math.PI*(S.rot/360)*(S.t||0);
+    if(fusing()){
+      var c=el('cfF');
+      drawFusion(c.getContext('2d'), c.width, c.height, [lv,lv], [lv,lv], rot);
+      return;
+    }
     for(var e=0;e<2;e++){
-      var c=el(e===0?'cfL':'cfR');
-      frame(e, c.getContext('2d'), c.width, c.height, lv, lv, rot);
+      var c2=el(e===0?'cfL':'cfR');
+      frame(e, c2.getContext('2d'), c2.width, c2.height, lv, lv, rot);
     }
   }
   function layout(){
@@ -1671,7 +1788,8 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       else if(S.part==='ud') p.className+=' seamH';
       else if(S.part==='lr') p.className+=' seamV';
     });
-    labels(); drawIdle();
+    document.querySelector('.cfeyes').classList.toggle('fuse', fusing());
+    labels(); drawIdle(); fitCanvas();
   }
   function fit(f){
     if(!S.rate) return {f:f, alg:1};
@@ -1815,11 +1933,11 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     drawWave();
   }
   function black(){
-    for(var e=0;e<2;e++){
-      var c=el(e===0?'cfL':'cfR');
+    ['cfL','cfR','cfF'].forEach(function(id){
+      var c=el(id);
       var x=c.getContext('2d'); x.setTransform(1,0,0,1,0,0);
       x.fillStyle='#000'; x.fillRect(0,0,c.width,c.height);
-    }
+    });
   }
   function fmt(t){
     var m=Math.floor(t/60), ss=Math.floor(t%60);
@@ -1867,14 +1985,22 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     if(!S.paused){
       S.t+=dt;
       var P=plan(), fade=Math.min(1, S.t/1.2), phi=2*Math.PI*(S.rot/360)*S.t;
+      var LV=[[0,0],[0,0]];
       for(var e=0;e<2;e++){
         for(var j=0;j<2;j++){
           S.ph[e][j]=(S.ph[e][j]||0)+dt*fit(P[e].fs[j]).f;
         }
         var lv0=wave(S.ph[e][0]+P[e].off)*S.br*fade;
         var lv1=wave(S.ph[e][1]+P[e].off)*S.br*fade;
-        var c=el(e===0?'cfL':'cfR');
-        frame(e, c.getContext('2d'), c.width, c.height, lv0, lv1, phi);
+        LV[e][0]=lv0; LV[e][1]=lv1;
+        if(!fusing()){
+          var c=el(e===0?'cfL':'cfR');
+          frame(e, c.getContext('2d'), c.width, c.height, lv0, lv1, phi);
+        }
+      }
+      if(fusing()){
+        var cf=el('cfF');
+        drawFusion(cf.getContext('2d'), cf.width, cf.height, LV[0], LV[1], phi);
       }
       var ff2=fit(P[0].fs[0]||0);
       var alg=ff2.alg>1 ? (' · 谐波折衷 ×1/'+ff2.alg) : '';
@@ -1917,8 +2043,40 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
     el('cfRCOL').style.display = S.gl==='ana' ? 'flex' : 'none';
     el('cfPOL').style.display  = S.gl==='lin' ? 'block' : 'none';
     el('cfPOLw').style.display = S.gl==='lin' ? 'flex' : 'none';
+    /* 合一档位只对戴镜有意义：裸眼下勾了它也分不开，直接禁用 */
+    var canFuse = S.gl!=='none';
+    el('cfFUSE').disabled = !canFuse;
+    el('cfFUSEw').style.opacity = canFuse ? 1 : .42;
+    var parOn = fusing();
+    el('cfPAR').style.display  = parOn ? 'block' : 'none';
+    el('cfPARw').style.display = parOn ? 'flex'  : 'none';
+    el('cfPARv').textContent = (S.par>0?'+':'')+S.par.toFixed(1)+' %';
     var L=eyeCol(0), R=eyeCol(1), FL=lensF(0), FR=lensF(1);
-    var nameL=COLNM[S.col]||'—', nameR=COLNM[(S.colR||S.col)]||'—';
+    var nameL=COLNM[S.col]||'—', nameR=COLNM[(S.gl==='ana'&&S.colR) ? S.colR : S.col]||'—';
+    var px=Math.round(S.par/100*404);
+    if(fusing()){
+      if(S.gl==='ana'){
+        var tL=thru(L,FL), tR=thru(R,FR);
+        box.innerHTML='<b>合一 ✔</b> 同一块屏上两路加法叠加：左眼图只占 <b>R</b> 通道、右眼图只占 <b>G/B</b> 通道。<br>'+
+          '左镜（红）滤掉 GB ⇒ 只见左眼图；右镜（青）滤掉 R ⇒ 只见右眼图。两幅位置重合、只差 <b>'+
+          (S.par>0?'+':'')+S.par.toFixed(1)+' % 视差</b>（≈ '+Math.round(Math.abs(px))+' px，'+
+          (S.par>0?'在屏后':'在屏前')+'），所以大脑把它们合<b>成一个</b>带深度的像。<br>'+
+          '透过率：左镜对 '+nameL+' <b>'+Math.round(tL*100)+'%</b>　右镜对 '+nameR+' <b>'+Math.round(tR*100)+'%</b>'+
+          (tL>0.35&&tR>0.35 ? '　<span class="ok">✔ 互补</span>' : '　<span class="no">✘ 右眼偏暗，把右眼换成 505 青</span>')+
+          '<br>摘下眼镜会看到红青<b>双影</b>——两幅都在同一块屏上，裸眼分不开。';
+      } else if(S.gl==='lin'){
+        box.innerHTML='<b>合一 ✔</b> 行交错：偶行 = 左眼图（偏光 0°）、奇行 = 右眼图（偏光 90°），'+
+          '屏前贴<b>条纹相位片</b>（patterned retarder）把两种取向按行排好。<br>'+
+          '代价是每眼只剩一半行：眼屏 404 px 上一条约 <b>1.6 px</b>，垂直分辨率直接减半。'+
+          '没有那层膜时，行交错在屏幕上只是一层横纹，两眼照样看得见全部内容 —— <b>膜是这件事的全部前提</b>。'+
+          '<br>视差 '+(S.par>0?'+':'')+S.par.toFixed(1)+' %（≈ '+Math.round(Math.abs(px))+' px，'+(S.par>0?'在屏后':'在屏前')+'）由两半行之间的水平错位给出。';
+      } else {
+        box.innerHTML='<b>合一 ✔</b> 行交错 + 屏前 1/4 波片条纹：偶行出左旋圆偏、奇行出右旋，左旋片只放行左旋 ⇒ 每眼只剩自己那一半行。<br>'+
+          '没有波片膜时圆偏眼镜两眼各得 50%，行交错也分不开 —— 现在试的其实是「屏幕上先贴好膜」之后的理想情形。'+
+          '<br>视差 '+(S.par>0?'+':'')+S.par.toFixed(1)+' %（≈ '+Math.round(Math.abs(px))+' px，'+(S.par>0?'在屏后':'在屏前')+'）。';
+      }
+      return;
+    }
     if(S.gl==='none'){
       box.innerHTML='裸眼 · 两眼各自看到整块屏，颜色都一样（'+nameL+'）';
     } else if(S.gl==='ana'){
@@ -1985,8 +2143,21 @@ duty_R  = period × d_R　　duty_G = period × d_G　　duty_B = period × d_B<
       if(!S.colR || S.colR===S.col){ S.colR = (S.col==='cyn' ? 'red' : 'cyn'); }
     } else if(S.gl==='none'){
       S.colR='';
+      if(S.fuse){ S.fuse=false; el('cfFUSE').checked=false; }
     }
-    syncR(); swatch();
+    GEOM=[null,null];            /* 合一 / 分屏的手性不同，几何缓存要作废 */
+    syncR(); swatch(); layout();
+  });
+  /* 合一：两幅叠到同一块屏（红青按通道叠、线偏/圆偏按行交错），戴上眼镜才分得开 */
+  el('cfFUSE').addEventListener('change', function(){
+    S.fuse = this.checked;
+    GEOM=[null,null];
+    glRead(); layout();
+  });
+  el('cfPAR').addEventListener('input', function(){
+    S.par = (+this.value)/10;
+    glRead(); labels();
+    if(!S.run) drawIdle();
   });
   grp('rcol','colR', swatch);
   el('cfPOL').addEventListener('input', function(){
